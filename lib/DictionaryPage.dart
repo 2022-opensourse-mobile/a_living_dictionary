@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'ThemeColor.dart';
 
 
 class DictionaryPage extends StatelessWidget {
@@ -7,7 +8,7 @@ class DictionaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Text('Hi')),
+      body: Center(child: Text('Dictionary')),
     );;
   }
 }
