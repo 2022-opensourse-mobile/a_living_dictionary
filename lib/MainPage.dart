@@ -7,9 +7,6 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('자취 백과사전'),
-      ),
       body: Center(child: Text('Hi')),
     );;
   }

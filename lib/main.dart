@@ -42,10 +42,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      appBar: AppBar(title: Text(widget.title),),
+      body: Center(child: _getPage(),),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: (index){
+          setState(() {_curIndex = index;});
+        },
+        currentIndex: _curIndex,
+        selectedItemColor: Colors.blue,
+        backgroundColor: Colors.blue,
+        items: const<BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Main'),
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Dictionary'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Comminity'),
+          BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: 'Map'),
+          BottomNavigationBarItem(icon: Icon(Icons.info), label: 'Info'),
+        ],
       ),
-      body: Center(child: Text('Hi')),
     );
   }
 
