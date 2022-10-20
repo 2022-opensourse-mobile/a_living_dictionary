@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'CommunityPage.dart';
+import 'MainPage.dart';
+import 'MyPage.dart';
+import 'RestaurantPage.dart';
+import 'DictionaryPage.dart';
 
 
 //page0 : Main
 //page1 : Dictionary
 //page2 : community
 //page3 : restaurant map
-//page4 : my Info
+//page4 : my Page
 
 void main() {
   runApp(const MyApp());
@@ -51,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 2: return CommunityPage();
       case 3: return RestaurantPage();
       case 4: return MyPage();
+      default: return MainPage();
     }
   }
 }
