@@ -45,7 +45,6 @@ class _MyComminityState extends State<MyCommunity> {
     Post(title: 'title1', writer: 'writer1', body: 'body1'),
     Post(title: 'title2', writer: 'writer2', body: 'body2'),
     Post(title: 'title3', writer: 'writer3', body: 'body3'),
-    Post(title: 'notice1', writer: 'manager', body: 'rule1'),
     Post(title: 'title4', writer: 'writer1', body: 'body4'),
     Post(title: 'title5', writer: 'writer2', body: 'body5'),
     Post(title: 'title6', writer: 'writer3', body: 'body6'),
@@ -55,19 +54,24 @@ class _MyComminityState extends State<MyCommunity> {
     Post(title: 'hot post2', writer: 'writer2', body: 'hot2', like: 23),
     Post(title: 'hot post3', writer: 'writer3', body: 'hot3', like: 10),
   ];
-  var noticePostList = <Post>[];
+  var noticePostList = <Post>[
+    Post(title: 'notice1', writer: 'manager', body: 'rule1'),
+  ];
   var curPostList = <Post>[];
 
   @override
   Widget build(BuildContext context) {
-    curPostList = genaralPostList;
+    curPostList = hotPostList;
+
     return Column(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextButton(
               onPressed: () {
-                setState( () => curPostList = genaralPostList);
+                setState(() {
+                  curPostList = genaralPostList;
+                });
               },
               child: Text('전체글'),
               style: ButtonStyle(
@@ -76,7 +80,9 @@ class _MyComminityState extends State<MyCommunity> {
               )),
           TextButton(
               onPressed: () {
-                setState(() =>curPostList = hotPostList);
+                setState(() {
+                  curPostList = hotPostList;
+                });
               },
               child: Text('인기글'),
               style: ButtonStyle(
@@ -84,7 +90,11 @@ class _MyComminityState extends State<MyCommunity> {
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
               )),
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  curPostList = noticePostList;
+                });
+              },
               child: Text('공지글'),
               style: ButtonStyle(
                 minimumSize: MaterialStateProperty.all<Size>(Size(110, 37)),

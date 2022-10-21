@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
           title: Text(widget.title, style: TextStyle(color: Colors.white),),
           actions: <Widget>[
-            new IconButton(
+            IconButton(
               icon: new Icon(Icons.search),
               tooltip: 'Hi!',
               onPressed: () => {
