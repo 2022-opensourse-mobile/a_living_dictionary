@@ -13,15 +13,14 @@ class Post{
   String writer_id = '';
   DateTime? time;
   int boardType = 1;
+  String? hashTag;
 
 
-  Post({this.title = '', this.writer = '', this.body = '', this.like=0}){
+  Post({this.title = '', this.writer = '', this.body = '', this.like=0, this.hashTag}){
     number = ++n;
     time = DateTime.now();
   }
 }
-
-
 
 
 class CommunityPage extends StatelessWidget {
@@ -39,6 +38,9 @@ class MyCommunity extends StatefulWidget {
   @override
   State<MyCommunity> createState() => _MyComminityState();
 }
+
+
+
 
 class _MyComminityState extends State<MyCommunity> {
   var genaralPostList = <Post>[
@@ -58,11 +60,8 @@ class _MyComminityState extends State<MyCommunity> {
     Post(title: 'notice1', writer: 'manager', body: 'rule1'),
   ];
   var curPostList = <Post>[];
-
   @override
   Widget build(BuildContext context) {
-    curPostList = hotPostList;
-
     return Column(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -111,14 +110,16 @@ class _MyComminityState extends State<MyCommunity> {
   }
 
   Widget _buildListItem(Post post) {
+    String t = '${post.time!.hour.toString()}:${post.time!.minute.toString()}';
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: ListTile(
-        title: Text('${post.number}. ' + post.title),
+        title: Text(post.title),
         subtitle: Text(post.body),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(width: 1.0, color: Colors.grey)),
+        trailing: Text(t),
       ),
     );
   }
