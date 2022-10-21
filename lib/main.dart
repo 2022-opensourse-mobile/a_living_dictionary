@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title, style: TextStyle(color: Colors.white),),),
-      body: Center(child: _getPage(),),
+      body: Center(child: _getPage()),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index){
           setState(() {_curIndex = index;});
