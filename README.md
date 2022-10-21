@@ -17,3 +17,6 @@ _themeMaterialColor : MaterialColor 자료형 색상
 
 ### 2. dart 클래스  
 각자 맡은 페이지를 클래스로 나누었으니 본인 클래스를 수정
+
+### 3. Firebase  
+Firebase를 연동해놨기 때문에 정상작동하는지 
