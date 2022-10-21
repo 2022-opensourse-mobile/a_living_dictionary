@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "574173650365",
+    "project_id": "a-living-dictionary",
+    "storage_bucket": "a-living-dictionary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:574173650365:android:98fd6098038ee4feb446d4",
+        "android_client_info": {
+          "package_name": "kr.ac.kumoh.team_mobile.a_living_dictionary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "574173650365-ke61atft0bn7fn3phjfbc5iftofdbsap.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmFEe4Z8ZsTWA3Q-ovkmtK-8rJJabGUz8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "574173650365-ke61atft0bn7fn3phjfbc5iftofdbsap.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "574173650365-khlfq6iv3hs443m6h3de7jd6lbq0pop4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "kr.ac.kumoh.teammobile.aLivingDictionary"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
