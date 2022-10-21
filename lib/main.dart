@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ]
       ),
-      body: Center(child: _getPage(),),
+      body: Center(child: _getPage()),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index){
           setState(() {_curIndex = index;});
