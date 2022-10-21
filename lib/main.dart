@@ -45,8 +45,19 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title, style: TextStyle(color: Colors.white),),),
-      body: Center(child: _getPage()),
+      appBar: AppBar(
+          title: Text(widget.title, style: TextStyle(color: Colors.white),),
+          actions: <Widget>[
+            new IconButton(
+              icon: new Icon(Icons.search),
+              tooltip: 'Hi!',
+              onPressed: () => {
+                // 검색 화면으로 이동
+              },
+            )
+          ]
+      ),
+      body: Center(child: _getPage(),),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index){
           setState(() {_curIndex = index;});
