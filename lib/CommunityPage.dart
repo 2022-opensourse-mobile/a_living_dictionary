@@ -40,8 +40,6 @@ class MyCommunity extends StatefulWidget {
 }
 
 
-
-
 class _MyComminityState extends State<MyCommunity> {
   var genaralPostList = <Post>[
     Post(title: 'title1', writer: 'writer1', body: 'body1'),
@@ -60,8 +58,19 @@ class _MyComminityState extends State<MyCommunity> {
     Post(title: 'notice1', writer: 'manager', body: 'rule1'),
   ];
   var curPostList = <Post>[];
+  var curHotPostList = <Post>[];
+  
   @override
   Widget build(BuildContext context) {
+    if(curHotPostList.isEmpty) {
+      for(int i = 0; i < 2; i++){
+        curHotPostList.add(hotPostList[0]);
+        hotPostList.removeAt(0);
+      }
+      curPostList = genaralPostList;
+    }
+    var postList = curHotPostList.map((post) => _buildListItem(post)).toList()+ curPostList.map((post) => _buildListItem(post)).toList();
+
     return Column(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -103,8 +112,21 @@ class _MyComminityState extends State<MyCommunity> {
       ),
       Expanded(
           child: ListView(
-              children: curPostList.map((post) => _buildListItem(post)).toList()
+              children: postList
           )
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 10.0, 10.0),
+            child: FloatingActionButton(
+              onPressed: (){},
+              tooltip: 'write',
+              child: Icon(Icons.add),
+            ),
+          ),
+        ],
       ),
     ]);
   }
