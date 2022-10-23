@@ -58,7 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
           actions: <Widget>[
             IconButton(
               icon: new Icon(Icons.search),
-              tooltip: 'Hi!',
               onPressed: () => {
                 // 검색 화면으로 이동
               },
