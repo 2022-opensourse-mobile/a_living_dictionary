@@ -14,7 +14,7 @@ class MyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '내 정보',
+      title: 'My Page',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: themeColor.getMaterialColor(),
