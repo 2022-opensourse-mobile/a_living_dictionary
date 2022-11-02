@@ -7,14 +7,15 @@ import 'firebase_options.dart';
 
 
 final List<String> imgList =[
-  'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
-  'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-  'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
-  'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
-  'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
-  'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
+  'assets/1.png',
+  'assets/2.png',
+  'assets/1.png',
+  'assets/1.png',
+  'assets/1.png',
 ];
 // w=1951&q=80
+
+
 
 
 class MainPage extends StatelessWidget {
@@ -45,7 +46,6 @@ class MainPage extends StatelessWidget {
                   weatherText(),
                   textList('인기글'),
                   textList('최신글')
-
                 ],
               ),
             ),
@@ -100,10 +100,8 @@ class MainPage extends StatelessWidget {
                 items: imgList
                     .map((item) => Container(
                           child: Center(
-                              child: Image.network(
-                            item,
-                            fit: BoxFit.cover,
-                            height: height,
+                              child: Image( 
+                                image: AssetImage(item)
                           )),
                         ))
                     .toList(),
@@ -148,7 +146,9 @@ class MainPage extends StatelessWidget {
                         ),
                         SizedBox(width: 193),
                         TextButton(
-                          onPressed: (){}, 
+                          onPressed: (){
+                              
+                          }, 
                           child: Text("더 보기 >", style: TextStyle(fontSize: 13)),
                           style: TextButton.styleFrom(
                             splashFactory: NoSplash.splashFactory
@@ -157,7 +157,6 @@ class MainPage extends StatelessWidget {
                       ],
                     ),
                     visualDensity: VisualDensity(vertical: -4),
-                    
                   ),
                   ListTile(
                     title: Text('안녕', style: TextStyle(fontSize: 13)),
