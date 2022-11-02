@@ -65,90 +65,6 @@ class MainPage extends StatelessWidget {
     // ));
   }
 
-  Container textList() {
-
-      
-      return Container(
-          margin: EdgeInsets.all(5),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Color.fromARGB(66, 74, 74, 74),
-                width: 1,
-              ),
-              // boxShadow: [
-              //   BoxShadow(
-              //     color: Color.fromARGB(31, 208, 208, 208),
-              //   )
-              // ]
-              ),
-          height: 210,
-          
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: <Widget>[
-                  ListTile(
-                    title: Row(
-                      children: [
-                        Text(
-                          '인기글',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          
-                        ),
-                        SizedBox(width: 193),
-                        TextButton(
-                          onPressed: (){}, 
-                          child: Text("더 보기 >", style: TextStyle(fontSize: 13)),
-                          style: TextButton.styleFrom(
-                            splashFactory: NoSplash.splashFactory
-                          )
-                        )
-                      ],
-                    ),
-                    visualDensity: VisualDensity(vertical: -4),
-                    
-                  ),
-                  ListTile(
-                    title: Text('안녕', style: TextStyle(fontSize: 13)),
-                    visualDensity: VisualDensity(vertical: -4),
-                    dense: true,
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text('afsd', style: TextStyle(fontSize: 13)),
-                    visualDensity: VisualDensity(vertical: -4),
-                    dense: true,
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text('afsd', style: TextStyle(fontSize: 13)),
-                    visualDensity: VisualDensity(vertical: -4),
-                    dense: true,
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text('afsd', style: TextStyle(fontSize: 13)),
-                    visualDensity: VisualDensity(vertical: -4),
-                    dense: true,
-                    onTap: () {},
-                  ),
-                  
-                ],
-              ),
-            ),
-            
-    
-            ],
-          )
-        );
-    
-  }
-
   Expanded newMethod() {
     return Expanded(
       child: ListView.builder(
@@ -168,7 +84,7 @@ class MainPage extends StatelessWidget {
 
   
 
-  Container carouselSlide() {
+  Widget carouselSlide() {
     return Container(
       child: Builder(
             builder: (context) {
@@ -197,10 +113,7 @@ class MainPage extends StatelessWidget {
     );
   }
 
-<<<<<<< HEAD
   Container textList(String communityTitle) {
-
-      
       return Container(
           margin: EdgeInsets.all(5),
           decoration: BoxDecoration(
@@ -281,80 +194,6 @@ class MainPage extends StatelessWidget {
         );
     
   }
-
-  Expanded newMethod() {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: items.length,
-        // prototypeItem: ListTile(
-        //   title: Text(items.first),
-        // ),
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(items[index], style: TextStyle(fontSize: 13)
-                ),
-              );
-            },
-          ),
-        );
-  }
-
-  
-
-  Container carouselSlide() {
-    return Container(
-      child: Builder(
-            builder: (context) {
-              final double height = MediaQuery.of(context).size.height;
-              return CarouselSlider(
-                options: CarouselOptions(
-                  height: 250,
-                  viewportFraction: 1.0,
-                  enlargeCenterPage: false,
-                  autoPlayAnimationDuration: Duration(milliseconds: 400),
-                  autoPlay: true,
-                ),
-                items: imgList
-                    .map((item) => Container(
-                          child: Center(
-                              child: Image.network(
-                            item,
-                            fit: BoxFit.cover,
-                            height: height,
-                          )),
-                        ))
-                    .toList(),
-              );
-            },
-          ),
-    );
-  }
-=======
-  
-
-  Container weatherText() {
-    return Container(
-      height: 50,
-      
-      alignment: Alignment.centerLeft,
-      child: Row(
-        children: [
-          SizedBox(width: 10),
-          Icon(Icons.sunny, color: Colors.orange, size: 20,),
-          Text(
-                "오늘은 날씨 맑음! 빨래하기 좋은 날~",
-                style: TextStyle(height: 2.5, fontSize: 14,),
-              ),
-        ],
-      ),
-    );
-  }
-
-  // Widget _buildItemWidget(DocumentSnapshot doc) {
-    
-  // }
->>>>>>> c02b38f0d62f34774706d2163fb803c21e4e0978
-
   
 
   Container weatherText() {
