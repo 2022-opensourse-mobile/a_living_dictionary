@@ -3,9 +3,9 @@ import 'ThemeColor.dart';
 
 ThemeColor themeColor = ThemeColor();
 
-class Post{
+class Post {
   static int n = 0;
-  int? number;
+  int id = n;
   int like = 0;
   String body = '';
   String title = '';
@@ -15,13 +15,16 @@ class Post{
   int boardType = 1;
   String? hashTag;
 
+  Post({this.title = '',
+      this.writer = '',
+      this.body = '',
+      this.like = 0,
+      this.hashTag}) {
 
-  Post({this.title = '', this.writer = '', this.body = '', this.like=0, this.hashTag}){
-    number = ++n;
+    id = ++n;
     time = DateTime.now();
   }
 }
-
 
 class CommunityPage extends StatelessWidget {
   const CommunityPage({Key? key}) : super(key: key);
@@ -38,7 +41,6 @@ class MyCommunity extends StatefulWidget {
   @override
   State<MyCommunity> createState() => _MyComminityState();
 }
-
 
 class _MyComminityState extends State<MyCommunity> {
   var genaralPostList = <Post>[
@@ -59,17 +61,18 @@ class _MyComminityState extends State<MyCommunity> {
   ];
   var curPostList = <Post>[];
   var curHotPostList = <Post>[];
-  
+
   @override
   Widget build(BuildContext context) {
-    if(curHotPostList.isEmpty) {
-      for(int i = 0; i < 2; i++){
+    if (curHotPostList.isEmpty) {
+      for (int i = 0; i < 2; i++) {
         curHotPostList.add(hotPostList[0]);
         hotPostList.removeAt(0);
       }
       curPostList = genaralPostList;
     }
-    var postList = curHotPostList.map((post) => _buildListItem(post)).toList()+ curPostList.map((post) => _buildListItem(post)).toList();
+    var postList = curHotPostList.map((post) => _buildListItem(post)).toList() +
+        curPostList.map((post) => _buildListItem(post)).toList();
 
     return Column(children: [
       Row(
@@ -78,7 +81,7 @@ class _MyComminityState extends State<MyCommunity> {
           TextButton(
               onPressed: () {
                 setState(() {
-                  curPostList = genaralPostList;
+                  curPostList = genaralPostList.where((p) => p.id+2 >= Post.n).toList();
                 });
               },
               child: Text('전체글'),
@@ -110,39 +113,57 @@ class _MyComminityState extends State<MyCommunity> {
               )),
         ],
       ),
-      Expanded(
-          child: ListView(
-              children: postList
-          )
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 10.0, 10.0),
-            child: FloatingActionButton(
-              onPressed: (){},
+      Expanded(child: ListView(shrinkWrap: true, children: postList)),
+      Container(
+        child: Row(
+          children: [
+            Align(
+              child: TextButton(
+                  onPressed: () {},
+                  child: Text('이전'),
+                  style: ButtonStyle(
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.black),
+                  )
+              ),
+            ),
+            Expanded(
+                child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: TextButton(
+                        onPressed: () {},
+                        child: Text('다음'),
+                        style: ButtonStyle(
+                            foregroundColor: MaterialStateProperty.all<Color>(Colors.black)
+                        )
+                    )
+                )
+            ),
+            FloatingActionButton(
+              onPressed: () {},
               tooltip: 'write',
               child: Icon(Icons.add),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      )
     ]);
   }
 
   Widget _buildListItem(Post post) {
     String t = '${post.time!.hour.toString()}:${post.time!.minute.toString()}';
     return Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: ListTile(
-        title: Text(post.title),
-        subtitle: Text(post.body),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(width: 1.0, color: Colors.grey)),
-        trailing: Text(t),
-      ),
-    );
+        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+        child: Card(
+          child: ListTile(
+            title: Text(post.id.toString() + post.title),
+            subtitle: Text(post.body),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(style: BorderStyle.none)),
+            trailing: Text(t),
+            style: ListTileStyle.list,
+          ),
+        ));
   }
 }
