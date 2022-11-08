@@ -23,6 +23,7 @@ class MyCommunity extends StatefulWidget {
 }
 
 class _MyComminityState extends State<MyCommunity> {
+  static int i = 20;
   Widget _buildListItemDB(DocumentSnapshot doc) {
     Timestamp stamp = doc['time'];
     final post = Post(
@@ -51,18 +52,20 @@ class _MyComminityState extends State<MyCommunity> {
         )
     );
   }
-  void _addPost(Post post){
-    Timestamp stamp = Timestamp.fromDate(post.time!);
+  void _addPost(){
+    Timestamp stamp = Timestamp.now();
     FirebaseFirestore.instance.collection('communityDB').add({
-      'id':post.id,
-      'title':post.title,
-      'writer_name':post.writer_name,
-      'writer_id':post.writer_id,
-      'body':post.body,
+      'id':i,
+      'title': i.toString(),
+      'like':i,
+      'writer_name':i.toString(),
+      'writer_id':i.toString(),
+      'body':i.toString(),
       'time': stamp,
-      'boardType':post.boardType,
-      'hashTag':post.hashTag
+      'boardType':1,
+      'hashTag':i.toString()
     });
+    i++;
   }
 
   @override
@@ -70,6 +73,7 @@ class _MyComminityState extends State<MyCommunity> {
     return Column(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: [
           TextButton(
               onPressed: () {
@@ -81,6 +85,7 @@ class _MyComminityState extends State<MyCommunity> {
               style: ButtonStyle(
                 minimumSize: MaterialStateProperty.all<Size>(Size(110, 37)),
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                alignment: Alignment(-1.0, -1.0),
               )),
           TextButton(
               onPressed: () {
@@ -92,6 +97,7 @@ class _MyComminityState extends State<MyCommunity> {
               style: ButtonStyle(
                 minimumSize: MaterialStateProperty.all<Size>(Size(110, 37)),
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                alignment: Alignment(0.0, -1.0),
               )),
           TextButton(
               onPressed: () {
@@ -103,6 +109,7 @@ class _MyComminityState extends State<MyCommunity> {
               style: ButtonStyle(
                 minimumSize: MaterialStateProperty.all<Size>(Size(110, 37)),
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                alignment: Alignment(1.0, -1.0),
               )),
         ],
       ),
@@ -125,7 +132,8 @@ class _MyComminityState extends State<MyCommunity> {
         children: <Widget>[
           FloatingActionButton(
             onPressed: (){
-              Navigator.pushNamed(context, '/community/writePost');
+              //Navigator.pushNamed(context, '/community/writePost');
+              //_addPost();
             },
             tooltip: 'write',
             child: Icon(Icons.add),
