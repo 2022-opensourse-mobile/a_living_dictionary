@@ -5,6 +5,7 @@ import 'MyPage.dart';
 import 'RestaurantPage.dart';
 import 'DictionaryPage.dart';
 import 'ThemeColor.dart';
+import 'community/writePost.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -35,6 +36,9 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: themeColor.getMaterialColor()),
       home: MyHomePage(title: '자취 백과사전'),
+      routes: {
+        '/writePost':(context)=>WritePostPage()
+      },
     );
   }
 }
