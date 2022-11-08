@@ -1,30 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'ThemeColor.dart';
+import 'community/Post.dart';
+import 'community/writePost.dart';
 
 ThemeColor themeColor = ThemeColor();
-
-class Post {
-  static int n = 0;
-  int id = n;
-  int like = 0;
-  String body = '';
-  String title = '';
-  String writer = '';
-  String writer_id = '';
-  DateTime? time;
-  int boardType = 1;
-  String? hashTag;
-
-  Post({this.title = '',
-      this.writer = '',
-      this.body = '',
-      this.like = 0,
-      this.hashTag}) {
-
-    id = ++n;
-    time = DateTime.now();
-  }
-}
 
 class CommunityPage extends StatelessWidget {
   const CommunityPage({Key? key}) : super(key: key);
@@ -43,37 +23,50 @@ class MyCommunity extends StatefulWidget {
 }
 
 class _MyComminityState extends State<MyCommunity> {
-  var genaralPostList = <Post>[
-    Post(title: 'title1', writer: 'writer1', body: 'body1'),
-    Post(title: 'title2', writer: 'writer2', body: 'body2'),
-    Post(title: 'title3', writer: 'writer3', body: 'body3'),
-    Post(title: 'title4', writer: 'writer1', body: 'body4'),
-    Post(title: 'title5', writer: 'writer2', body: 'body5'),
-    Post(title: 'title6', writer: 'writer3', body: 'body6'),
-  ];
-  var hotPostList = <Post>[
-    Post(title: 'hot post1', writer: 'writer1', body: 'hot', like: 15),
-    Post(title: 'hot post2', writer: 'writer2', body: 'hot2', like: 23),
-    Post(title: 'hot post3', writer: 'writer3', body: 'hot3', like: 10),
-  ];
-  var noticePostList = <Post>[
-    Post(title: 'notice1', writer: 'manager', body: 'rule1'),
-  ];
-  var curPostList = <Post>[];
-  var curHotPostList = <Post>[];
+  Widget _buildListItemDB(DocumentSnapshot doc) {
+    Timestamp stamp = doc['time'];
+    final post = Post(
+        id: doc['id'],
+        title: doc['title'],
+        writer_name: doc['writer_name'],
+        writer_id: doc['writer_id'],
+        body: doc['body'],
+        like: doc['like'],
+        time: stamp.toDate(),
+        boardType: doc['boardType'],
+        hashTag: doc['hashTag']);
+    String t = '${post.time!.hour.toString()}:${post.time!.minute.toString()}';
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+        child: Card(
+          child: ListTile(
+            title: Text(post.id.toString() + " " + post.title),
+            subtitle: Text(post.body),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(style: BorderStyle.none)),
+            trailing: Text(t),
+            style: ListTileStyle.list,
+          ),
+        )
+    );
+  }
+  void _addPost(Post post){
+    Timestamp stamp = Timestamp.fromDate(post.time!);
+    FirebaseFirestore.instance.collection('communityDB').add({
+      'id':post.id,
+      'title':post.title,
+      'writer_name':post.writer_name,
+      'writer_id':post.writer_id,
+      'body':post.body,
+      'time': stamp,
+      'boardType':post.boardType,
+      'hashTag':post.hashTag
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (curHotPostList.isEmpty) {
-      for (int i = 0; i < 2; i++) {
-        curHotPostList.add(hotPostList[0]);
-        hotPostList.removeAt(0);
-      }
-      curPostList = genaralPostList;
-    }
-    var postList = curHotPostList.map((post) => _buildListItem(post)).toList() +
-        curPostList.map((post) => _buildListItem(post)).toList();
-
     return Column(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -81,7 +74,7 @@ class _MyComminityState extends State<MyCommunity> {
           TextButton(
               onPressed: () {
                 setState(() {
-                  curPostList = genaralPostList.where((p) => p.id+2 >= Post.n).toList();
+                  //curPostList = genaralPostList;
                 });
               },
               child: Text('전체글'),
@@ -92,7 +85,7 @@ class _MyComminityState extends State<MyCommunity> {
           TextButton(
               onPressed: () {
                 setState(() {
-                  curPostList = hotPostList;
+                  //curPostList = hotPostList;
                 });
               },
               child: Text('인기글'),
@@ -103,7 +96,7 @@ class _MyComminityState extends State<MyCommunity> {
           TextButton(
               onPressed: () {
                 setState(() {
-                  curPostList = noticePostList;
+                  //curPostList = noticePostList;
                 });
               },
               child: Text('공지글'),
@@ -113,57 +106,33 @@ class _MyComminityState extends State<MyCommunity> {
               )),
         ],
       ),
-      Expanded(child: ListView(shrinkWrap: true, children: postList)),
-      Container(
-        child: Row(
-          children: [
-            Align(
-              child: TextButton(
-                  onPressed: () {},
-                  child: Text('이전'),
-                  style: ButtonStyle(
-                    foregroundColor:
-                        MaterialStateProperty.all<Color>(Colors.black),
-                  )
-              ),
-            ),
-            Expanded(
-                child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: TextButton(
-                        onPressed: () {},
-                        child: Text('다음'),
-                        style: ButtonStyle(
-                            foregroundColor: MaterialStateProperty.all<Color>(Colors.black)
-                        )
-                    )
-                )
-            ),
-            FloatingActionButton(
-              onPressed: () {},
-              tooltip: 'write',
-              child: Icon(Icons.add),
-            ),
-          ],
-        ),
+      StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('communityDB').snapshots(),
+        builder: (context, snapshot) {
+          if(!snapshot.hasData){
+            return CircularProgressIndicator();
+          }
+          final documents = snapshot.data!.docs;
+          return Expanded(
+              child: ListView(
+                  shrinkWrap: true,
+                  children: documents.map((doc)=> _buildListItemDB(doc)).toList()
+              )
+          );
+          }),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          FloatingActionButton(
+            onPressed: (){
+              Navigator.pushNamed(context, '/community/writePost');
+            },
+            tooltip: 'write',
+            child: Icon(Icons.add),
+          ),
+        ],
       )
     ]);
   }
 
-  Widget _buildListItem(Post post) {
-    String t = '${post.time!.hour.toString()}:${post.time!.minute.toString()}';
-    return Padding(
-        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-        child: Card(
-          child: ListTile(
-            title: Text(post.id.toString() + post.title),
-            subtitle: Text(post.body),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(style: BorderStyle.none)),
-            trailing: Text(t),
-            style: ListTileStyle.list,
-          ),
-        ));
-  }
 }
