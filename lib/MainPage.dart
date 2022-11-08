@@ -17,7 +17,6 @@ final List<String> imgList =[
 
 
 
-
 class MainPage extends StatelessWidget {
   
   MainPage({Key? key}) : super(key: key);
@@ -131,20 +130,22 @@ class MainPage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(10.0),
               child: ListView(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 children: <Widget>[
                   ListTile(
                     title: Row(
-                      children: [
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        
                         Text(
                           communityTitle,
                           style: TextStyle(fontWeight: FontWeight.bold),
                           
                         ),
-                        SizedBox(width: 193),
+                        SizedBox(height: 50,),
                         TextButton(
                           onPressed: (){
                               
@@ -199,15 +200,17 @@ class MainPage extends StatelessWidget {
     return Container(
       height: 50,
       
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(width: 10),
+          
           Icon(Icons.sunny, color: Colors.orange, size: 20,),
           Text(
-                "오늘은 날씨 맑음! 빨래하기 좋은 날~",
-                style: TextStyle(height: 2.5, fontSize: 14,),
-              ),
+            " 오늘은 날씨 맑음! 빨래하기 좋은 날~",
+            style: TextStyle(height: 2.5, fontSize: 14,),
+          ),
         ],
       ),
     );
