@@ -132,7 +132,7 @@ class _MyComminityState extends State<MyCommunity> {
         children: <Widget>[
           FloatingActionButton(
             onPressed: (){
-              //Navigator.pushNamed(context, '/community/writePost');
+              Navigator.pushNamed(context, '/writePost');
               //_addPost();
             },
             tooltip: 'write',
