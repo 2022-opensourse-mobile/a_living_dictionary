@@ -10,8 +10,8 @@ class WritePostPage extends StatelessWidget {
           children: [
             Row(
               children: <Widget>[
-                TextField(decoration: InputDecoration(labelText: '제목'),),
-                TextField(decoration: InputDecoration(labelText: '내용'),),
+                //TextField(decoration: InputDecoration(labelText: '제목'),),
+                //TextField(decoration: InputDecoration(labelText: '내용'),),
                 ElevatedButton(
                   child: Text('확인'),
                   onPressed: (){
