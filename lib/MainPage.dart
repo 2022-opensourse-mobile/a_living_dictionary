@@ -7,11 +7,11 @@ import 'firebase_options.dart';
 
 
 final List<String> imgList =[
-  'assets/1.png',
-  'assets/2.png',
-  'assets/1.png',
-  'assets/1.png',
-  'assets/1.png',
+  'assets/3.png',
+  'assets/4.png',
+  'assets/3.png',
+  'assets/4.png',
+  'assets/3.png',
 ];
 // w=1951&q=80
 
