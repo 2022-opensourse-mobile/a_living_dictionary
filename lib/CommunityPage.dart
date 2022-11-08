@@ -125,7 +125,7 @@ class _MyComminityState extends State<MyCommunity> {
         children: <Widget>[
           FloatingActionButton(
             onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>WritePostPage()));
+              Navigator.pushNamed(context, '/community/writePost');
             },
             tooltip: 'write',
             child: Icon(Icons.add),

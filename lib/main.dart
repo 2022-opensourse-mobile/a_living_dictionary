@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: themeColor.getMaterialColor()),
-      home: const MyHomePage(title: '자취 백과사전'),
+      home: MyHomePage(title: '자취 백과사전'),
     );
   }
 }
