@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: themeColor.getMaterialColor()),
+      theme: ThemeData(primarySwatch: themeColor.getWhiteMaterialColor()),
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
         '/writePost':(context)=>WritePostPage()
@@ -61,7 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(widget.title, style: TextStyle(color: Colors.white),),
+          title: Text(widget.title, style: TextStyle(color: themeColor.getColor()),),
+          elevation: 0.0,
           actions: <Widget>[
             IconButton(
               icon: new Icon(Icons.search),
@@ -71,22 +72,24 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ]
       ),
-      body: Center(child: _getPage()),
+      body: _getPage(),
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 0.0,
         onTap: (index){
           setState(() {_curIndex = index;});
         },
         currentIndex: _curIndex,
-        backgroundColor: Colors.black,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
 
-        unselectedIconTheme: IconThemeData(color:Colors.white70,opacity: 100),
-        selectedIconTheme: IconThemeData(color:Colors.white,opacity: 100),
+        unselectedIconTheme: IconThemeData(color:Colors.black12,opacity: 100),
+        selectedIconTheme: IconThemeData(color:Colors.black54,opacity: 100),
         items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home,), label: '홈', backgroundColor: themeColor.getColor(),),
-          BottomNavigationBarItem(icon: Icon(Icons.book,), label: '사전', backgroundColor: themeColor.getColor(),),
-          BottomNavigationBarItem(icon: Icon(Icons.people,), label: '게시판', backgroundColor: themeColor.getColor(),),
-          BottomNavigationBarItem(icon: Icon(Icons.map_outlined,), label: '혼밥 맵', backgroundColor: themeColor.getColor(),),
-          BottomNavigationBarItem(icon: Icon(Icons.info,), label: '내 정보', backgroundColor: themeColor.getColor(),),
+          BottomNavigationBarItem(icon: Icon(Icons.home,), label: '홈', backgroundColor: themeColor.getWhiteColor(),),
+          BottomNavigationBarItem(icon: Icon(Icons.book,), label: '사전', backgroundColor: themeColor.getWhiteColor(),),
+          BottomNavigationBarItem(icon: Icon(Icons.people,), label: '게시판', backgroundColor: themeColor.getWhiteColor(),),
+          BottomNavigationBarItem(icon: Icon(Icons.map_outlined,), label: '혼밥 맵', backgroundColor: themeColor.getWhiteColor(),),
+          BottomNavigationBarItem(icon: Icon(Icons.info,), label: '내 정보', backgroundColor: themeColor.getWhiteColor(),),
         ],
       ),
     );
