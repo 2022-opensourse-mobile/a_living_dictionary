@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'main.dart';
 
 
 final List<String> imgList =[
@@ -19,8 +20,9 @@ final List<String> imgList =[
 
 class MainPage extends StatelessWidget {
   
-  MainPage({Key? key}) : super(key: key);
+  MainPage({Key? key, required this.tabController}) : super(key: key);
   late List<String> items;
+  late TabController tabController;
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +151,7 @@ class MainPage extends StatelessWidget {
                         SizedBox(height: 50,),
                         TextButton(
                           onPressed: (){
-                              
+                            tabController.animateTo((tabController.index+2)); // 게시판으로 이동
                           }, 
                           child: Text("더 보기 >", style: TextStyle(fontSize: 13)),
                           style: TextButton.styleFrom(
