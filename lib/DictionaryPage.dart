@@ -96,7 +96,7 @@ class DictionaryPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("청소 / 빨래", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                    Text("청소", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                     Icon(Icons.arrow_forward_rounded, color: Colors.white,),
                   ],
                 )
@@ -104,7 +104,35 @@ class DictionaryPage extends StatelessWidget {
           ),
         ),
 
-
+        Container(
+          margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+          width: double.infinity,
+          height: 85,
+          child: SizedBox(
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xff9c00ff),
+                    padding: EdgeInsets.fromLTRB(27, 0, 27, 0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(23)
+                    )
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => btnLaundry()),
+                  );
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("빨래", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                    Icon(Icons.arrow_forward_rounded, color: Colors.white,),
+                  ],
+                )
+            ),
+          ),
+        ),
 
         Container(
           margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
@@ -137,35 +165,7 @@ class DictionaryPage extends StatelessWidget {
         ),
 
 
-        Container(
-          margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-          width: double.infinity,
-          height: 85,
-          child: SizedBox(
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xff9c00ff),
-                    padding: EdgeInsets.fromLTRB(27, 0, 27, 0),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(23)
-                    )
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => btnLaundry()),
-                  );
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("집 꾸미기", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-                    Icon(Icons.arrow_forward_rounded, color: Colors.white,),
-                  ],
-                )
-            ),
-          ),
-        ),
+
 
 
         Container(
