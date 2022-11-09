@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'ThemeColor.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'community/Post.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -234,42 +236,30 @@ class MainPage extends StatelessWidget {
                     ),
                     visualDensity: VisualDensity(vertical: -4),
                   ),
-                  ListTile(
-                    title: Text('안녕', style: TextStyle(fontSize: 13)),
-                    visualDensity: VisualDensity(vertical: -4),
-                    dense: true,
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text('afsd', style: TextStyle(fontSize: 13)),
-                    visualDensity: VisualDensity(vertical: -4),
-                    dense: true,
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text('afsd', style: TextStyle(fontSize: 13)),
-                    visualDensity: VisualDensity(vertical: -4),
-                    dense: true,
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text('afsd', style: TextStyle(fontSize: 13)),
-                    visualDensity: VisualDensity(vertical: -4),
-                    dense: true,
-                    onTap: () {},
-                  ),
-                  
+
                 ],
               ),
             ),
-            
-    
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance.collection('communityDB').snapshots(),
+                builder: (context, snapshot) {
+                  if(!snapshot.hasData){
+                    return CircularProgressIndicator();
+                  }
+                  final documents = snapshot.data!.docs;
+                  return Expanded(
+                      child: ListView(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: Post.getWidgetList(documents)
+                      )
+                  );
+                }),
             ],
           )
         );
-    
   }
-  
+
 
   Container weatherText() {
     return Container(
@@ -291,5 +281,4 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  
 }

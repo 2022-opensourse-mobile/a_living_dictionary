@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ThemeColor.dart';
 
-void main() {
-  runApp(const MyPage());
-}
-
 bool isLogin = true;
 ThemeColor themeColor = ThemeColor();
 
@@ -20,6 +16,16 @@ class MyPage extends StatelessWidget {
         primarySwatch: themeColor.getMaterialColor(),
       ),
       home: isLogin? Login() : Logout(),
+      routes: {
+        '/changePW': (context) => changePassword(context),
+        '/scrapList': (context) => scrapList(context),
+        '/communitySetting': (context) => communitySetting(context),
+        '/nickSetting': (context) => nickSetting(context),
+        '/changeImage': (context) => changeImage(context),
+        '/communityRule': (context) => communityRule(context),
+        '/appSetting': (context) => appSetting(context),
+        '/alarmSetting': (context) => alarmSetting(context),
+      },
     );
   }
 }
@@ -34,6 +40,7 @@ class Login extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Card(
+              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
               elevation: 1.0,
               child: Padding(
@@ -42,11 +49,12 @@ class Login extends StatelessWidget {
               ),
             ),
             Card(
+              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
               elevation: 1.0,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Account(),
+                child: Account(context),
               ),
             ),
             Card(
@@ -54,7 +62,7 @@ class Login extends StatelessWidget {
               elevation: 1.0,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Community(),
+                child: Community(context),
               ),
             ),
             Card(
@@ -62,7 +70,7 @@ class Login extends StatelessWidget {
               elevation: 1.0,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: App(),
+                child: App(context),
               ),
             ),
           ],
@@ -93,7 +101,7 @@ class Logout extends StatelessWidget {
               elevation: 1.0,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: App(),
+                child: App(context),
               ),
             ),
           ],
@@ -127,7 +135,7 @@ ListView loginUser() {
   );
 }
 
-ListView Account() {
+ListView Account(BuildContext context) {
   return ListView(
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
@@ -139,22 +147,28 @@ ListView Account() {
       ),
       ListTile(
         title: Text('비밀번호 변경'),
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).pushNamed('/changePW');
+        },
       ),
-      ListTile(
-        title: Text('이메일 변경'),
-        onTap: () {},
-      ),
+      // ListTile(
+      //   title: Text('이메일 변경'),
+      //   onTap: () {
+      //     Navigator.of(context).pushNamed('/changeEmail');
+      //   },
+      // ),
       ListTile(
         title: Text('스크랩 목록'),
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).pushNamed('/scrapList');
+        },
       ),
       // Divider(thickness: 0.5),
     ],
   );
 }
 
-ListView Community() {
+ListView Community(BuildContext context) {
   return ListView(
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
@@ -166,22 +180,28 @@ ListView Community() {
       ),
       ListTile(
         title: Text('닉네임 설정'),
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).pushNamed('/nickSetting');
+        },
       ),
       ListTile(
         title: Text('프로필 이미지 변경'),
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).pushNamed('/changeImage');
+        },
       ),
       ListTile(
         title: Text('커뮤니티 이용규칙'),
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).pushNamed('/communityRule');
+        },
       ),
       // Divider(thickness: 0.5),
     ],
   );
 }
 
-ListView App() {
+ListView App(BuildContext context) {
   return ListView(
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
@@ -193,12 +213,125 @@ ListView App() {
       ),
       ListTile(
         title: Text('알림 설정'),
-        onTap: (){},
+        onTap: (){
+          Navigator.of(context).pushNamed('/alarmSetting');
+        },
       ),
-      ListTile(
-        title: Text('암호 잠금'),
-        onTap: () {},
-      ),
+      // ListTile(
+      //   title: Text('암호 잠금'),
+      //   onTap: () {},
+      // ),
     ],
+  );
+}
+
+// NamedRoute Page
+Widget changePassword(BuildContext context) {
+  return Scaffold(
+    body: ListView(
+      children: <Widget>[
+        closeIcon(context),
+        Text("비밀번호 변경 페이지")
+      ],
+    ),
+  );
+}
+
+// Widget changeEmail() {
+//   return Scaffold(
+//     body: ListView(
+//       children: <Widget>[
+//         Text("이메일 변경 페이지"),
+//       ],
+//     ),
+//   );
+// }
+
+Widget scrapList(BuildContext context) {
+  return Scaffold(
+    body: ListView(
+      children: <Widget>[
+        closeIcon(context),
+        Text("스크랩 목록 페이지"),
+      ],
+    ),
+  );
+}
+
+Widget communitySetting(BuildContext context) {
+  return Scaffold(
+    body: ListView(
+      children: <Widget>[
+        closeIcon(context),
+        Text("커뮤니티 설정 페이지"),
+      ],
+    ),
+  );
+}
+
+Widget nickSetting(BuildContext context) {
+  return Scaffold(
+    body: ListView(
+      children: <Widget>[
+        closeIcon(context),
+        Text("닉네임 설정 페이지"),
+      ],
+    ),
+  );
+}
+
+Widget changeImage(BuildContext context) {
+  return Scaffold(
+    body: ListView(
+      children: <Widget>[
+        closeIcon(context),
+        Text("프로필 이미지 변경 페이지"),
+      ],
+    ),
+  );
+}
+
+Widget communityRule(BuildContext context) {
+  return Scaffold(
+    body: ListView(
+      children: <Widget>[
+        closeIcon(context),
+        Text("커뮤니티 규칙 페이지"),
+      ],
+    ),
+  );
+}
+
+Widget appSetting(BuildContext context) {
+  return Scaffold(
+    body: ListView(
+      children: <Widget>[
+        closeIcon(context),
+        Text("앱 설정 페이지"),
+      ],
+    ),
+  );
+}
+
+Widget alarmSetting(BuildContext context) {
+  return Scaffold(
+    body: ListView(
+      children: <Widget>[
+        closeIcon(context),
+        Text("알림 설정 페이지"),
+      ],
+    ),
+  );
+}
+
+IconButton closeIcon(BuildContext context) {
+  return IconButton(
+    onPressed: () {
+      Navigator.pop(context);
+    },
+    icon: Icon(Icons.close),
+    color: themeColor.getColor(),
+    alignment: Alignment.topRight,
+    iconSize: 30,
   );
 }
