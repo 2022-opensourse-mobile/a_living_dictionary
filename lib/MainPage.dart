@@ -9,6 +9,7 @@ import 'firebase_options.dart';
 import 'main.dart';
 
 
+
 final List<String> imgList =[
   'assets/3.png',
   'assets/4.png',
@@ -47,6 +48,7 @@ class MainPage extends StatelessWidget {
                 children: <Widget>[
                   carouselSlide(),
                   weatherText(),
+                  recommendedItems(),
                   textList('인기글'),
                   textList('최신글')
                 ],
@@ -56,50 +58,121 @@ class MainPage extends StatelessWidget {
         },
       )
     );
-
-    // return Scaffold(
-    //   body: Column(
-    //     children: <Widget>[
-    //       carouselSlide(),
-    //       weatherText(),
-    //       textList(),
-    //       textList()
-    //     ],
-    // ));
   }
 
-  Expanded newMethod() {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: items.length,
-        // prototypeItem: ListTile(
-        //   title: Text(items.first),
-        // ),
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(items[index], style: TextStyle(fontSize: 13)
+  Container recommendedItems() {
+    
+    return Container(
+      
+
+        margin: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Color.fromARGB(66, 74, 74, 74),
+              width: 1,
+            ),
+            
+            ),
+        // height: 210,
+          
+        child: Builder(
+          builder: (context) {
+            final double width = MediaQuery.of(context).size.width;
+            double imagesize = width/5 > 150? 150: width/5;
+    
+
+            return Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    // shrinkWrap: true,
+                    // physics: const NeverScrollableScrollPhysics(),
+                    children: <Widget>[
+                      ListTile(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            
+                            Text(
+                              "추천 꿀팁",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              
+                            ),
+                            SizedBox(height: 50,),
+                            TextButton(
+                              onPressed: (){
+                                tabController.animateTo((tabController.index+2)); // 게시판으로 이동
+                              }, 
+                              child: Text("더 보기 >", style: TextStyle(fontSize: 13)),
+                              style: TextButton.styleFrom(
+                                splashFactory: NoSplash.splashFactory
+                              )
+                            )
+                          ],
+                        ),
+                        visualDensity: VisualDensity(vertical: -4),
+                      ),
+                      Row(
+                        
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          tipBlock(imagesize, '꿀잠 자는법', 'recommend1.png'),
+                          tipBlock(imagesize, '다래끼 났을 때', 'recommend2.png'),
+                          tipBlock(imagesize, '꿀잠 자는법', 'recommend1.png'),
+                          tipBlock(imagesize, '다래끼 났을 때', 'recommend2.png'),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
+                
+    
+                ],
               );
-            },
-          ),
+          }
+        )
         );
+    
+  }
+
+  Column tipBlock(double imagesize, String text, String imageName) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: () {},
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10.0),
+            child: Image.asset(imageName,
+                width: imagesize, height: imagesize),
+          )
+        ),
+        Text(text)
+      ],
+    );
   }
 
   
 
   Widget carouselSlide() {
+
+    int _currentIndex = 0;
+
     return Container(
-      color: Color.fromARGB(255, 214, 214, 214),
+      color: Colors.white,
       child: Builder(
         builder: (context) {
-          final double height = MediaQuery.of(context).size.height;
+          final double width = MediaQuery.of(context).size.width;
           return CarouselSlider(
+            
             options: CarouselOptions(
-              height: 250,
+              height: width/2 > 350? 350 : width/2 ,
               viewportFraction: 1.0,
               enlargeCenterPage: false,
               autoPlayAnimationDuration: Duration(milliseconds: 400),
               autoPlay: true,
+              
             ),
             items: imgList
                 .map((item) => Container(
@@ -113,6 +186,9 @@ class MainPage extends StatelessWidget {
         },
       ),
     );
+
+  
+            
   }
 
   Container textList(String communityTitle) {
@@ -124,11 +200,7 @@ class MainPage extends StatelessWidget {
                 color: Color.fromARGB(66, 74, 74, 74),
                 width: 1,
               ),
-              // boxShadow: [
-              //   BoxShadow(
-              //     color: Color.fromARGB(31, 208, 208, 208),
-              //   )
-              // ]
+              
               ),
           height: 210,
           
@@ -208,9 +280,5 @@ class MainPage extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _buildItemWidget(DocumentSnapshot doc) {
-    
-  // }
 
 }
