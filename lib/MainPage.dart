@@ -85,28 +85,29 @@ class MainPage extends StatelessWidget {
 
   Widget carouselSlide() {
     return Container(
+      color: Color.fromARGB(255, 214, 214, 214),
       child: Builder(
-            builder: (context) {
-              final double height = MediaQuery.of(context).size.height;
-              return CarouselSlider(
-                options: CarouselOptions(
-                  height: 250,
-                  viewportFraction: 1.0,
-                  enlargeCenterPage: false,
-                  autoPlayAnimationDuration: Duration(milliseconds: 400),
-                  autoPlay: true,
-                ),
-                items: imgList
-                    .map((item) => Container(
-                          child: Center(
-                              child: Image( 
-                                image: AssetImage(item)
-                          )),
-                        ))
-                    .toList(),
-              );
-            },
-          ),
+        builder: (context) {
+          final double height = MediaQuery.of(context).size.height;
+          return CarouselSlider(
+            options: CarouselOptions(
+              height: 250,
+              viewportFraction: 1.0,
+              enlargeCenterPage: false,
+              autoPlayAnimationDuration: Duration(milliseconds: 400),
+              autoPlay: true,
+            ),
+            items: imgList
+                .map((item) => Container(
+                      child: Center(
+                          child: Image( 
+                            image: AssetImage(item)
+                      )),
+                    ))
+                .toList(),
+          );
+        },
+      ),
     );
   }
 

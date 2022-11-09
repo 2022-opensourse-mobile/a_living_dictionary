@@ -1,3 +1,4 @@
+import 'package:a_living_dictionary/Search.dart';
 import 'package:flutter/material.dart';
 import 'CommunityPage.dart';
 import 'MainPage.dart';
@@ -53,7 +54,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final List<String> list = List.generate(10, (index) => "Text $index");
   int _curIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
               icon: new Icon(Icons.search),
               onPressed: () => {
-                // 검색 화면으로 이동
+                showSearch(context: context, delegate:Search(list))
               },
             )
           ]
