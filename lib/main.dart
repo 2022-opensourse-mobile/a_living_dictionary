@@ -11,7 +11,7 @@ import 'community/writePost.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-
+//123
 //page0 : Main
 //page1 : Dictionary
 //page2 : community
