@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: themeColor.getMaterialColor()),
+      theme: ThemeData(primarySwatch: themeColor.getWhiteMaterialColor()),
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
         '/writePost':(context)=>WritePostPage()
@@ -93,7 +93,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(widget.title, style: TextStyle(color: Colors.white),),
+          title: Text(widget.title, style: TextStyle(color: themeColor.getColor()),),
+          elevation: 0.0,
           actions: <Widget>[
             IconButton(
               icon: new Icon(Icons.search),
