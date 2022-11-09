@@ -25,17 +25,7 @@ class MyCommunity extends StatefulWidget {
 class _MyComminityState extends State<MyCommunity> {
   static int i = 20;
   Widget _buildListItemDB(DocumentSnapshot doc) {
-    Timestamp stamp = doc['time'];
-    final post = Post(
-        id: doc['id'],
-        title: doc['title'],
-        writer_name: doc['writer_name'],
-        writer_id: doc['writer_id'],
-        body: doc['body'],
-        like: doc['like'],
-        time: stamp.toDate(),
-        boardType: doc['boardType'],
-        hashTag: doc['hashTag']);
+    final post = _getPostFromDoc(doc);
     String t = '${post.time!.hour.toString()}:${post.time!.minute.toString()}';
     return Padding(
         padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
@@ -51,6 +41,20 @@ class _MyComminityState extends State<MyCommunity> {
           ),
         )
     );
+  }
+  Post _getPostFromDoc(DocumentSnapshot doc){
+    Timestamp stamp = doc['time'];
+    final post = Post(
+        id: doc['id'],
+        title: doc['title'],
+        writer_name: doc['writer_name'],
+        writer_id: doc['writer_id'],
+        body: doc['body'],
+        like: doc['like'],
+        time: stamp.toDate(),
+        boardType: doc['boardType'],
+        hashTag: doc['hashTag']);
+    return post;
   }
   void _addPost(){
     Timestamp stamp = Timestamp.now();
