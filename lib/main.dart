@@ -105,6 +105,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           ]
       ),
       body: TabBarView(
+        physics:NeverScrollableScrollPhysics(),
         controller: _tabController,
         children: [
           MainPage(tabController: _tabController),
