@@ -19,7 +19,7 @@ class DictionaryItem extends Data<DictionaryItem>{
   }
 
   @override
-  DictionaryItem getPostFromDoc(DocumentSnapshot<Object?> doc) {
+  DictionaryItem getDataFromDoc(DocumentSnapshot<Object?> doc) {
     // TODO: implement getPostFromDoc
     throw UnimplementedError();
   }

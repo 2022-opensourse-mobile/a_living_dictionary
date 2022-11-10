@@ -23,7 +23,7 @@ class MyCommunity extends StatefulWidget {
 }
 
 class _MyComminityState extends State<MyCommunity> {
-  static int i = 20;
+  Post p = Post();
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +83,7 @@ class _MyComminityState extends State<MyCommunity> {
           return Expanded(
               child: ListView(
                   shrinkWrap: true,
-                  children: documents.map((doc)=> Post.buildListItemDB(doc)).toList()
+                  children: documents.map((doc)=> p.build(doc)).toList()
               )
           );
         }),

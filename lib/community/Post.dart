@@ -1,8 +1,9 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../Data.dart';
 
-class Post {
+class Post extends Data<Post>{
   static int n = 0;
   int id;
   String title;
@@ -25,8 +26,47 @@ class Post {
     this.boardType = 1,
     this.hashTag = ''}) {}
 
+  //add Post
+  @override
+  void add(E) {
+    Timestamp stamp = Timestamp.now();
+    FirebaseFirestore.instance.collection('communityDB').add({
+      'id':E.id,
+      'title': E.toString(),
+      'like':E.like,
+      'writer_name':E.toString(),
+      'writer_id':E.toString(),
+      'body':E.toString(),
+      'time': stamp,
+      'boardType':1,
+      'hashTag':E.hashTag.toString()
+    });
+  }
 
-  static Post getPostFromDoc(DocumentSnapshot doc){
+  //일반 build
+  @override
+  Widget build(DocumentSnapshot<Object?> doc) {
+    final post = getDataFromDoc(doc);
+    String t = '${post.time!.hour.toString()}:${post.time!.minute.toString()}';
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
+        child: Card(
+          child: ListTile(
+            title: Text(post.id.toString() + " " + post.title),
+            subtitle: Text(post.body),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(style: BorderStyle.none)),
+            trailing: Text(t),
+            style: ListTileStyle.list,
+            onTap: (){},
+          ),
+        )
+    );
+  }
+
+  //Firebase db의 데이터를 Post로 변환
+  Post getDataFromDoc(DocumentSnapshot doc){
     Timestamp stamp = doc['time'];
     final post = Post(
         id: doc['id'],
@@ -40,26 +80,12 @@ class Post {
         hashTag: doc['hashTag']);
     return post;
   }
-  static void addPost(int i){
-    Timestamp stamp = Timestamp.now();
-    FirebaseFirestore.instance.collection('communityDB').add({
-      'id':i,
-      'title': i.toString(),
-      'like':i,
-      'writer_name':i.toString(),
-      'writer_id':i.toString(),
-      'body':i.toString(),
-      'time': stamp,
-      'boardType':1,
-      'hashTag':i.toString()
-    });
-  }
-
-  static Widget buildMainListItemDB(DocumentSnapshot doc) {
-    final post = getPostFromDoc(doc);
+  //MainPage에서 사용, 하나의 doc을 받아서 하나의 리스트 원소 출력
+  Widget buildMain(DocumentSnapshot doc) {
+    final post = getDataFromDoc(doc);
     String t = '${post.time!.hour.toString()}:${post.time!.minute.toString()}';
     return Padding(
-        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+        padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
         child: ListTile(
           title: Text(post.title),
           visualDensity: VisualDensity(vertical: -4),
@@ -68,29 +94,10 @@ class Post {
           onTap: (){},
         ));
   }
-
-  static Widget buildListItemDB(DocumentSnapshot doc) {
-    final post = getPostFromDoc(doc);
-    String t = '${post.time!.hour.toString()}:${post.time!.minute.toString()}';
-    return Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
-        child: Card(
-          child: ListTile(
-            title: Text(post.id.toString() + " " + post.title),
-            subtitle: Text(post.body),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(style: BorderStyle.none)),
-            trailing: Text(t),
-            style: ListTileStyle.list,
-          ),
-        )
-    );
-  }
-
-  static List<Widget> getWidgetList(List<QueryDocumentSnapshot<Object?>> doc){
+  //document 리스트를 일부 elements만 뽑아서 return
+  List<Widget> getWidgetList(List<QueryDocumentSnapshot<Object?>> doc){
     final d = doc.where((doc){return doc['id'] < 7 == true;});
-    var dl = d.map((e) => buildMainListItemDB(e)).toList();
+    var dl = d.map((e) => buildMain(e)).toList();
     return dl;
   }
 }
