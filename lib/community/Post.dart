@@ -65,6 +65,7 @@ class Post {
           visualDensity: VisualDensity(vertical: -4),
           dense: true,
           trailing: Text(t),
+          onTap: (){},
         ));
   }
 
@@ -72,7 +73,7 @@ class Post {
     final post = getPostFromDoc(doc);
     String t = '${post.time!.hour.toString()}:${post.time!.minute.toString()}';
     return Padding(
-        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+        padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
         child: Card(
           child: ListTile(
             title: Text(post.id.toString() + " " + post.title),
