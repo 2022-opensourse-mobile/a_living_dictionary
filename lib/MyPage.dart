@@ -10,22 +10,21 @@ class MyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'My Page',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: themeColor.getMaterialColor(),
       ),
       home: isLogin? Login() : Logout(),
-      routes: {
-        '/changePW': (context) => changePassword(context),
-        '/scrapList': (context) => scrapList(context),
-        '/communitySetting': (context) => communitySetting(context),
-        '/nickSetting': (context) => nickSetting(context),
-        '/changeImage': (context) => changeImage(context),
-        '/communityRule': (context) => communityRule(context),
-        '/appSetting': (context) => appSetting(context),
-        '/alarmSetting': (context) => alarmSetting(context),
-      },
+      // routes: {
+      //   '/changePW': (context) => changePassword(context),
+      //   '/scrapList': (context) => scrapList(context),
+      //   '/communitySetting': (context) => communitySetting(context),
+      //   '/nickSetting': (context) => nickSetting(context),
+      //   '/changeImage': (context) => changeImage(context),
+      //   '/communityRule': (context) => communityRule(context),
+      //   '/appSetting': (context) => appSetting(context),
+      //   '/alarmSetting': (context) => alarmSetting(context),
+      // },
     );
   }
 }
@@ -142,25 +141,20 @@ ListView Account(BuildContext context) {
     children: <Widget>[
       ListTile(
         title: Text('계정', style: TextStyle(fontWeight: FontWeight.bold),),
-        // leading: Icon(Icons.person),
-        // title: Text('계정'),
       ),
       ListTile(
         title: Text('비밀번호 변경'),
         onTap: () {
-          Navigator.of(context).pushNamed('/changePW');
+          // Navigator.of(context).pushNamed('/changePW');
+          Navigator.push(context, MaterialPageRoute(builder: (context) => changePassword(context)));
         },
       ),
-      // ListTile(
-      //   title: Text('이메일 변경'),
-      //   onTap: () {
-      //     Navigator.of(context).pushNamed('/changeEmail');
-      //   },
       // ),
       ListTile(
         title: Text('스크랩 목록'),
         onTap: () {
-          Navigator.of(context).pushNamed('/scrapList');
+          // Navigator.of(context).pushNamed('/scrapList');
+          Navigator.push(context, MaterialPageRoute(builder: (context) => scrapList(context)));
         },
       ),
       // Divider(thickness: 0.5),
@@ -175,25 +169,26 @@ ListView Community(BuildContext context) {
     children: <Widget>[
       ListTile(
         title: Text('커뮤니티 설정', style: TextStyle(fontWeight: FontWeight.bold),),
-        // leading: Icon(Icons.keyboard),
-        // title: Text('커뮤니티 설정'),
       ),
       ListTile(
         title: Text('닉네임 설정'),
         onTap: () {
-          Navigator.of(context).pushNamed('/nickSetting');
+          // Navigator.of(context).pushNamed('/nickSetting');
+          Navigator.push(context, MaterialPageRoute(builder: (context) => nickSetting(context)));
         },
       ),
       ListTile(
         title: Text('프로필 이미지 변경'),
         onTap: () {
-          Navigator.of(context).pushNamed('/changeImage');
+          // Navigator.of(context).pushNamed('/changeImage');
+          Navigator.push(context, MaterialPageRoute(builder: (context) => changeImage(context)));
         },
       ),
       ListTile(
         title: Text('커뮤니티 이용규칙'),
         onTap: () {
-          Navigator.of(context).pushNamed('/communityRule');
+          // Navigator.of(context).pushNamed('/communityRule');
+          Navigator.push(context, MaterialPageRoute(builder: (context) => communityRule(context)));
         },
       ),
       // Divider(thickness: 0.5),
@@ -208,24 +203,19 @@ ListView App(BuildContext context) {
     children: <Widget>[
       ListTile(
         title: Text('앱 설정', style: TextStyle(fontWeight: FontWeight.bold),),
-        // leading: Icon(Icons.settings),
-        // title: Text('앱 설정'),
       ),
       ListTile(
         title: Text('알림 설정'),
         onTap: (){
-          Navigator.of(context).pushNamed('/alarmSetting');
+          // Navigator.of(context).pushNamed('/alarmSetting');
+          Navigator.push(context, MaterialPageRoute(builder: (context) => alarmSetting(context)));
         },
       ),
-      // ListTile(
-      //   title: Text('암호 잠금'),
-      //   onTap: () {},
-      // ),
     ],
   );
 }
 
-// NamedRoute Page
+// Setting Page
 Widget changePassword(BuildContext context) {
   return Scaffold(
     body: ListView(
