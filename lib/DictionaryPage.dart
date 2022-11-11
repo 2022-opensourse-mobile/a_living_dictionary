@@ -12,14 +12,14 @@ List<String> txtValue = [
   'box3',
   'box4',
   'box4',
-  'bossssssssssssssssssssssssssssssssssssx4'
+  'bossssssssssssssssssssssssssssssssssss4'
 ];
-List<String> imgValue = ['assets/4.png', 'assets/3.png', 'assets/2.png', 'assets/1.png', 'assets/4.png', 'assets/4.png'];
+List<String> imgValue = [
+  'assets/4.png', 'assets/3.png', 'assets/2.png', 'assets/1.png', 'assets/4.png', 'assets/4.png'
+];
 
 class DictionaryPage extends StatelessWidget {
   const DictionaryPage({Key? key}) : super(key: key);
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class DictionaryPage extends StatelessWidget {
 
                   /* ---------------------------------------- 탭 내용 */
                   Container(
-                    height: 645,
+                    height: MediaQuery.of(context).size.height * 0.75,
                     child:
 
                     TabBarView(
@@ -69,14 +69,12 @@ class DictionaryPage extends StatelessWidget {
 
                         postList(context), // 추천 탭
 
-                        slideList(context), // 청소 탭
+                        slideList(context, '청소'),
 
 
-                        Container(
-                          child: Center(
-                            child: Text('빨래 탭 미리보기'),
-                          ),
-                        ),
+                        bestList(),
+
+
                         Container(
                           child: Center(
                             child: Text('요리 탭 미리보기'),
@@ -108,20 +106,19 @@ class DictionaryPage extends StatelessWidget {
 
 // TODO: 위젯 만들기
 
-Widget postList(BuildContext context){
+Widget bestList(){ // 인기 TOP 6
   return Container(
     child: GridView.builder(
       padding: EdgeInsets.all(5),
-      itemCount: txtValue.length, //몇 개 출력할 건지
+      itemCount: 6, //게시글 몇 개 출력할 건지
       itemBuilder: (context, index){
         return
-
           Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
             elevation: 0,
-            //color: Colors.green,
+            color: Colors.white,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -136,8 +133,6 @@ Widget postList(BuildContext context){
               ],
             ),
           );
-
-
       },
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -148,36 +143,88 @@ Widget postList(BuildContext context){
 }
 
 
-/* 가로 스크롤 */
-Widget slideList(BuildContext context){
+
+Widget postList(BuildContext context){ // 게시글 출력
+  return Container(
+    child: GridView.builder(
+      padding: EdgeInsets.all(5),
+      itemCount: txtValue.length, //게시글 몇 개 출력할 건지
+      itemBuilder: (context, index){
+        return
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            elevation: 0,
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Image.asset(imgValue[index]),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text(txtValue[index]),
+                ),
+              ],
+            ),
+          );
+      },
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 2 / 1.8, // 가로 세로 비율
+      ),
+    ),
+  );
+}
+
+
+Widget slideList(BuildContext context, String text){ // 상단 가로 스크롤
   return Column(
     children: [
-      Row(children: [Text("관리자 PICK!", style: TextStyle(fontWeight: FontWeight.bold),)],),
+      Row(children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(10,5,10,5),
+          child: Text("관리자가 엄선한 $text TIP", style: TextStyle(fontWeight: FontWeight.bold),),),
+      ],),
+
       SingleChildScrollView(
           scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.all(5),
           child: Row(
-            children: [
-              Container(
-                width: 250,
-                height: 100,
-                margin: EdgeInsets.all(5),
-                color: Colors.red,
-              ),
-              Container(
-                width: 250,
-                height: 100,
-                margin: EdgeInsets.all(5),
-                color: Colors.red,
-              ),
-              Container(
-                width: 250,
-                height: 100,
-                margin: EdgeInsets.all(5),
-                color: Colors.red,
-              ),
-            ],
-          )
+            children: List.generate(5, (index) => slideView(index)),
+          ),
       ),
     ],
+  );
+}
+
+Widget slideView(int index){ // 상단 가로 스크롤 게시글 출력
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 2),
+    width: 220,
+    height: 198,
+    child: Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      elevation: 0,
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10.0),
+            child: Image.asset(imgValue[index]),
+          ),
+          Padding(
+            padding: EdgeInsets.all(5),
+            child: Text(txtValue[index]),
+          ),
+        ],
+      ),
+    ),
   );
 }
