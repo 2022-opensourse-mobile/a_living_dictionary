@@ -6,7 +6,6 @@ import 'ThemeColor.dart';
 
 ThemeColor themeColor = ThemeColor();
 
-
 // 기존 txtValue의 2번째 내용 수정
 List<String> txtValue = [
   'box1',
@@ -19,6 +18,10 @@ List<String> txtValue = [
 
 List<String> imgValue = [
   'assets/4.png', 'assets/3.png', 'assets/2.png', 'assets/1.png', 'assets/4.png', 'assets/4.png'
+];
+
+List<String> secondimgValue = [
+  'assets/5.png', 'assets/6.png', 'assets/5.png', 'assets/6.png', 'assets/5.png', 'assets/6.png'
 ];
 
 class DictionaryPage extends StatefulWidget {
@@ -65,25 +68,36 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
               otherPage(context, "청소"),
               otherPage(context, "빨래"),
               otherPage(context, "요리"),
-              postList(context, 10),
-              // otherPage(context, "기타"),
+              otherPage(context, "기타"),
             ],
           ),
         )
       ],
     );
   }
+
   // 추천 탭 화면
   Widget recommandPage(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          textBox(context, "인기 Top 10"),
+          startxtIcon(context, '인기 TOP 10'),
           postList(context, 10),
-          Divider(thickness: 0.5,),
-          slideList(context, "오늘은 대청소 하는 날!", 4),
-          slideList(context, "옷에 양념이 묻었다면?", 4),
+          slideList(context, "오늘은 대청소하는 날!", 4),
+          slideList(context, "빨래의 모든 것", 4),
           slideList(context, "뭐 먹을지 고민된다면?", 4),
+        ],
+      ),
+    );
+  }
+
+  Widget startxtIcon(BuildContext context, String str) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+      child: Row(
+        children: [
+          textBox(context, '$str'),
+          Icon(Icons.star_rounded, color: Colors.orange,),
         ],
       ),
     );
@@ -93,8 +107,13 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   Widget otherPage(BuildContext context, String tab) {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          slideList(context, "관리자가 엄선한 $tab TIP", 6),
+          secondslideList(context, '관리자가 엄선한 $tab TIP', 6),
+          Padding(
+            padding: EdgeInsets.fromLTRB(10, 10, 0, 5),
+            child: textBox(context, '최신글'),
+          ),
           postList(context, 10),
         ],
       )
@@ -107,12 +126,12 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       child: GridView.builder(
         physics: ScrollPhysics(),
         shrinkWrap: true,
-        padding: EdgeInsets.all(5),
+        padding: EdgeInsets.fromLTRB(5,0,5,5),
         itemCount: i, //몇 개 출력할 건지
         itemBuilder: (context, index){
           return InkWell(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Temp(context)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
             },
             child: Card(
               shape: RoundedRectangleBorder(
@@ -127,7 +146,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     child: Image.asset(imgValue[index % imgValue.length]),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(5),
+                    padding: EdgeInsets.all(5), // 게시글 제목 여백
                     child: Text(txtValue[index % txtValue.length]),
                   ),
                 ],
@@ -137,14 +156,14 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 1 / 1, // 가로 세로 비율
+          childAspectRatio: 1 / 0.95, // 가로 세로 비율
         ),
       ),
     );
   }
 
   // 클릭 시, 다른 페이지 이동
-  Widget Temp(BuildContext context) {
+  Widget tempPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: Text("확인용 페이지"),
@@ -152,10 +171,33 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
   // 텍스트 출력 + 가로 스크롤 리스트 출력
-  Widget slideList(BuildContext context, String text, int i){ // 상단 가로 스크롤
+  Widget slideList(BuildContext context, String str, int i){
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        textBox(context, text),
+        Divider(thickness: 0.5,),
+        Padding(
+          padding: EdgeInsets.fromLTRB(10, 10, 0, 5),
+          child: textBox(context, str),
+        ),
+        slide(context, i),
+      ],
+    );
+  }
+
+  Widget secondslideList(BuildContext context, String str, int i){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+          child: Row(
+            children: [
+              textBox(context, str),
+              Icon(Icons.star_rounded, color: Colors.orange,),
+            ],
+          ),
+        ),
         slide(context, i),
         Divider(thickness: 0.5,),
       ],
@@ -164,20 +206,14 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
   // 텍스트 출력
   Widget textBox(BuildContext context, String str) {
-    return Row(
-      children: [
-        Padding(
-            padding: EdgeInsets.fromLTRB(10,5,10,5),
-            child: Text(str, style: TextStyle(fontWeight: FontWeight.bold))
-        ),],
-    );
+    return Text(str, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16));
   }
 
   // 가로 스크롤 리스트
-  Widget slide(BuildContext context, int i){ // 상단 가로 스크롤
+  Widget slide(BuildContext context, int i){
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: EdgeInsets.all(5),
+      padding: EdgeInsets.fromLTRB(5,0,5,5), //5055
       child: Row(
         children: List.generate(i, (index) => slideView(index)),
       ),
@@ -187,9 +223,9 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   // 가로 스크롤 개별 게시글
   Widget slideView(int index){
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 2),
-      width: 220,
-      height: 198,
+      margin: EdgeInsets.symmetric(horizontal: 0),
+      width: 220, //220
+      height: 198, //198
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -201,7 +237,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10.0),
-              child: Image.asset(imgValue[index]),
+              child: Image.asset(secondimgValue[index]),
             ),
             Padding(
               padding: EdgeInsets.all(5),
