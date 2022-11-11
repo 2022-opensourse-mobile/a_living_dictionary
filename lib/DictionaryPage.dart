@@ -67,22 +67,16 @@ class DictionaryPage extends StatelessWidget {
                     TabBarView(
                       children: <Widget>[
 
-                        postList(context), // 추천 탭
-
+                        // postList(context), // 추천 탭
+                        recommand(context),
                         slideList(context, '청소'),
 
 
                         bestList(),
 
 
-                        Container(
-                          child: Center(
-                            child: Text('요리 탭 미리보기'),
-                          ),
-                        ),
-                        Container(
-                          child: Text('기타 탭 미리보기'),
-                        ),
+                        postList(context),
+                        postList(context),
                       ],
                     ),
 
@@ -142,21 +136,109 @@ Widget bestList(){ // 인기 TOP 6
   );
 }
 
+// TODO: 추천 탭
+Widget recommand(BuildContext context) {
+  return SingleChildScrollView(
+      child: Column(
+        children: [
+          textBox(context, "인기 Top 10"),
+          // postList(context),
+          // top10(context),
+          // post(context, 10),
+          textBox(context, "오늘은 대청소 하는 날!"),
+          imageBox(context, 4),
 
+          textBox(context, "옷에 양념이 묻었다면?"),
+          imageBox(context, 4),
 
-Widget postList(BuildContext context){ // 게시글 출력
+          textBox(context, "뭐 먹을지 고민된다면?"),
+          imageBox(context, 4),
+        ],
+      )
+  );
+}
+
+Widget top10(BuildContext context) {
+  return GridView.builder(
+    padding: EdgeInsets.all(5),
+    itemCount: txtValue.length, //몇 개 출력할 건지
+    itemBuilder: (context, index){
+      return InkWell(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Temp(context)));
+        },
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 0,
+          //color: Colors.green,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Image.asset(imgValue[index]),
+              ),
+              Padding(
+                padding: EdgeInsets.all(5),
+                child: Text(txtValue[index]),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      childAspectRatio: 2 / 1.8, // 가로 세로 비율
+    ),
+  );
+}
+
+Widget textBox(BuildContext context, String s) {
+  return Text(
+    s,
+    style: TextStyle(
+      fontWeight: FontWeight.bold,
+    ),
+  );
+}
+
+Widget imageBox(BuildContext context, int i) {
+  return SizedBox(
+    height: 150,
+    child: ListView.builder(
+        itemCount: i,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) => Container(
+          height: 100,
+          width: 200,
+          margin: EdgeInsets.all(8.0),
+          child: Center(
+            child: Image.asset(imgValue[index % imgValue.length]),
+          ),
+        )
+    ),
+  );
+}
+// TODO: 위젯 만들기
+Widget postList(BuildContext context){
   return Container(
     child: GridView.builder(
       padding: EdgeInsets.all(5),
-      itemCount: txtValue.length, //게시글 몇 개 출력할 건지
+      itemCount: txtValue.length, //몇 개 출력할 건지
       itemBuilder: (context, index){
-        return
-          Card(
+        return InkWell(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Temp(context)));
+          },
+          child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
             elevation: 0,
-            color: Colors.white,
+            //color: Colors.green,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -170,13 +252,23 @@ Widget postList(BuildContext context){ // 게시글 출력
                 ),
               ],
             ),
-          );
+          ),
+        );
       },
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 2 / 1.8, // 가로 세로 비율
       ),
     ),
+  );
+}
+
+Widget Temp(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+
+    ),
+    body: Text("확인용 페이지"),
   );
 }
 
@@ -197,6 +289,7 @@ Widget slideList(BuildContext context, String text){ // 상단 가로 스크롤
             children: List.generate(5, (index) => slideView(index)),
           ),
       ),
+
     ],
   );
 }
