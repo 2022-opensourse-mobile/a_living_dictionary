@@ -133,31 +133,37 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
             },
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              elevation: 0,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
-                    child: Image.asset(imgValue[index % imgValue.length]),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(5), // 게시글 제목 여백
-                    child: Text(txtValue[index % txtValue.length]),
-                  ),
-                ],
-              ),
-            ),
+            child: card(context, index, imgValue, txtValue),
           );
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 1 / 0.95, // 가로 세로 비율
+          childAspectRatio: 1 / 1, // 가로 세로 비율
         ),
+      ),
+    );
+  }
+
+  Widget card(BuildContext context, int index, List<String> imgList, List<String> textList) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      elevation: 0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10.0),
+            // child: Image.asset(imgValue[index % imgValue.length]),
+            child: Image.asset(imgList[index % imgList.length]),
+          ),
+          Padding(
+            padding: EdgeInsets.all(5), // 게시글 제목 여백
+            child: Text(textList[index % textList.length]),
+            // child: Text(txtValue[index % txtValue.length]),
+         ),
+        ],
       ),
     );
   }
@@ -165,12 +171,30 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   // 클릭 시, 다른 페이지 이동
   Widget tempPage(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Text("확인용 페이지"),
+      appBar: AppBar(
+        title: Text("제목"),
+        titleSpacing: 0,
+        elevation: 0,
+        // centerTitle: false,
+      ),
+      body: ListView.builder(
+        padding: EdgeInsets.all(8),
+        itemCount: 15,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Column(
+              children: [
+                Text("ListTile $index"),
+                Image.asset(secondimgValue[index % secondimgValue.length])
+              ],
+            )
+          );
+        },
+      ),
     );
   }
 
-  // 텍스트 출력 + 가로 스크롤 리스트 출력
+  // 텍스트 출력 + 가로 스크롤 리스트 출력 (1)
   Widget slideList(BuildContext context, String str, int i){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,22 +209,28 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     );
   }
 
+  // 텍스트 출력 + 가로 스크롤 리스트 출력 (2)
   Widget secondslideList(BuildContext context, String str, int i){
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-          child: Row(
-            children: [
-              textBox(context, str),
-              Icon(Icons.star_rounded, color: Colors.orange,),
-            ],
+    return InkWell(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+            child: Row(
+              children: [
+                textBox(context, str),
+                Icon(Icons.star_rounded, color: Colors.orange,),
+              ],
+            ),
           ),
-        ),
-        slide(context, i),
-        Divider(thickness: 0.5,),
-      ],
+          slide(context, i),
+          Divider(thickness: 0.5,),
+        ],
+      )
     );
   }
 
@@ -224,28 +254,30 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   Widget slideView(int index){
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 0),
-      width: 220, //220
-      height: 198, //198
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        elevation: 0,
-        color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: Image.asset(secondimgValue[index]),
-            ),
-            Padding(
-              padding: EdgeInsets.all(5),
-              child: Text(txtValue[index]),
-            ),
-          ],
-        ),
-      ),
+      // width: 220, //220
+      height: MediaQuery.of(context).size.width / 2, //198
+      width: MediaQuery.of(context).size.width / 2,
+      child: card(context, index, secondimgValue, txtValue),
+      // child: Card(
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(10),
+      //   ),
+      //   elevation: 0,
+      //   color: Colors.white,
+      //   child: Column(
+      //     crossAxisAlignment: CrossAxisAlignment.start,
+      //     children: [
+      //       ClipRRect(
+      //         borderRadius: BorderRadius.circular(10.0),
+      //         child: Image.asset(secondimgValue[index]),
+      //       ),
+      //       Padding(
+      //         padding: EdgeInsets.all(5),
+      //         child: Text(txtValue[index]),
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }
