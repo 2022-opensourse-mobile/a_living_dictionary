@@ -249,19 +249,16 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           return Stack(
             children: [
               Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: ExactAssetImage(secondimgValue[0]),
+                    fit: BoxFit.cover,
+                  ),
+                ),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 20,sigmaY: 20),
+                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                   child: Container(
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          colorFilter: ColorFilter.mode(
-                              Colors.black.withOpacity(0.3),
-                              BlendMode.dstATop
-                          ),
-                          image: AssetImage(secondimgValue[0]),
-                        )
-                    ),
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
                   ),
                 ),
               ),
