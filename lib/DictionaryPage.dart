@@ -94,14 +94,22 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
   // 텍스트 + 아이콘
   Widget startxtIcon(BuildContext context, String str) {
+    return Row(
+      children: [
+        textBox(context, '$str'),
+        Padding(
+          padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+          child: Icon(Icons.star_rounded, color: Colors.orange),
+        )
+      ],
+    );
+  }
+
+  // 텍스트 출력
+  Widget textBox(BuildContext context, String str) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(0 , 10, 0, 1),
-      child: Row(
-        children: [
-          textBox(context, '$str'),
-          Icon(Icons.star_rounded, color: Colors.orange,),
-        ],
-      ),
+      padding: EdgeInsets.fromLTRB(10, 10, 0, 5),
+      child: Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.2),
     );
   }
 
@@ -112,10 +120,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             slideList(context, '관리자가 엄선한 $tabName TIP', 6, true),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 6),
-              child: textBox(context, '최신글'),
-            ),
+            textBox(context, '최신글'),
             postList(context, tabName, 10),
           ],
         )
@@ -220,21 +225,11 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(0, 10, 0, 6),
-          child: iconTF? startxtIcon(context, title) : textBox(context, title),
-        ),
+        iconTF? startxtIcon(context, title) : textBox(context, title),
         slide(context, slideNum),
         Divider(thickness: 0.5,),
       ],
     );
-  }
-
-  // 텍스트 출력
-  Widget textBox(BuildContext context, String str) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(10, 0, 0, 1),
-      child: Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.2),);
   }
 
   // 가로 스크롤 리스트
