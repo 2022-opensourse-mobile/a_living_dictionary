@@ -78,7 +78,7 @@ class Settings extends StatelessWidget {
                       title: Text('스크랩 목록'),
                       onTap: () {
                         // Navigator.of(context).pushNamed('/scrapList');
-                        // Navigator.push(context, MaterialPageRoute(builder: (context) => setting_page.scrapList(context)));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrapList(context)));
                       },
                     ),
                     // Divider(thickness: 0.5),

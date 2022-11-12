@@ -160,7 +160,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       height: MediaQuery.of(context).size.height / 4,
       child: InkWell(
         onTap: () {
-         // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+          // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
           Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
         },
         child: Card(
@@ -181,13 +181,13 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(padding: EdgeInsets.fromLTRB(0, 0, 0 , 3),
-                    child: Text(
-                      "#$tabName",
-                      style: TextStyle(
-                        color: themeColor.getColor(),
+                      child: Text(
+                        "#$tabName",
+                        style: TextStyle(
+                          color: themeColor.getColor(),
+                        ),
+                        textScaleFactor: 1,
                       ),
-                      textScaleFactor: 1,
-                    ),
                     ),
                     Text(textList[index % textList.length], textScaleFactor: 1)
                   ],
@@ -236,7 +236,13 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   Widget pageView(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("제목"),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("제목", textScaleFactor: 1),
+            Icon(Icons.bookmark_outline_rounded, color: Color(0xffffd654), size: 30,),
+          ],
+        ),
         titleSpacing: 0,
         elevation: 0,
       ),
@@ -255,10 +261,13 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     fit: BoxFit.cover,
                   ),
                 ),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                  child: Container(
-                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                child: ClipRect(
+                  child: BackdropFilter(
+                    
+                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                    child: Container(
+                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                    ),
                   ),
                 ),
               ),
