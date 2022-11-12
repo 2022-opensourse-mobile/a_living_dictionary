@@ -54,14 +54,14 @@ class MainPage extends StatelessWidget {
 
   Container recommendedItems() {
     return Container(
-        margin: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: Color.fromARGB(66, 74, 74, 74),
-            width: 1,
-          ),
-        ),
+        // margin: EdgeInsets.all(5),
+        // decoration: BoxDecoration(
+        //   borderRadius: BorderRadius.circular(20),
+        //   border: Border.all(
+        //     color: Color.fromARGB(66, 74, 74, 74),
+        //     width: 1,
+        //   ),
+        // ),
         // height: 210,
 
         child: Builder(builder: (context) {
@@ -71,11 +71,30 @@ class MainPage extends StatelessWidget {
           return Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: EdgeInsets.all(5.0),
                 child: Column(
                   // shrinkWrap: true,
                   // physics: const NeverScrollableScrollPhysics(),
                   children: <Widget>[
+                    // Row(
+                    //   children: [
+                    //   Text(
+                    //     "추천 꿀TIP", textScaleFactor: 1.1,
+                    //     style: TextStyle(fontWeight: FontWeight.bold),
+                    //   ),
+                    //   TextButton(
+                    //       onPressed: () {
+                    //         tabController.animateTo(
+                    //             (tabController.index + 2)); // 게시판으로 이동
+                    //       },
+                    //       child: Text("더 보기 >", textScaleFactor: 0.9),
+                    //       style: TextButton.styleFrom(
+                    //           splashFactory: NoSplash.splashFactory))
+                    // ],),
+
+
+
+
                     ListTile(
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -97,7 +116,10 @@ class MainPage extends StatelessWidget {
                                   splashFactory: NoSplash.splashFactory))
                         ],
                       ),
+
                       visualDensity: VisualDensity(vertical: -4),
+
+
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,13 +141,16 @@ class MainPage extends StatelessWidget {
   Column tipBlock(double imagesize, String text, String imageName) {
     return Column(
       children: [
-        InkWell(
-            onTap: () {},
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child:
-                  Image.asset(imageName, width: imagesize, height: imagesize),
-            )),
+        Padding(
+          padding: EdgeInsets.all(5),
+          child: InkWell(
+              onTap: () {},
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child:
+                Image.asset(imageName, width: imagesize, height: imagesize),
+              )),
+        ),
         Text(text)
       ],
     );
@@ -160,19 +185,19 @@ class MainPage extends StatelessWidget {
   Container textList(String communityTitle) {
     Post p = Post();
     return Container(
-        margin: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: Color.fromARGB(66, 74, 74, 74),
-            width: 1,
-          ),
-        ),
+        //margin: EdgeInsets.all(5),
+        // decoration: BoxDecoration(
+        //   borderRadius: BorderRadius.circular(20),
+        //   border: Border.all(
+        //     color: Color.fromARGB(66, 74, 74, 74),
+        //     width: 1,
+        //   ),
+        // ),
         height: 210,
         child: Column(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(5.0),
               child: ListView(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),

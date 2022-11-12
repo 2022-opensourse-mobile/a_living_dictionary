@@ -21,7 +21,7 @@ List<String> imgValue = [
 ];
 
 List<String> secondimgValue = [
-  'assets/5.png', 'assets/6.png', 'assets/5.png', 'assets/6.png', 'assets/5.png', 'assets/6.png'
+  'assets/7.png', 'assets/8.png', 'assets/7.png', 'assets/8.png', 'assets/7.png', 'assets/8.png'
 ];
 
 class DictionaryPage extends StatefulWidget {
@@ -81,8 +81,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     return SingleChildScrollView(
       child: Column(
         children: [
-          startxtIcon(context, '인기 TOP 10'),
-          postList(context, "추천", 10),
+          startxtIcon(context, '인기 TOP 4'),
+          postList(context, "추천", 4),
           Divider(thickness: 0.5,),
           slideList(context, "오늘은 대청소하는 날!", 4, false),
           slideList(context, "빨래의 모든 것", 4, false),
@@ -98,7 +98,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       children: [
         textBox(context, '$str'),
         Padding(
-          padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+          padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
           child: Icon(Icons.star_rounded, color: Colors.orange),
         )
       ],
@@ -108,7 +108,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   // 텍스트 출력
   Widget textBox(BuildContext context, String str) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10, 10, 0, 5),
+      padding: EdgeInsets.fromLTRB(10, 10, 0, 6),
       child: Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.2),
     );
   }
@@ -121,7 +121,10 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           children: [
             slideList(context, '관리자가 엄선한 $tabName TIP', 6, true),
             textBox(context, '최신글'),
-            postList(context, tabName, 10),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
+              child:postList(context, tabName, 10),),
+            Divider(thickness: 0.5,),
           ],
         )
     );
@@ -198,7 +201,13 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   Widget tempPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("제목", textScaleFactor: 1),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("제목", textScaleFactor: 1),
+            Icon(Icons.bookmark_outline_rounded, color: Color(0xffffd654), size: 30,),
+          ],
+        ),
         titleSpacing: 0,
         elevation: 0,
       ),
