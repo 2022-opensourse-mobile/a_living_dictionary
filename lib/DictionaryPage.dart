@@ -4,6 +4,8 @@ import 'ThemeColor.dart';
 
 /* 백과사전: 청소, 빨래, 요리, 기타 */
 
+// TODO: 글자 크기 고정하기 Text() 속성 안에  textScaleFactor: 1 넣기
+
 ThemeColor themeColor = ThemeColor();
 
 // 기존 txtValue의 2번째 내용 수정
@@ -178,11 +180,12 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         // centerTitle: false,
       ),
       body: ListView.builder(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
         itemCount: 15,
         itemBuilder: (context, index) {
           return ListTile(
             title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("ListTile $index", textScaleFactor: 1),
                 Image.asset(secondimgValue[index % secondimgValue.length])

@@ -126,7 +126,7 @@ class MainPage extends StatelessWidget {
               child:
                   Image.asset(imageName, width: imagesize, height: imagesize),
             )),
-        Text(text, textScaleFactor: 1)
+        Text(text)
       ],
     );
   }
@@ -238,7 +238,6 @@ class MainPage extends StatelessWidget {
           ),
           Text(
             " 오늘은 날씨 맑음! 빨래하기 좋은 날~",
-            textScaleFactor: 1,
             style: TextStyle(height: 2.5),
           ),
         ],
