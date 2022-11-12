@@ -1,5 +1,8 @@
 import 'package:a_living_dictionary/Search.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 import 'CommunityPage.dart';
 import 'MainPage.dart';
 import 'MyPage.dart';
@@ -7,9 +10,9 @@ import 'RestaurantPage.dart';
 import 'DictionaryPage.dart';
 import 'ThemeColor.dart';
 import 'community/writePost.dart';
+import 'Dictionary/CardPage.dart';
+import 'Dictionary/WriteDictionaryPage.dart';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 //123
 //page0 : Main
@@ -38,7 +41,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: themeColor.getWhiteMaterialColor()),
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
-        '/writePost':(context)=>WritePostPage()
+        '/writePost':(context)=>WritePostPage(),
+        '/dictionaryItemCard':(context)=>CardPage(),
+        '/writeDictionary':(context)=>WriteDictionaryPage(),
       },
     );
   }
