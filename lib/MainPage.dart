@@ -127,7 +127,7 @@ class MainPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            '$text', textScaleFactor: 1.25,
+            '$text', textScaleFactor: 1.22,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           TextButton(

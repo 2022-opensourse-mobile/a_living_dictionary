@@ -110,8 +110,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   // 텍스트 출력
   Widget textBox(BuildContext context, String str) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10, 12, 0, 10),
-      child: Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.25),
+      padding: EdgeInsets.fromLTRB(10, 12, 0, 11),
+      child: Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.22),
     );
   }
 
