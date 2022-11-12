@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:a_living_dictionary/main.dart';
 import 'ThemeColor.dart';
@@ -158,7 +160,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       height: MediaQuery.of(context).size.height / 4,
       child: InkWell(
         onTap: () {
-         Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+         // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
         },
         child: Card(
           shape: RoundedRectangleBorder(
@@ -197,7 +200,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     );
   }
 
-  // 클릭 시, 세부 페이지로 이동
+  // 클릭 시, 스크롤 페이지로 이동
   Widget tempPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -223,6 +226,49 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                   Image.asset(secondimgValue[index % secondimgValue.length])
                 ],
               )
+          );
+        },
+      ),
+    );
+  }
+
+  // 클릭 시, 슬라이드 페이지로 이동
+  Widget pageView(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("제목"),
+        titleSpacing: 0,
+        elevation: 0,
+      ),
+      body: PageView.builder(
+        controller: PageController(
+          initialPage: 0,
+        ),
+        itemCount: 15,
+        itemBuilder: (context, index) {
+          return Stack(
+            children: [
+              Container(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20,sigmaY: 20),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          colorFilter: ColorFilter.mode(
+                              Colors.black.withOpacity(0.3),
+                              BlendMode.dstATop
+                          ),
+                          image: AssetImage(secondimgValue[0]),
+                        )
+                    ),
+                  ),
+                ),
+              ),
+              Center(
+                child: Image.asset(secondimgValue[index % secondimgValue.length]),
+              )
+            ],
           );
         },
       ),
