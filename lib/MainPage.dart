@@ -81,7 +81,7 @@ class MainPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "추천 꿀팁",
+                            "추천 꿀TIP", textScaleFactor: 1.1,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           SizedBox(
@@ -92,8 +92,7 @@ class MainPage extends StatelessWidget {
                                 tabController.animateTo(
                                     (tabController.index + 2)); // 게시판으로 이동
                               },
-                              child: Text("더 보기 >",
-                                  style: TextStyle(fontSize: 13)),
+                              child: Text("더 보기 >", textScaleFactor: 0.9),
                               style: TextButton.styleFrom(
                                   splashFactory: NoSplash.splashFactory))
                         ],
@@ -127,7 +126,7 @@ class MainPage extends StatelessWidget {
               child:
                   Image.asset(imageName, width: imagesize, height: imagesize),
             )),
-        Text(text)
+        Text(text, textScaleFactor: 1)
       ],
     );
   }
@@ -183,7 +182,7 @@ class MainPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          communityTitle,
+                          communityTitle, textScaleFactor: 1.1,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
@@ -195,7 +194,7 @@ class MainPage extends StatelessWidget {
                                   (tabController.index + 2)); // 게시판으로 이동
                             },
                             child:
-                                Text("더 보기 >", style: TextStyle(fontSize: 13)),
+                                Text("더 보기 >", textScaleFactor: 0.9),
                             style: TextButton.styleFrom(
                                 splashFactory: NoSplash.splashFactory))
                       ],
@@ -239,10 +238,8 @@ class MainPage extends StatelessWidget {
           ),
           Text(
             " 오늘은 날씨 맑음! 빨래하기 좋은 날~",
-            style: TextStyle(
-              height: 2.5,
-              fontSize: 14,
-            ),
+            textScaleFactor: 1,
+            style: TextStyle(height: 2.5),
           ),
         ],
       ),

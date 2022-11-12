@@ -160,7 +160,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           ),
           Padding(
             padding: EdgeInsets.all(5), // 게시글 제목 여백
-            child: Text(textList[index % textList.length]),
+            child: Text(textList[index % textList.length], textScaleFactor: 1),
             // child: Text(txtValue[index % txtValue.length]),
          ),
         ],
@@ -172,7 +172,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   Widget tempPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("제목"),
+        title: Text("제목", textScaleFactor: 1),
         titleSpacing: 0,
         elevation: 0,
         // centerTitle: false,
@@ -184,7 +184,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           return ListTile(
             title: Column(
               children: [
-                Text("ListTile $index"),
+                Text("ListTile $index", textScaleFactor: 1),
                 Image.asset(secondimgValue[index % secondimgValue.length])
               ],
             )
@@ -236,7 +236,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
   // 텍스트 출력
   Widget textBox(BuildContext context, String str) {
-    return Text(str, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16));
+    return Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.2);
   }
 
   // 가로 스크롤 리스트
