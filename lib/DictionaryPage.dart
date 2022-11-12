@@ -82,10 +82,10 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       child: Column(
         children: [
           startxtIcon(context, '인기 TOP 10'),
-          postList(context, 10),
-          secondslideList(context, "오늘은 대청소하는 날!", 4, false),
-          secondslideList(context, "빨래의 모든 것", 4, false),
-          secondslideList(context, "뭐 먹을지 고민된다면?", 4, false),
+          postList(context, "추천", 10),
+          slideList(context, "오늘은 대청소하는 날!", 4, false),
+          slideList(context, "빨래의 모든 것", 4, false),
+          slideList(context, "뭐 먹을지 고민된다면?", 4, false),
         ],
       ),
     );
@@ -110,19 +110,19 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            secondslideList(context, '관리자가 엄선한 $tabName TIP', 6, true),
+            slideList(context, '관리자가 엄선한 $tabName TIP', 6, true),
             Padding(
               padding: EdgeInsets.fromLTRB(10, 10, 0, 5),
               child: textBox(context, '최신글'),
             ),
-            postList(context, 10),
+            postList(context, tabName, 10),
           ],
         )
     );
   }
 
   // 게시글 리스트
-  Widget postList(BuildContext context, int postNum){
+  Widget postList(BuildContext context, String tabName, int postNum){
     return Container(
       child: GridView.builder(
         physics: ScrollPhysics(),
@@ -130,15 +130,11 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         padding: EdgeInsets.fromLTRB(5,0,5,5),
         itemCount: postNum, //몇 개 출력할 건지
         itemBuilder: (context, index){
-          return InkWell(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
-            },
-            child: post(context, index, imgValue, txtValue),
-          );
+          return post(context, index, tabName, imgValue, txtValue);
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
+          childAspectRatio: (MediaQuery.of(context).size.width / 2) / (MediaQuery.of(context).size.height / 4),
           // childAspectRatio: 1 / 1, // 가로 세로 비율
         ),
       ),
@@ -146,31 +142,45 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
   // 개별 게시글
-  Widget post(BuildContext context, int index, List<String> imgList, List<String> textList) {
+  Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 0),
       width: MediaQuery.of(context).size.width / 2,
-      // height: MediaQuery.of(context).size.width / 2,
-      height: MediaQuery.of(context).size.height / 4.5,
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        elevation: 0,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              // child: Image.asset(imgValue[index % imgValue.length]),
-              child: Image.asset(imgList[index % imgList.length]),
-            ),
-            Padding(
-              padding: EdgeInsets.all(5), // 게시글 제목 여백
-              child: Text(textList[index % textList.length], textScaleFactor: 1),
-              // child: Text(txtValue[index % txtValue.length]),
-            ),
-          ],
+      height: MediaQuery.of(context).size.height / 4,
+      child: InkWell(
+        onTap: () {
+         Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+        },
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Image.asset(imgList[index % imgList.length]),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8), // 게시글 제목 여백
+                child: Column(
+                  children: [
+                    Text(
+                      "#$tabName",
+                      style: TextStyle(
+                        color: themeColor.getColor(),
+                      ),
+                      textScaleFactor: 1,
+                      textAlign: TextAlign.left,
+                    ),
+                    Text(textList[index % textList.length], textScaleFactor: 1)
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -203,22 +213,17 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
   // 텍스트 출력 + 가로 스크롤 리스트 출력
-  Widget secondslideList(BuildContext context, String title, int slideNum, bool iconTF){
-    return InkWell(
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-              child: iconTF? startxtIcon(context, title) : textBox(context, title),
-            ),
-            slide(context, slideNum),
-            Divider(thickness: 0.5,),
-          ],
-        )
+  Widget slideList(BuildContext context, String title, int slideNum, bool iconTF){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+          child: iconTF? startxtIcon(context, title) : textBox(context, title),
+        ),
+        slide(context, slideNum),
+        Divider(thickness: 0.5,),
+      ],
     );
   }
 
@@ -233,7 +238,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       scrollDirection: Axis.horizontal,
       padding: EdgeInsets.fromLTRB(5,0,5,5), //5055
       child: Row(
-        children: List.generate(i, (index) => post(context, index, secondimgValue, txtValue)),
+        children: List.generate(i, (index) => post(context, index, "TIP", secondimgValue, txtValue)),
       ),
     );
   }
