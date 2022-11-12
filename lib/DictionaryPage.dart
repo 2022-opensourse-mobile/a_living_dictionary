@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:a_living_dictionary/main.dart';
 import 'ThemeColor.dart';
@@ -99,7 +101,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         textBox(context, '$str'),
         Padding(
           padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
-          child: Icon(Icons.star_rounded, color: Colors.orange),
+          child: Icon(Icons.star_rounded, color: Colors.amberAccent),
         )
       ],
     );
@@ -108,8 +110,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   // 텍스트 출력
   Widget textBox(BuildContext context, String str) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10, 10, 0, 6),
-      child: Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.2),
+      padding: EdgeInsets.fromLTRB(10, 12, 0, 10),
+      child: Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.25),
     );
   }
 
@@ -158,7 +160,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       height: MediaQuery.of(context).size.height / 4,
       child: InkWell(
         onTap: () {
-         Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+          // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
         },
         child: Card(
           shape: RoundedRectangleBorder(
@@ -173,18 +176,18 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                 child: Image.asset(imgList[index % imgList.length]),
               ),
               Padding(
-                padding: EdgeInsets.all(8), // 게시글 제목 여백
+                padding: EdgeInsets.fromLTRB(8,5,8,0), // 게시글 제목 여백
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(padding: EdgeInsets.fromLTRB(0, 0, 0 , 3),
-                    child: Text(
-                      "#$tabName",
-                      style: TextStyle(
-                        color: themeColor.getColor(),
+                      child: Text(
+                        "#$tabName",
+                        style: TextStyle(
+                          color: themeColor.getColor(),
+                        ),
+                        textScaleFactor: 1,
                       ),
-                      textScaleFactor: 1,
-                    ),
                     ),
                     Text(textList[index % textList.length], textScaleFactor: 1)
                   ],
@@ -197,7 +200,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     );
   }
 
-  // 클릭 시, 세부 페이지로 이동
+  // 클릭 시, 스크롤 페이지로 이동
   Widget tempPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -205,7 +208,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("제목", textScaleFactor: 1),
-            Icon(Icons.bookmark_outline_rounded, color: Color(0xffffd654), size: 30,),
+            Icon(Icons.bookmark, color: Colors.amberAccent, size: 30,),
           ],
         ),
         titleSpacing: 0,
@@ -223,6 +226,54 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                   Image.asset(secondimgValue[index % secondimgValue.length])
                 ],
               )
+          );
+        },
+      ),
+    );
+  }
+
+  // 클릭 시, 슬라이드 페이지로 이동
+  Widget pageView(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("제목", textScaleFactor: 1),
+            Icon(Icons.bookmark_outline_rounded, color: Colors.amberAccent, size: 30,),
+          ],
+        ),
+        titleSpacing: 0,
+        elevation: 0,
+      ),
+      body: PageView.builder(
+        controller: PageController(
+          initialPage: 0,
+        ),
+        itemCount: 15,
+        itemBuilder: (context, index) {
+          return Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: ExactAssetImage(secondimgValue[0]),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 23.0, sigmaY: 23.0),
+                    child: Container(
+                      decoration: BoxDecoration(color: Colors.white.withOpacity(0)),
+                    ),
+                  ),
+                ),
+              ),
+              Center(
+                child: Image.asset(secondimgValue[index % secondimgValue.length]),
+              )
+            ],
           );
         },
       ),
