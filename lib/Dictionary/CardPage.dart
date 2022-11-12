@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'DictionaryItem.dart';
 
 
-int itemNum = 9;
+int itemNum = 6;
 int cardNum = 1;
-int itemId = 1;
+int itemId = 6;
 
 
 class CardPage extends StatefulWidget {
@@ -41,7 +41,7 @@ class _CardPageState extends State<CardPage> {
 
   Stream? _queryDb() {
     slides = FirebaseFirestore.instance
-        .collection('card').where("item_id", isEqualTo: itemId).orderBy("card_id", descending: false)
+        .collection('dictionaryCard').where("item_id", isEqualTo: itemId).orderBy("card_id", descending: false)
         .snapshots()
         .map((list) => list.docs.map((doc) => doc.data()));
 

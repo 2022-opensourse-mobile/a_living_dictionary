@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import '../Data.dart';
 
+int cardNum = 1;
+int itemId = 6;
+
+
 class DictionaryItem extends Data<DictionaryItem>{
   DictionaryItem(
       this.item_id, {
@@ -37,7 +41,7 @@ class DictionaryItem extends Data<DictionaryItem>{
   }
   void delete(DocumentSnapshot doc) {
     FirebaseFirestore.instance.collection('dictionaryItem').doc(doc.id).delete();
-    var card_del_query = FirebaseFirestore.instance.collection('card').where('item_id', isEqualTo: doc['item_id']);
+    var card_del_query = FirebaseFirestore.instance.collection('dictionaryCard').where('item_id', isEqualTo: doc['item_id']);
     card_del_query.get().then((querySnapshot){
       querySnapshot.docs.forEach((snp) {
         snp.reference.delete();
@@ -95,8 +99,11 @@ class MyCard extends Data<MyCard>{
   }
   @override
   void add(E) {
-    // TODO: implement add
+    FirebaseFirestore.instance.collection('dictionaryCard').add(
+        {'card_id': E.card_id, 'content': E.content, 'img': E.img, 'item_id': E.post_id}
+    );
   }
+
   Widget buildCardPage(Map data, int index){
     return Column(
       children: [
@@ -123,6 +130,13 @@ class MyCard extends Data<MyCard>{
         SizedBox(
           height: 20,
         ),
+        //카드추가용코드
+        IconButton(
+            onPressed: (){
+              //add(MyCard(cardNum++, itemId, "",""));
+            },
+            icon: Icon(Icons.add)
+        )
       ],
     );
   }
