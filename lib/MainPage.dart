@@ -21,10 +21,12 @@ class MainPage extends StatelessWidget {
   MainPage({Key? key, required this.tabController}) : super(key: key);
   late List<String> items;
   late TabController tabController;
+  late BuildContext c;
 
   @override
   Widget build(BuildContext context) {
     items = List<String>.generate(5, (i) => 'Item $i');
+    this.c = context;
 
     return DefaultTextStyle(
         style: Theme.of(context).textTheme.bodyText2!,
@@ -121,7 +123,9 @@ class MainPage extends StatelessWidget {
     return Column(
       children: [
         InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(c, '/dictionaryItemCard');
+            },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10.0),
               child:
