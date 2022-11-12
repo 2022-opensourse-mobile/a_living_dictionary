@@ -9,6 +9,10 @@ class MyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: (context,child) {
+        return MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);
+      },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: themeColor.getMaterialColor(),
@@ -74,7 +78,7 @@ class Settings extends StatelessWidget {
                       title: Text('스크랩 목록'),
                       onTap: () {
                         // Navigator.of(context).pushNamed('/scrapList');
-                        // Navigator.push(context, MaterialPageRoute(builder: (context) => setting_page.scrapList(context)));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrapList(context)));
                       },
                     ),
                     // Divider(thickness: 0.5),
