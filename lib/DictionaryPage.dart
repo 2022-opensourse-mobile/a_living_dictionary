@@ -131,7 +131,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         itemBuilder: (context, index){
           return InkWell(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+              Navigator.pushNamed(context, '/card');
             },
             child: Card(
               shape: RoundedRectangleBorder(
