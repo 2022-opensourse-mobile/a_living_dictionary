@@ -17,7 +17,7 @@ List<String> txtValue = [
 ];
 
 List<String> imgValue = [
-  'assets/4.png', 'assets/3.png', 'assets/2.png', 'assets/1.png', 'assets/4.png', 'assets/4.png'
+  'assets/1.png', 'assets/2.png', 'assets/3.png', 'assets/4.png', 'assets/5.png', 'assets/6.png'
 ];
 
 List<String> secondimgValue = [
@@ -83,6 +83,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         children: [
           startxtIcon(context, '인기 TOP 10'),
           postList(context, "추천", 10),
+          Divider(thickness: 0.5,),
           slideList(context, "오늘은 대청소하는 날!", 4, false),
           slideList(context, "빨래의 모든 것", 4, false),
           slideList(context, "뭐 먹을지 고민된다면?", 4, false),
@@ -94,7 +95,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   // 텍스트 + 아이콘
   Widget startxtIcon(BuildContext context, String str) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+      padding: EdgeInsets.fromLTRB(0 , 10, 0, 1),
       child: Row(
         children: [
           textBox(context, '$str'),
@@ -112,7 +113,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           children: [
             slideList(context, '관리자가 엄선한 $tabName TIP', 6, true),
             Padding(
-              padding: EdgeInsets.fromLTRB(10, 10, 0, 5),
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 6),
               child: textBox(context, '최신글'),
             ),
             postList(context, tabName, 10),
@@ -166,14 +167,16 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
               Padding(
                 padding: EdgeInsets.all(8), // 게시글 제목 여백
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    Padding(padding: EdgeInsets.fromLTRB(0, 0, 0 , 3),
+                    child: Text(
                       "#$tabName",
                       style: TextStyle(
                         color: themeColor.getColor(),
                       ),
                       textScaleFactor: 1,
-                      textAlign: TextAlign.left,
+                    ),
                     ),
                     Text(textList[index % textList.length], textScaleFactor: 1)
                   ],
@@ -218,7 +221,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 6),
           child: iconTF? startxtIcon(context, title) : textBox(context, title),
         ),
         slide(context, slideNum),
@@ -229,7 +232,9 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
   // 텍스트 출력
   Widget textBox(BuildContext context, String str) {
-    return Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.2);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(10, 0, 0, 1),
+      child: Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.2),);
   }
 
   // 가로 스크롤 리스트
