@@ -11,7 +11,7 @@ ThemeColor themeColor = ThemeColor();
 // 기존 txtValue의 2번째 내용 수정
 List<String> txtValue = [
   'box1',
-  '2줄로됐을때 2줄로됐을때 2줄로됐을때 2줄로됐을때 2줄로됐을때 2줄로됐을때',
+  '2줄로됐을때 2줄로됐을때 2줄로됐을때 2줄로됐을때',
   'box3',
   'box4',
   'box4',
@@ -35,7 +35,7 @@ class DictionaryPage extends StatefulWidget {
 
 class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStateMixin {
   late TabController _tabController;
-  var width, portraitH, landscapeH;
+  var width, height, portraitH, landscapeH;
   var isPortrait;
   @override
   void initState() {
@@ -46,9 +46,10 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    width = deviceSize.width / 2; // 세로모드 및 가로모드 높이
-    portraitH = deviceSize.height / 4; // 세로모드 높이
-    landscapeH = deviceSize.height / 1.3; // 가로모드 높이
+    width = deviceSize.width; // 세로모드 및 가로모드 높이
+    height = deviceSize.height;
+    portraitH = deviceSize.height / 3.5; // 세로모드 높이
+    landscapeH = deviceSize.height / 1.2; // 가로모드 높이
     isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Column(
@@ -152,8 +153,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: width / (isPortrait? portraitH : landscapeH),
-          // childAspectRatio: 1 / 1, // 가로 세로 비율
+          childAspectRatio: (width / 2) / (isPortrait? (height < 750? 250 : portraitH) : landscapeH), // 가로 세로 비율
         ),
       ),
     );
@@ -163,13 +163,15 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 0),
-      width: width,
-      height: isPortrait? portraitH : landscapeH,
+      width: width / 2,
+      height: (isPortrait? (height < 750? 250 : portraitH) : landscapeH),
 
       child: InkWell(
         onTap: () {
           // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
-          Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
+          // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
+          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
+          Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
         },
         child: Card(
           shape: RoundedRectangleBorder(
@@ -271,9 +273,9 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                 ),
                 child: ClipRect(
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 23.0, sigmaY: 23.0),
+                    filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
                     child: Container(
-                      decoration: BoxDecoration(color: Colors.black.withOpacity(0)),
+                      decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
                     ),
                   ),
                 ),
@@ -308,6 +310,60 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       child: Row(
         children: List.generate(i, (index) => post(context, index, "TIP", secondimgValue, txtValue)),
       ),
+    );
+  }
+}
+
+// Route 이동할 때 애니메이션 주기
+class PageRouteWithAnimation {
+  final Widget page;
+
+  PageRouteWithAnimation(this.page);
+
+  Route slideRitghtToLeft() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return page;
+      },
+      transitionsBuilder: (
+          BuildContext context,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+          Widget child,
+          ) {
+        var begin = Offset(1.0, 0.0);
+        var end = Offset.zero;
+        var curve = Curves.ease;
+        var tween =
+        Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+  Route slideLeftToRight() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return page;
+      },
+      transitionsBuilder: (
+          BuildContext context,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+          Widget child,
+          ) {
+        var begin = Offset(1.0, 0.0);
+        var end = Offset.zero;
+        var curve = Curves.ease;
+        var tween =
+        Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
     );
   }
 }

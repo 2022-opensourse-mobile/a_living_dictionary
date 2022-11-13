@@ -39,7 +39,7 @@ class MainPage extends StatelessWidget {
   MainPage({Key? key, required this.tabController}) : super(key: key);
   late List<String> items;
   late TabController tabController;
-  var width, portraitH, landscapeH;
+  var width, height, portraitH, landscapeH;
   var isPortrait;
 
   @override
@@ -47,9 +47,10 @@ class MainPage extends StatelessWidget {
     items = List<String>.generate(5, (i) => 'Item $i');
 
     final deviceSize = MediaQuery.of(context).size;
-    width = deviceSize.width / 2; // 세로모드 및 가로모드 높이
-    portraitH = deviceSize.height / 4; // 세로모드 높이
-    landscapeH = deviceSize.height / 1.3; // 가로모드 높이
+    width = deviceSize.width; // 세로모드 및 가로모드 높이
+    height = deviceSize.height;
+    portraitH = deviceSize.height / 3.5; // 세로모드 높이
+    landscapeH = deviceSize.height / 1.2; // 가로모드 높이
     isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     return DefaultTextStyle(
@@ -230,8 +231,7 @@ class MainPage extends StatelessWidget {
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: width / (isPortrait? portraitH : landscapeH),
-          // childAspectRatio: 1 / 1, // 가로 세로 비율
+          childAspectRatio: (width / 2) / (isPortrait? (height < 750? 250 : portraitH) : landscapeH), // 가로 세로 비율
         ),
       ),
     );
@@ -240,8 +240,8 @@ class MainPage extends StatelessWidget {
   Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 0),
-      width: width,
-      height: isPortrait? portraitH : landscapeH,
+      width: width / 2,
+      height: (isPortrait? (height < 750? 250 : portraitH) : landscapeH),
       child: InkWell(
         onTap: () {
           // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
