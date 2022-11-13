@@ -39,10 +39,18 @@ class MainPage extends StatelessWidget {
   MainPage({Key? key, required this.tabController}) : super(key: key);
   late List<String> items;
   late TabController tabController;
+  var width, portraitH, landscapeH;
+  var isPortrait;
 
   @override
   Widget build(BuildContext context) {
     items = List<String>.generate(5, (i) => 'Item $i');
+
+    final deviceSize = MediaQuery.of(context).size;
+    width = deviceSize.width / 2; // 세로모드 및 가로모드 높이
+    portraitH = deviceSize.height / 4; // 세로모드 높이
+    landscapeH = deviceSize.height / 1.3; // 가로모드 높이
+    isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     return DefaultTextStyle(
         style: Theme.of(context).textTheme.bodyText2!,
@@ -122,7 +130,7 @@ class MainPage extends StatelessWidget {
 
   Widget textPrint(String text, int i) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10,5,10,0),
+      padding: EdgeInsets.fromLTRB(10,0,10,0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -130,13 +138,16 @@ class MainPage extends StatelessWidget {
             '$text', textScaleFactor: 1.22,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          TextButton(
+          Container(
+            // margin: const EdgeInsets.all(0),
+            child: TextButton(
               onPressed: () {
                 tabController.animateTo((tabController.index + i)); // 게시판으로 이동
               },
               child: Text("더 보기 >", textScaleFactor: 0.9, style: TextStyle(color: themeColor.getColor(),),),
               style: TextButton.styleFrom(
-                  splashFactory: NoSplash.splashFactory)),
+              splashFactory: NoSplash.splashFactory)),
+          ),
         ],
       ),
     );
@@ -174,7 +185,7 @@ class MainPage extends StatelessWidget {
       //     width: 1,
       //   ),
       // ),
-        height: 210, //210
+        height: 200, //210
         child: Column(
           children: <Widget>[
             Divider(thickness: 0.5,),
@@ -219,7 +230,7 @@ class MainPage extends StatelessWidget {
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: (MediaQuery.of(context).size.width / 2) / (MediaQuery.of(context).size.height / 4),
+          childAspectRatio: width / (isPortrait? portraitH : landscapeH),
           // childAspectRatio: 1 / 1, // 가로 세로 비율
         ),
       ),
@@ -229,8 +240,8 @@ class MainPage extends StatelessWidget {
   Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 0),
-      width: MediaQuery.of(context).size.width / 2,
-      height: MediaQuery.of(context).size.height / 4,
+      width: width,
+      height: isPortrait? portraitH : landscapeH,
       child: InkWell(
         onTap: () {
           // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));

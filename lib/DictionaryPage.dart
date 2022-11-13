@@ -11,7 +11,7 @@ ThemeColor themeColor = ThemeColor();
 // 기존 txtValue의 2번째 내용 수정
 List<String> txtValue = [
   'box1',
-  '2줄로됐을때 2줄로됐을때 2줄로됐을때',
+  '2줄로됐을때 2줄로됐을때 2줄로됐을때 2줄로됐을때 2줄로됐을때 2줄로됐을때',
   'box3',
   'box4',
   'box4',
@@ -35,7 +35,8 @@ class DictionaryPage extends StatefulWidget {
 
 class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStateMixin {
   late TabController _tabController;
-
+  var width, portraitH, landscapeH;
+  var isPortrait;
   @override
   void initState() {
     super.initState();
@@ -44,6 +45,12 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final deviceSize = MediaQuery.of(context).size;
+    width = deviceSize.width / 2; // 세로모드 및 가로모드 높이
+    portraitH = deviceSize.height / 4; // 세로모드 높이
+    landscapeH = deviceSize.height / 1.3; // 가로모드 높이
+    isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -145,7 +152,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: (MediaQuery.of(context).size.width / 2) / (MediaQuery.of(context).size.height / 4),
+          childAspectRatio: width / (isPortrait? portraitH : landscapeH),
           // childAspectRatio: 1 / 1, // 가로 세로 비율
         ),
       ),
@@ -156,8 +163,9 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 0),
-      width: MediaQuery.of(context).size.width / 2,
-      height: MediaQuery.of(context).size.height / 4,
+      width: width,
+      height: isPortrait? portraitH : landscapeH,
+
       child: InkWell(
         onTap: () {
           // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
@@ -265,7 +273,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 23.0, sigmaY: 23.0),
                     child: Container(
-                      decoration: BoxDecoration(color: Colors.white.withOpacity(0)),
+                      decoration: BoxDecoration(color: Colors.black.withOpacity(0)),
                     ),
                   ),
                 ),
