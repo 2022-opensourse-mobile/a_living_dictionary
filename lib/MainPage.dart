@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'ThemeColor.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'community/Post.dart';
+import 'DictionaryPage.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -245,7 +246,9 @@ class MainPage extends StatelessWidget {
       child: InkWell(
         onTap: () {
           // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
-          Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
+          // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
+          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
+          Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
         },
         child: Card(
           shape: RoundedRectangleBorder(
