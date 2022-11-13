@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import '../Data.dart';
@@ -139,5 +140,44 @@ class MyCard extends Data<MyCard>{
         )
       ],
     );
+  }
+}
+
+
+
+class FireConnect {
+  FirebaseStorage storage = FirebaseStorage.instance;
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  dynamic getCollection(String collectionName) {
+    return db.collection(collectionName);
+  }
+
+  void addItem(String collectionName, dynamic item) {
+    if (collectionName == 'dictionaryItem') {
+
+      db.collection('dictionaryItem')
+          .add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.post_id, 'scrapnum': item.scrapnum, 'title': item.title});
+
+
+      // TODO@@ info에 item_num을 갱신하는 코드작성(읽어와서 값을 +1 시키는거)
+      // db.collection('info')
+
+    }
+    if (collectionName == 'card') {
+
+
+    }
+  }
+
+  void deleteItem (String collectionName, String docId) {
+    db.collection(collectionName).doc(docId).delete();
+  }
+
+  // 변수 타입을 몰라서 일단 dynamic , 나중에 고치기
+  dynamic getDBSnapShot(String collectionName) {
+    print("@@F@@: "+ db.collection(collectionName).snapshots().runtimeType.toString());
+
+    return db.collection(collectionName).snapshots();
   }
 }
