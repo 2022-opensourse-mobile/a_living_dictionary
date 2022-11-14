@@ -111,9 +111,9 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           startxtIcon(context, '인기 TOP 4'),
           postList(context, "추천", 4),
           Divider(thickness: 0.5,),
-          slideList(context, "오늘은 대청소하는 날!", 4, false),
-          slideList(context, "빨래의 모든 것", 4, false),
-          slideList(context, "뭐 먹을지 고민된다면?", 4, false),
+          slideList(context,"청소", "오늘은 대청소하는 날!", false),
+          slideList(context,"빨래", "빨래의 모든 것", false),
+          slideList(context,"요리", "뭐 먹을지 고민된다면?", false),
         ],
       ),
     );
@@ -168,7 +168,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            slideList(context, '관리자가 엄선한 $tabName TIP', 6, true),
+            slideList(context, tabName, '관리자가 엄선한 $tabName TIP', true),
             textBox(context, '최신글'),
             Padding(
               padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
@@ -410,6 +410,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
   // 개별 게시글
   Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
+// children: List.generate(i, (index) => post(context, index, "TIP", secondimgValue, txtValue)),
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 0),
       width: width / 2,
@@ -516,12 +518,12 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
             return Text(snap.error.toString());
           }
 
-          List slideList;
+          List cardDocList;
 
           // dictionary item에 카드가 1장이라도 있을 때
           if (snap.hasData && snap.data.size != 0) {      
          
-            slideList = snap.data?.docs.toList();
+            cardDocList = snap.data?.docs.toList();
 
             if (snap.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
@@ -531,7 +533,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
               controller: PageController(
                 initialPage: 0,
               ),
-              itemCount: slideList.length,
+              itemCount: cardDocList.length,
               itemBuilder: (context, index) {
 
                 return Stack(
@@ -539,7 +541,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(slideList[0]['img']),  // 카드 맨 첫번째 사진으로 배경 설정
+                          image: NetworkImage(cardDocList[0]['img']),  // 카드 맨 첫 번째 사진으로 배경 설정
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -553,7 +555,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                       ),
                     ),
                     Center(
-                      child: Image.network(slideList[index]['img']),  // 카드 해당 이미지 출력
+                      child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
                     ), 
                     Row(
                       children: [
@@ -572,6 +574,19 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                               .add({'item_id': dic_id});
                           }, 
                           child: Text("best로 설정")
+                        ),
+                        TextButton(
+                          onPressed: (){
+                            FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": true});
+  
+                          }, 
+                          child: Text("관리자 추천 설정")
+                        ),
+                        TextButton(
+                          onPressed: (){
+                            FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": false});
+                          }, 
+                          child: Text("관리자 추천x")
                         ),
                       ],
                     )
@@ -616,34 +631,104 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
               },
             );
           }
-
-          
         }
       ),
     );
   }
 
+
   // 텍스트 출력 + 가로 스크롤 리스트 출력
-  Widget slideList(BuildContext context, String title, int slideNum, bool iconTF){
+  Widget slideList(BuildContext context, String tabName, String title, bool iconTF){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         iconTF? startxtIcon(context, title) : textBox(context, title),
-        slide(context, slideNum),
+        slide(context, tabName),
         Divider(thickness: 0.5,),
       ],
     );
   }
 
+
+// slideList(context,"청소", "오늘은 대청소하는 날!", 4, false),
+//           slideList(context,"빨래", "빨래의 모든 것", 4, false),
+//           slideList(context,"요리", "뭐 먹을지 고민된다면?", 4, false),
+
+
   // 가로 스크롤 리스트
-  Widget slide(BuildContext context, int i){
+  Widget slide(BuildContext context, String tabName){
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: EdgeInsets.fromLTRB(5,0,5,5), //5055
-      child: Row(
-        //   Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
-        // children: List.generate(i, (index) => post(context, index, "TIP", secondimgValue, txtValue)), //TODO@@@@@@@@@@@@@@@@
-      ),
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('dictionaryItem').where("hashtag", isEqualTo: tabName)
+                  .where('recommend', isEqualTo: true)
+                  .snapshots(),
+        builder: (context, snap) {
+
+          if (snap.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          }
+
+          return Row(
+
+
+            //   Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
+            children: List.generate(snap.data!.size, (index){
+              return Container(
+                margin: EdgeInsets.symmetric(horizontal: 0),
+                width: width / 2,
+                height: (isPortrait? (height < 750? 250 : portraitH) : landscapeH),
+      
+                child: InkWell(
+                  onTap: () {
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
+      
+                    // pageView(BuildContext context, String dic_id, String title)
+      
+                    // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
+                    // Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@TODO
+                  }, 
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 0,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Image.network(snap.data!.docs[index]['thumbnail']),      // 확인필요TODO
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(8,5,8,0), // 게시글 제목 여백
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(padding: EdgeInsets.fromLTRB(0, 0, 0 , 3),
+                                child: Text(
+                                  "#$tabName",
+                                  style: TextStyle(
+                                    color: themeColor.getColor(),
+                                  ),
+                                  textScaleFactor: 1,
+                                ),
+                              ),
+                              Text(snap.data!.docs[index]['title'], textScaleFactor: 1)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } ), //TODO@@@@@@@@@@@@@@@@
+          );
+        }
+      )
     );
   }
 }
