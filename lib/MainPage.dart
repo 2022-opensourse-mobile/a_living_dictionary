@@ -354,14 +354,12 @@ class MainPage extends StatelessWidget {
 
         final doc = snapshot.data!.docs.where((element) => element['item_id']==item_id).first;
 
-
-
         return Scaffold(
           appBar: AppBar(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(doc['title'].toString(), textScaleFactor: 1),
+                Text(doc['content'].toString(), textScaleFactor: 1),
                 Icon(Icons.bookmark_outline_rounded, color: Colors.amberAccent, size: 30,),
               ],
             ),
@@ -393,7 +391,7 @@ class MainPage extends StatelessWidget {
                     ),
                   ),
                   Center(
-                    child: Image.asset(doc['img']),
+                    child: Image.network(doc['img']),
                   )
                 ],
               );
