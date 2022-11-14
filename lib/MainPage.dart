@@ -179,14 +179,6 @@ class MainPage extends StatelessWidget {
   Container textList(String communityTitle) {
     Post p = Post();
     return Container(
-      //margin: EdgeInsets.all(5),
-      // decoration: BoxDecoration(
-      //   borderRadius: BorderRadius.circular(20),
-      //   border: Border.all(
-      //     color: Color.fromARGB(66, 74, 74, 74),
-      //     width: 1,
-      //   ),
-      // ),
         height: 200, //210
         child: Column(
           children: <Widget>[
@@ -228,7 +220,8 @@ class MainPage extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(5,0,5,5),
         itemCount: postNum, //몇 개 출력할 건지
         itemBuilder: (context, index){
-          return post(context, index, tabName, imgList, txtValue);
+          Widget w = post(context, index, tabName, imgList, txtValue);
+          return (w != null)?(w):(Text('w is null'));
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -238,37 +231,32 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  Widget post (BuildContext context, int index, String tabName,
+  Widget post(BuildContext context, int index, String tabName,
       List<String> imgList, List<String> textList) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('dictionaryItem').snapshots(),
+        stream:
+            FirebaseFirestore.instance.collection('dictionaryItem').snapshots(),
         builder: (context, snapshot) {
-
-          if(!snapshot.hasData){
-            return CircularProgressIndicator();
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
           }
-          final documents = snapshot.data!.docs;
-          final itemNow = documents.elementAt(documents.length-1);
+          final documents = snapshot.data!.docs.where((doc) => doc['hashtag']=="요리");
 
-          QueryDocumentSnapshot<Object?> q;
-          final b = FirebaseFirestore.instance.collection('dictionaryCard').get().then((value) => q = value.docs.first);
-
-          StreamController a = StreamController();
-          a.add(FirebaseFirestore.instance.collection('dictionaryItem').snapshots());
-          a.add(FirebaseFirestore.instance.collection('dictionaryCard').snapshots());
-          //a.
+          int i = (documents.length-index-1 > 0)?(documents.length-index-1):(0);
+          final it = documents.elementAt(i);
 
           return Container(
             margin: EdgeInsets.symmetric(horizontal: 0),
             width: width / 2,
-            height:
-                (isPortrait ? (height < 750 ? 250 : portraitH) : landscapeH),
+            height: (isPortrait ? (height < 750 ? 250 : portraitH) : landscapeH),
             child: InkWell(
               onTap: () {
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
-                PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
-                Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
+                PageRouteWithAnimation pageRouteWithAnimation =
+                    PageRouteWithAnimation(pageView(context));
+                Navigator.push(
+                    context, pageRouteWithAnimation.slideLeftToRight());
               },
               child: Card(
                 shape: RoundedRectangleBorder(
@@ -280,7 +268,7 @@ class MainPage extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10.0),
-                      child: Text('hi'),//temp['img'],
+                      child: Image.network(it['thumbnail']),
                     ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(8, 5, 8, 0), // 게시글 제목 여백
@@ -290,15 +278,14 @@ class MainPage extends StatelessWidget {
                           Padding(
                             padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
                             child: Text(
-                              "#$tabName",
+                              "#${it['hashtag'].toString()}",
                               style: TextStyle(
                                 color: themeColor.getColor(),
                               ),
                               textScaleFactor: 1.0,
                             ),
                           ),
-                          Text('hi2',//temp['content'],
-                              textScaleFactor: 1)
+                          Text(it['title'].toString(), textScaleFactor: 1)
                         ],
                       ),
                     ),
