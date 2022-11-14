@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -53,7 +54,6 @@ class MainPage extends StatelessWidget {
     portraitH = deviceSize.height / 3.5; // 세로모드 높이
     landscapeH = deviceSize.height / 1.2; // 가로모드 높이
     isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-
     return DefaultTextStyle(
         style: Theme.of(context).textTheme.bodyText2!,
         child: LayoutBuilder(
@@ -143,12 +143,12 @@ class MainPage extends StatelessWidget {
           Container(
             // margin: const EdgeInsets.all(0),
             child: TextButton(
-              onPressed: () {
-                tabController.animateTo((tabController.index + i)); // 게시판으로 이동
-              },
-              child: Text("더 보기 >", textScaleFactor: 0.9, style: TextStyle(color: themeColor.getColor(),),),
-              style: TextButton.styleFrom(
-              splashFactory: NoSplash.splashFactory)),
+                onPressed: () {
+                  tabController.animateTo((tabController.index + i)); // 게시판으로 이동
+                },
+                child: Text("더 보기 >", textScaleFactor: 0.9, style: TextStyle(color: themeColor.getColor(),),),
+                style: TextButton.styleFrom(
+                    splashFactory: NoSplash.splashFactory)),
           ),
         ],
       ),
@@ -179,14 +179,6 @@ class MainPage extends StatelessWidget {
   Container textList(String communityTitle) {
     Post p = Post();
     return Container(
-      //margin: EdgeInsets.all(5),
-      // decoration: BoxDecoration(
-      //   borderRadius: BorderRadius.circular(20),
-      //   border: Border.all(
-      //     color: Color.fromARGB(66, 74, 74, 74),
-      //     width: 1,
-      //   ),
-      // ),
         height: 200, //210
         child: Column(
           children: <Widget>[
@@ -228,7 +220,8 @@ class MainPage extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(5,0,5,5),
         itemCount: postNum, //몇 개 출력할 건지
         itemBuilder: (context, index){
-          return post(context, index, tabName, imgList, txtValue);
+          Widget w = post(context, index, tabName, imgList, txtValue);
+          return (w != null)?(w):(Text('w is null'));
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -238,53 +231,70 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 0),
-      width: width / 2,
-      height: (isPortrait? (height < 750? 250 : portraitH) : landscapeH),
-      child: InkWell(
-        onTap: () {
-          // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
-          // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
-          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
-          Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
-        },
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          elevation: 0,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
-                child: Image.asset(imgList[index % imgList.length]),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(8,5,8,0), // 게시글 제목 여백
+  Widget post(BuildContext context, int index, String tabName,
+      List<String> imgList, List<String> textList) {
+    return StreamBuilder<QuerySnapshot>(
+        stream:
+            FirebaseFirestore.instance.collection('dictionaryItem').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
+          }
+          final documents = snapshot.data!.docs.where((doc) => doc['hashtag']=="요리");
+
+          int i = (documents.length-index-1 > 0)?(documents.length-index-1):(0);
+          final it = documents.elementAt(i);
+
+          return Container(
+            margin: EdgeInsets.symmetric(horizontal: 0),
+            width: width / 2,
+            height: (isPortrait ? (height < 750 ? 250 : portraitH) : landscapeH),
+            child: InkWell(
+              onTap: () {
+                // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+                // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
+                PageRouteWithAnimation pageRouteWithAnimation =
+                    PageRouteWithAnimation(pageView(context));
+                Navigator.push(
+                    context, pageRouteWithAnimation.slideLeftToRight());
+              },
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 0,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(padding: EdgeInsets.fromLTRB(0, 0, 0 , 3),
-                      child: Text(
-                        "#$tabName",
-                        style: TextStyle(
-                          color: themeColor.getColor(),
-                        ),
-                        textScaleFactor: 1.0,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: Image.network(it['thumbnail']),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(8, 5, 8, 0), // 게시글 제목 여백
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
+                            child: Text(
+                              "#${it['hashtag'].toString()}",
+                              style: TextStyle(
+                                color: themeColor.getColor(),
+                              ),
+                              textScaleFactor: 1.0,
+                            ),
+                          ),
+                          Text(it['title'].toString(), textScaleFactor: 1)
+                        ],
                       ),
                     ),
-                    Text(textList[index % textList.length], textScaleFactor: 1)
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
+        });
   }
 
   Widget pageView(BuildContext context) {
@@ -388,72 +398,3 @@ class PageRouteWithAnimation {
     );
   }
 }
-
-/*
-  Container recommendedItems() {
-    return Container(
-        // margin: EdgeInsets.all(5),
-        // decoration: BoxDecoration(
-        //   borderRadius: BorderRadius.circular(20),
-        //   border: Border.all(
-        //     color: Color.fromARGB(66, 74, 74, 74),
-        //     width: 1,
-        //   ),
-        // ),
-        // height: 210,
-
-        child: Builder(builder: (context) {
-          final double width = MediaQuery.of(context).size.width;
-          double imagesize = width / 5 > 150 ? 150 : width / 5;
-
-          return Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(0), //빼기
-                child: Column(
-                  // shrinkWrap: true,
-                  // physics: const NeverScrollableScrollPhysics(),
-                  children: <Widget>[
-                    ListTile(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            "오늘의 최신 TIP", textScaleFactor: 1.1,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            height: 50,
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                tabController.animateTo(
-                                    (tabController.index + 2)); // 게시판으로 이동
-                              },
-                              child: Text("더 보기 >", textScaleFactor: 0.9),
-                              style: TextButton.styleFrom(
-                                  splashFactory: NoSplash.splashFactory))
-                        ],
-                      ),
-
-                      visualDensity: VisualDensity(vertical: -4),
-
-
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        tipBlock(imagesize, '꿀잠 자는법', 'assets/recommend1.png'),
-                        tipBlock(imagesize, '다래끼 났을 때', 'assets/recommend2.png'),
-                        tipBlock(imagesize, '꿀잠 자는법', 'assets/recommend1.png'),
-                        tipBlock(imagesize, '다래끼 났을 때', 'assets/recommend2.png'),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ],
-          );
-        }));
-  }
-*/
