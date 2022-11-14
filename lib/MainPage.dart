@@ -86,9 +86,60 @@ class MainPage extends StatelessWidget {
     int _currentIndex = 0;
     return Container(
       // color: Colors.green,
-      child: Builder(
-        builder: (context) {
+      child: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('best').snapshots(),
+        builder: (context, AsyncSnapshot snap) {
+          if(!snap.hasData) {
+            return CircularProgressIndicator();
+          }
+
+          if (snap.hasError) {
+            return Text(snap.error.toString());
+          }
+
           final double width = MediaQuery.of(context).size.width;
+          final documents = snap.data!.docs;
+
+
+          // best가 한 장이라도 있을 때
+          if (documents.length != 0) { 
+
+            List slideList = snap.data?.docs.toList();
+          
+            if (snap.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+            
+            
+
+            return CarouselSlider(
+              options: CarouselOptions(
+                height: width / 2 > 350 ? 350 : width / 2,
+                viewportFraction: 1.3,
+                enlargeCenterPage: false,
+                autoPlayAnimationDuration: Duration(milliseconds: 400),
+                autoPlay: true,
+              ),
+              items: slideList.map((item) {
+                // item['item_id']가 아이디인 dictionary item을 가져와서 img필드 -> Image에 출력
+                return StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('dictionaryItem')
+                    .where('__name__', isEqualTo: item['item_id']) 
+                    .snapshots(),
+                  builder: (context, snapshot) {
+                    
+                    return Container(
+                      child: Center(
+                        child: Image(image: NetworkImage(snapshot.data!.docs[0]['thumbnail']))
+                      )
+                    );
+                  }
+                );
+              }).toList(),
+            );
+          } 
+
+          // best가 한 장도 없을 때
           return CarouselSlider(
             options: CarouselOptions(
               height: width / 2 > 350 ? 350 : width / 2,
@@ -99,7 +150,9 @@ class MainPage extends StatelessWidget {
             ),
             items: testImg
                 .map((item) => Container(
-              child: Center(child: Image(image: AssetImage(item))),
+              child: Center(
+                child: Image(image: AssetImage(item))
+              ),
             ))
                 .toList(),
           );

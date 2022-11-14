@@ -408,9 +408,59 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     
   }
 
-  // 개별 게시글 나중에 빼라
-  //Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
-// post(context, index, tabName, imgValue, txtValue);
+  // 개별 게시글
+  Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 0),
+      width: width / 2,
+      height: (isPortrait? (height < 750? 250 : portraitH) : landscapeH),
+
+      child: InkWell(
+        onTap: () {
+          // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
+          // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
+
+          // pageView(BuildContext context, String dic_id, String title)
+
+          // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
+          // Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@TODO
+        }, 
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Image.asset(imgList[index % imgList.length]),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(8,5,8,0), // 게시글 제목 여백
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(padding: EdgeInsets.fromLTRB(0, 0, 0 , 3),
+                      child: Text(
+                        "#$tabName",
+                        style: TextStyle(
+                          color: themeColor.getColor(),
+                        ),
+                        textScaleFactor: 1,
+                      ),
+                    ),
+                    Text(textList[index % textList.length], textScaleFactor: 1)
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   // 클릭 시, 스크롤 페이지로 이동
   Widget tempPage(BuildContext context) {
@@ -459,27 +509,14 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         elevation: 0,
       ),
       body: StreamBuilder(
-        // stream: FirebaseFirestore.instance.collection('dictionaryCard')
-        //   .where("item_id", isEqualTo: itemId).orderBy("card_id", descending: false).snapshots()
-        //   .map((list) => list.docs.map((doc) => doc.data())),
-
-        //FirebaseFirestore.instance.collection('dictionaryItem').where("hashtag", isEqualTo: tabName).snapshots(),
-
-        // collection('main collection name').document( unique id).collection('string name').document().setData(); 
-
-        
-
         stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard').snapshots(),
         builder: (context, AsyncSnapshot snap) {
-
 
           if (snap.hasError) {
             return Text(snap.error.toString());
           }
 
           List slideList;
-
-        // print("SFD: " + snap.runtimeType.toString());
 
           // dictionary item에 카드가 1장이라도 있을 때
           if (snap.hasData && snap.data.size != 0) {      
@@ -496,7 +533,6 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
               ),
               itemCount: slideList.length,
               itemBuilder: (context, index) {
-                print("@!!!" + slideList[0]['card_id'].toString());
 
                 return Stack(
                   children: [
@@ -519,11 +555,26 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     Center(
                       child: Image.network(slideList[index]['img']),  // 카드 해당 이미지 출력
                     ), 
-                    IconButton(onPressed: (){
-                      FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
-                        .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337", 'item_id': itemId});
-
-                    }, icon: Icon(Icons.add))
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: (){
+                            FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
+                              .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337", 'item_id': itemId});
+                          }, 
+                          icon: Icon(Icons.add)
+                        ),
+                        TextButton(
+                          onPressed: (){
+                            //.add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.item_id, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
+        
+                            FirebaseFirestore.instance.collection('best')
+                              .add({'item_id': dic_id});
+                          }, 
+                          child: Text("best로 설정")
+                        ),
+                      ],
+                    )
                   ],
                 );
               },
@@ -590,7 +641,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       scrollDirection: Axis.horizontal,
       padding: EdgeInsets.fromLTRB(5,0,5,5), //5055
       child: Row(
-        // children: List.generate(i, (index) => post(context, index, "TIP", secondimgValue, txtValue)),
+        //   Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
+        // children: List.generate(i, (index) => post(context, index, "TIP", secondimgValue, txtValue)), //TODO@@@@@@@@@@@@@@@@
       ),
     );
   }
