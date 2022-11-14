@@ -254,7 +254,7 @@ class MainPage extends StatelessWidget {
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
                 PageRouteWithAnimation pageRouteWithAnimation =
-                    PageRouteWithAnimation(pageView(context));
+                    PageRouteWithAnimation(pageViewByDongwon(context, it['item_id']));
                 Navigator.push(
                     context, pageRouteWithAnimation.slideLeftToRight());
               },
@@ -343,6 +343,67 @@ class MainPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget pageViewByDongwon(BuildContext context, int item_id) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('dictionaryCard').snapshots(),
+      builder: (context, snapshot) {
+        if(!snapshot.hasData){
+          return CircularProgressIndicator();
+        }
+
+        final doc = snapshot.data!.docs.where((element) => element['item_id']==item_id).first;
+
+
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(doc['title'].toString(), textScaleFactor: 1),
+                Icon(Icons.bookmark_outline_rounded, color: Colors.amberAccent, size: 30,),
+              ],
+            ),
+            titleSpacing: 0,
+            elevation: 0,
+          ),
+          body: PageView.builder(
+            controller: PageController(
+              initialPage: 0,
+            ),
+            itemCount: 15,
+            itemBuilder: (context, index) {
+              return Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: ExactAssetImage(imgList[0]),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: ClipRect(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 23.0, sigmaY: 23.0),
+                        child: Container(
+                          decoration: BoxDecoration(color: Colors.white.withOpacity(0)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Image.asset(doc['img']),
+                  )
+                ],
+              );
+            },
+          ),
+        );
+      }
+    );
+  }
+
 }
 
 // Route 이동할 때 애니메이션 주기
