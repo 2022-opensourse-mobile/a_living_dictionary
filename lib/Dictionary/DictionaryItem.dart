@@ -16,7 +16,8 @@ class DictionaryItem extends Data<DictionaryItem>{
         this.author = "",
         this.scrapnum = 0,
         this.date = null,
-        this.writeController = null
+        this.thumbnail = "",
+        this.recommend = false      // 탭 상단 추천으로 뜰지말지
       });
 
   String title;
@@ -25,7 +26,8 @@ class DictionaryItem extends Data<DictionaryItem>{
   String hashTag;
   String author;
   DateTime? date;
-  TextEditingController? writeController;
+  String thumbnail;
+  bool recommend;
 
 
   @override
@@ -36,10 +38,12 @@ class DictionaryItem extends Data<DictionaryItem>{
       'hashtag': E.hashTag,
       'post_id': E.post_id,
       'scrapnum': E.scrapnum,
-      'title': E.title
+      'title': E.title,
+      'recommend': E.recommend,
+      'thumbnail': E.thumbnail
     });
-    writeController?.text = ''; //TextField 비움
   }
+
   void delete(DocumentSnapshot doc) {
     FirebaseFirestore.instance.collection('dictionaryItem').doc(doc.id).delete();
     var card_del_query = FirebaseFirestore.instance.collection('dictionaryCard').where('item_id', isEqualTo: doc['item_id']);
@@ -61,28 +65,11 @@ class DictionaryItem extends Data<DictionaryItem>{
         hashTag: doc['hashtag'],
         author: doc['author'],
         scrapnum: doc['scrapnum'],
-        date: date
+        date: date,
+        recommend: doc['recommend'],
+        thumbnail: doc['thumbnail']
     );
   }
-  Widget buildListItem(DocumentSnapshot<Object?> doc, BuildContext context) {
-    var item = DictionaryItem(-1);
-    item = item.getDataFromDoc(doc);
-    return ListTile(
-      onTap: (){
-        Navigator.pushNamed(context, '/card');
-      },
-      title: Text(
-        item.title,
-      ),
-      subtitle: Text(item.date.toString()),
-      trailing: IconButton(
-        icon: const Icon(Icons.delete_forever),
-        onPressed: () => delete(doc),
-      ),
-    );
-  }
-
-
 }
 
 class MyCard extends Data<MyCard>{
@@ -145,39 +132,39 @@ class MyCard extends Data<MyCard>{
 
 
 
-class FireConnect {
-  FirebaseStorage storage = FirebaseStorage.instance;
-  FirebaseFirestore db = FirebaseFirestore.instance;
+// class FireConnect {
+//   FirebaseStorage storage = FirebaseStorage.instance;
+//   FirebaseFirestore db = FirebaseFirestore.instance;
 
-  dynamic getCollection(String collectionName) {
-    return db.collection(collectionName);
-  }
+//   dynamic getCollection(String collectionName) {
+//     return db.collection(collectionName);
+//   }
 
-  void addItem(String collectionName, dynamic item) {
-    if (collectionName == 'dictionaryItem') {
+//   void addItem(String collectionName, dynamic item) {
+//     if (collectionName == 'dictionaryItem') {
 
-      db.collection('dictionaryItem')
-          .add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.post_id, 'scrapnum': item.scrapnum, 'title': item.title});
-
-
-      // TODO@@ info에 item_num을 갱신하는 코드작성(읽어와서 값을 +1 시키는거)
-      // db.collection('info')
-
-    }
-    if (collectionName == 'card') {
+//       db.collection('dictionaryItem')
+//           .add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.post_id, 'scrapnum': item.scrapnum, 'title': item.title});
 
 
-    }
-  }
+//       // TODO@@ info에 item_num을 갱신하는 코드작성(읽어와서 값을 +1 시키는거)
+//       // db.collection('info')
 
-  void deleteItem (String collectionName, String docId) {
-    db.collection(collectionName).doc(docId).delete();
-  }
+//     }
+//     if (collectionName == 'card') {
 
-  // 변수 타입을 몰라서 일단 dynamic , 나중에 고치기
-  dynamic getDBSnapShot(String collectionName) {
-    print("@@F@@: "+ db.collection(collectionName).snapshots().runtimeType.toString());
 
-    return db.collection(collectionName).snapshots();
-  }
-}
+//     }
+//   }
+
+//   void deleteItem (String collectionName, String docId) {
+//     db.collection(collectionName).doc(docId).delete();
+//   }
+
+//   // 변수 타입을 몰라서 일단 dynamic , 나중에 고치기
+//   dynamic getDBSnapShot(String collectionName) {
+//     print("@@F@@: "+ db.collection(collectionName).snapshots().runtimeType.toString());
+
+//     return db.collection(collectionName).snapshots();
+//   }
+// }

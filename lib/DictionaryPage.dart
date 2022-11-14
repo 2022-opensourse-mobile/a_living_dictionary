@@ -11,22 +11,22 @@ import 'Dictionary/DictionaryItem.dart';
 ThemeColor themeColor = ThemeColor();
 
 // 기존 txtValue의 2번째 내용 수정
-List<String> txtValue = [
-  'box1',
-  '2줄로됐을때 2줄로됐을때 2줄로됐을때 2줄로됐을때',
-  'box3',
-  'box4',
-  'box4',
-  'bossssssssssssssssssssssssssssssssssss4'
-];
+// List<String> txtValue = [
+//   'box1',
+//   '2줄로됐을때 2줄로됐을때 2줄로됐을때 2줄로됐을때',
+//   'box3',
+//   'box4',
+//   'box4',
+//   'bossssssssssssssssssssssssssssssssssss4'
+// ];
 
-List<String> imgValue = [
-  'assets/1.png', 'assets/2.png', 'assets/3.png', 'assets/4.png', 'assets/5.png', 'assets/6.png'
-];
+// List<String> imgValue = [
+//   'assets/1.png', 'assets/2.png', 'assets/3.png', 'assets/4.png', 'assets/5.png', 'assets/6.png'
+// ];
 
-List<String> secondimgValue = [
-  'assets/7.png', 'assets/8.png', 'assets/7.png', 'assets/8.png', 'assets/7.png', 'assets/8.png'
-];
+// List<String> secondimgValue = [
+//   'assets/7.png', 'assets/8.png', 'assets/7.png', 'assets/8.png', 'assets/7.png', 'assets/8.png'
+// ];
 
 class DictionaryPage extends StatefulWidget {
   const DictionaryPage({Key? key}) : super(key: key);
@@ -93,7 +93,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
 
-
+//화이팅
   // 추천 탭 화면
   Widget recommandPage(BuildContext context) {
     return SingleChildScrollView(
@@ -127,9 +127,11 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           itemnum++, 
           title: '게시글' + itemnum.toString(), 
           hashTag: fieldName, 
-          date: Timestamp.now().toDate()
+          date: Timestamp.now().toDate(),
+          recommend: false,
+          thumbnail: "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/3.png?alt=media&token=d0fdb9da-b484-48e8-924b-5727e9c749f2"
         );
-        FirebaseFirestore.instance.collection('dictionaryItem').add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.item_id, 'scrapnum': item.scrapnum, 'title': item.title});
+        FirebaseFirestore.instance.collection('dictionaryItem').add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.item_id, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
         },
       style: TextButton.styleFrom(
         foregroundColor: Colors.pink,
@@ -161,7 +163,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
   // 나머지 탭 화면
-  Widget otherPage(BuildContext context, String tabName) {
+  Widget otherPage(BuildContext context, String tabName) {  // tabName: 청소, 빨래, 요리, 기타
     return SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,7 +180,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
   // 게시글 리스트
-  Widget postList(BuildContext context, String tabName, int postNum){
+  Widget postList(BuildContext context, String tabName, int postNum){      // tabName: 청소, 빨래, 요리, 기타
 
      Stream? postDoc = FirebaseFirestore.instance.collection('dictionaryItem').snapshots()
       .map((list) => list.docs.map((doc) => doc.data()));
@@ -186,7 +188,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
     if (tabName == '추천') {
       return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('recommend').snapshots(), 
+        stream: FirebaseFirestore.instance.collection('best').snapshots(), 
         builder: (context, AsyncSnapshot snapshot) {
           if(!snapshot.hasData) {
             return CircularProgressIndicator();
@@ -210,16 +212,13 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                   onTap: () {
                     // recommend 삭제하는 거 (원본은 남아있음)
                     // print("@@F@@: " + documents[index].id.toString());
-                    //  FirebaseFirestore.instance.collection('recommend').doc(documents[index].id).delete();
+                    //  FirebaseFirestore.instance.collection('best').doc(documents[index].id).delete();
                     
-
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
                    
-                   
-                   
-                    int clicekd_item_id = documents[0]['item_id'];
-                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicekd_item_id));
+                    String clicked_id = documents[0].id;
+                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id, documents[0]['title']));
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
                   },
                   child: Card(
@@ -227,51 +226,91 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                       borderRadius: BorderRadius.circular(10),
                     ),
                     elevation: 0,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: Image.asset('assets/4.png'), // TODO 임시 사진, 썸네일로 바꿔야함
-                        ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(8,5,8,0), // 게시글 제목 여백
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(padding: EdgeInsets.fromLTRB(0, 0, 0 , 3),
-                                child: Text(
-                                  "#$tabName",
-                                  style: TextStyle(
-                                    color: themeColor.getColor(),
-                                  ),
-                                  textScaleFactor: 1,
-                                ),
-                              ),
-                              StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance.collection('dictionaryItem')
-                                    .where('item_id', isEqualTo: documents[index]['item_id']).snapshots(),
+                    // child: Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     ClipRRect(
+                    //       borderRadius: BorderRadius.circular(10.0),
+                    //       child: Image.asset('assets/4.png'), // TODO 임시 사진, 썸네일로 바꿔야함
+                    //     ),
+                    //     Padding(
+                    //       padding: EdgeInsets.fromLTRB(8,5,8,0), // 게시글 제목 여백
+                    //       child: Column(
+                    //         crossAxisAlignment: CrossAxisAlignment.start,
+                    //         children: [
+                    //           Padding(padding: EdgeInsets.fromLTRB(0, 0, 0 , 3),
+                    //             child: Text(
+                    //               "#$tabName",
+                    //               style: TextStyle(
+                    //                 color: themeColor.getColor(),
+                    //               ),
+                    //               textScaleFactor: 1,
+                    //             ),
+                    //           ),
+                    //           StreamBuilder<QuerySnapshot>(
+                    //             stream: FirebaseFirestore.instance.collection('dictionaryItem')
+                    //                 .where('item_id', isEqualTo: documents[index]['item_id']).snapshots(),
                                     
-                                builder: (context, snapshot) {
-                                  return Text(
-                                    snapshot.data!.docs[0]['title']
-                                  );
-                                }
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
+                    //             builder: (context, snapshot) {
+                    //               return Text(
+                    //                 snapshot.data!.docs[0]['title']
+                    //               );
+                    //             }
+                    //           )
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection('dictionaryItem')
+                          .where('__name__', isEqualTo: documents[index]['item_id'])    
+                          .snapshots(),
+                      builder: (context, snapshot) {
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: Image.network(snapshot.data!.docs[0]['thumbnail']), // TODO 임시 사진, 썸네일로 바꿔야함
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                  8, 5, 8, 0), // 게시글 제목 여백
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.fromLTRB(0, 0, 0, 3),
+                                    child: Text(
+                                      "#$tabName",
+                                      style: TextStyle(
+                                        color: themeColor.getColor(),
+                                      ),
+                                      textScaleFactor: 1,
+                                    ),
+                                  ),
+                                  Text(snapshot.data!.docs[0]['title'])
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      })),
                     ),
-                  ),
+                  );
+                },
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: (width / 2) /
+                      (isPortrait
+                          ? (height < 750 ? 250 : portraitH)
+                          : landscapeH), // 가로 세로 비율
                 ),
-              );
-            },
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: (width / 2) / (isPortrait? (height < 750? 250 : portraitH) : landscapeH), // 가로 세로 비율
-            ),
-          ),
+              ),
           );
         }
       );
@@ -309,8 +348,9 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
                     
                     
-                    int clicekd_item_id = documents[0]['item_id'];  // 지금 클릭한 dictionaryItem의 item_id
-                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicekd_item_id));
+                    String clicked_id = documents[index].id;  // 지금 클릭한 dictionaryItem의 item_id
+
+                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id, documents[index]['title']));
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
                   },
                   child: Card(
@@ -323,7 +363,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
-                          child: Image.asset('assets/4.png'), // TODO 임시 사진, 썸네일로 바꿔야함
+                          child: Image.network(snapshot.data!.docs[index]['thumbnail']), // TODO 임시 사진, 썸네일로 바꿔야함
                         ),
                         Padding(
                           padding: EdgeInsets.fromLTRB(8,5,8,0), // 게시글 제목 여백
@@ -395,7 +435,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("ListTile $index", textScaleFactor: 1),
-                  Image.asset(secondimgValue[index % secondimgValue.length])
+                  Image.network('https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d'),  // 임의 사진
                 ],
               )
           );
@@ -405,13 +445,13 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
   // 클릭 시, 슬라이드 페이지(카드 페이지)로 이동
-  Widget pageView(BuildContext context, int item_id) {
+  Widget pageView(BuildContext context, String dic_id, String title) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("제목", textScaleFactor: 1),
+            Text(title, textScaleFactor: 1),
             Icon(Icons.bookmark_outline_rounded, color: Colors.amberAccent, size: 30,),
           ],
         ),
@@ -419,10 +459,19 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         elevation: 0,
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('dictionaryCard')
-          .where("item_id", isEqualTo: itemId).orderBy("card_id", descending: false).snapshots()
-          .map((list) => list.docs.map((doc) => doc.data())),
+        // stream: FirebaseFirestore.instance.collection('dictionaryCard')
+        //   .where("item_id", isEqualTo: itemId).orderBy("card_id", descending: false).snapshots()
+        //   .map((list) => list.docs.map((doc) => doc.data())),
+
+        //FirebaseFirestore.instance.collection('dictionaryItem').where("hashtag", isEqualTo: tabName).snapshots(),
+
+        // collection('main collection name').document( unique id).collection('string name').document().setData(); 
+
+        
+
+        stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard').snapshots(),
         builder: (context, AsyncSnapshot snap) {
+
 
           if (snap.hasError) {
             return Text(snap.error.toString());
@@ -430,9 +479,12 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
           List slideList;
 
+        // print("SFD: " + snap.runtimeType.toString());
+
           // dictionary item에 카드가 1장이라도 있을 때
-          if (snap.data.length != 0) {
-            slideList = snap.data?.toList();
+          if (snap.hasData && snap.data.size != 0) {      
+         
+            slideList = snap.data?.docs.toList();
 
             if (snap.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
@@ -444,6 +496,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
               ),
               itemCount: slideList.length,
               itemBuilder: (context, index) {
+                print("@!!!" + slideList[0]['card_id'].toString());
+
                 return Stack(
                   children: [
                     Container(
@@ -464,14 +518,52 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     ),
                     Center(
                       child: Image.network(slideList[index]['img']),  // 카드 해당 이미지 출력
-                    )
+                    ), 
+                    IconButton(onPressed: (){
+                      FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
+                        .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337", 'item_id': itemId});
+
+                    }, icon: Icon(Icons.add))
                   ],
                 );
               },
             );
 
-          } else {
-            return Container();
+          } else {    // 카드가 하나도 없을 때 화면
+            
+            return PageView.builder(
+              controller: PageController(
+                initialPage: 0,
+              ),
+              itemCount: 1,
+              itemBuilder: (context, index) {
+                return Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage('https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d'),  // 임의 사진
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: ClipRect(
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+                          child: Container(
+                            decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    IconButton(onPressed: (){
+                      FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
+                        .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337", 'item_id': itemId});
+
+                    }, icon: Icon(Icons.add))
+                  ],
+                );
+              },
+            );
           }
 
           
@@ -557,3 +649,6 @@ class PageRouteWithAnimation {
     );
   }
 }
+
+
+int cardnum = 1;
