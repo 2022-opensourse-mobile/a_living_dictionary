@@ -127,6 +127,9 @@ class MainPage extends StatelessWidget {
                     .where('__name__', isEqualTo: item['item_id']) 
                     .snapshots(),
                   builder: (context, snapshot) {
+                    if(!snapshot.hasData){
+                      return CircularProgressIndicator();
+                    }
                     
                     return Container(
                       child: Center(
