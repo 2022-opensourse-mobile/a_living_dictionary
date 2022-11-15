@@ -288,12 +288,12 @@ class MainPage extends StatelessWidget {
       List<String> imgList, List<String> textList) {
     return StreamBuilder<QuerySnapshot>(
         stream:
-            FirebaseFirestore.instance.collection('dictionaryItem').snapshots(),
+            FirebaseFirestore.instance.collection('dictionaryItem').orderBy('date', descending: false).snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
           }
-          final documents = snapshot.data!.docs.where((doc) => doc['hashtag']=="요리");
+          final documents = snapshot.data!.docs;
 
           int i = (documents.length-index-1 > 0)?(documents.length-index-1):(0);
           final it = documents.elementAt(i);
@@ -306,8 +306,7 @@ class MainPage extends StatelessWidget {
               onTap: () {
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
-                PageRouteWithAnimation pageRouteWithAnimation =
-                    PageRouteWithAnimation(pageView(context, it['item_id']));
+                PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, it.id, it['title']));
                 Navigator.push(
                     context, pageRouteWithAnimation.slideLeftToRight());
               },
@@ -350,22 +349,24 @@ class MainPage extends StatelessWidget {
         });
   }
 
-  Widget pageView(BuildContext context, int item_id) {
+  Widget pageView(BuildContext context, String dic_id, String title) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('dictionaryCard').snapshots(),
+      stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).
+        collection('dictionaryCard').orderBy('card_id',descending: false).snapshots(),
+
       builder: (context, snapshot) {
         if(!snapshot.hasData){
           return CircularProgressIndicator();
         }
 
-        final doc = snapshot.data!.docs.where((element) => element['item_id']==item_id).first;
+        final doc = snapshot.data!.docs;
 
         return Scaffold(
           appBar: AppBar(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(doc['content'].toString(), textScaleFactor: 1),
+                Text(title, textScaleFactor: 1),
                 Icon(Icons.bookmark_outline_rounded, color: Colors.amberAccent, size: 30,),
               ],
             ),
@@ -376,14 +377,15 @@ class MainPage extends StatelessWidget {
             controller: PageController(
               initialPage: 0,
             ),
-            itemCount: 15,
+            itemCount: doc.length,
             itemBuilder: (context, index) {
               return Stack(
                 children: [
                   Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: ExactAssetImage(imgList[0]),
+                        //image: ExactAssetImage(),
+                        image: Image.network(doc[index]['img']).image,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -397,7 +399,7 @@ class MainPage extends StatelessWidget {
                     ),
                   ),
                   Center(
-                    child: Image.network(doc['img']),
+                    child: Image.network(doc[index]['img']),
                   )
                 ],
               );
