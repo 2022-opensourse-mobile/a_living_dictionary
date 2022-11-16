@@ -99,15 +99,15 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Row 나중에 삭제 검색어: @@삭제
-          Row(
-            children: [
-              makeButton("청소"),
-              makeButton("빨래"),
-              makeButton("요리"),
-              makeButton("기타"),
-            ],
-          ),
+          // 추가할 때 필요한 코드 @@삭제
+          // Row(
+          //   children: [
+          //     makeButton("청소"),
+          //     makeButton("빨래"),
+          //     makeButton("요리"),
+          //     makeButton("기타"),
+          //   ],
+          // ),
           startxtIcon(context, '인기 TOP 4'),
           postList(context, "추천", 4),
           Divider(thickness: 0.5,),
@@ -585,39 +585,40 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                         )
                       ],
                     ), 
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: (){
-                            FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
-                              .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337"});
-                          }, 
-                          icon: Icon(Icons.add)
-                        ),
-                        TextButton(
-                          onPressed: (){
-                            //.add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.item_id, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
+                    // @@삭제 추가하는 코드
+                    // Row(
+                    //   children: [
+                    //     IconButton(
+                    //       onPressed: (){
+                    //         FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
+                    //           .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337"});
+                    //       }, 
+                    //       icon: Icon(Icons.add)
+                    //     ),
+                    //     TextButton(
+                    //       onPressed: (){
+                    //         //.add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.item_id, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
         
-                            FirebaseFirestore.instance.collection('best')
-                              .add({'item_id': dic_id});
-                          }, 
-                          child: Text("best로 설정")
-                        ),
-                        TextButton(
-                          onPressed: (){
-                            FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": true});
+                    //         FirebaseFirestore.instance.collection('best')
+                    //           .add({'item_id': dic_id});
+                    //       }, 
+                    //       child: Text("best로 설정")
+                    //     ),
+                    //     TextButton(
+                    //       onPressed: (){
+                    //         FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": true});
   
-                          }, 
-                          child: Text("관리자 추천 설정")
-                        ),
-                        TextButton(
-                          onPressed: (){
-                            FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": false});
-                          }, 
-                          child: Text("관리자 추천x")
-                        ),
-                      ],
-                    )
+                    //       }, 
+                    //       child: Text("관리자 추천 설정")
+                    //     ),
+                    //     TextButton(
+                    //       onPressed: (){
+                    //         FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": false});
+                    //       }, 
+                    //       child: Text("관리자 추천x")
+                    //     ),
+                    //   ],
+                    // )
                   ],
                 );
               },
@@ -649,11 +650,12 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                         ),
                       ),
                     ),
-                    IconButton(onPressed: (){
-                      FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
-                        .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337"});
+                    // @@삭제 카드 추가하는 코드
+                    // IconButton(onPressed: (){
+                    //   FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
+                    //     .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337"});
 
-                    }, icon: Icon(Icons.add))
+                    // }, icon: Icon(Icons.add))
                   ],
                 );
               },
