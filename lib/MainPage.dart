@@ -496,12 +496,15 @@ class MainPage extends StatelessWidget {
                         Center(
                           child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Text(
-                            (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
-                            style: TextStyle(
-                              color: Colors.white,
+                        SizedBox(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         )
