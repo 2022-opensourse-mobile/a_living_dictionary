@@ -521,8 +521,6 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         elevation: 0,
       ),
       body: StreamBuilder(
-
-
         stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard').orderBy("card_id", descending: false).snapshots(),
         builder: (context, AsyncSnapshot snap) {// TODO 고치기
 
@@ -574,7 +572,12 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: Text(cardDocList[index]['content']),
+                          child: Text(
+                            (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
                         )
                       ],
                     ), 
@@ -710,6 +713,12 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       
                     // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
                     // Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@TODO
+
+                    String clicked_id = snap.data!.docs[index].id;  // 지금 클릭한 dictionaryItem의 item_id
+
+                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id));
+                    Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
+
                   }, 
                   child: Card(
                     shape: RoundedRectangleBorder(
