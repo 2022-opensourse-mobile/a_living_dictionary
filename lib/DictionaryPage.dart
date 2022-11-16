@@ -564,27 +564,89 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                         ),
                       ),
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
-                        ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            
-                            child: Text(
-                              (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
-                              style: TextStyle(
-                                color: Colors.white,
+                    // Column(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Expanded(
+                    //       child: Column(
+                    //         mainAxisAlignment: MainAxisAlignment.center,
+                    //         children: [
+                    //           Expanded(
+                    //             flex: 1,
+                    //             child: SizedBox(
+                    //               width: double.infinity,
+                    //               child: Padding(
+                    //                 padding: const EdgeInsets.all(10.0),
+                    //                 child: Text(""),
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           Expanded(
+                    //             flex: 4,
+                    //             child: Center(
+                    //               child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
+                    //             ),
+                    //           ),
+                    //           Expanded(
+                    //             flex: 2,
+                    //             child: SizedBox(
+                    //               width: double.infinity,
+                    //               child: Padding(
+                    //                 padding: const EdgeInsets.all(10.0),
+                    //
+                    //                 child: Text(
+                    //                   (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
+                    //                   style: TextStyle(
+                    //                     color: Colors.white,
+                    //                   ),
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Text(""),
                               ),
                             ),
                           ),
-                        )
-                      ],
-                    ), 
+                          Expanded(
+                            flex: 4,
+                            child: Center(
+                              child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+
+                                child: Text(
+                                  (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     Row(
                       children: [
                         IconButton(
