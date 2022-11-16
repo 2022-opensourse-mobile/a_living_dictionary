@@ -490,23 +490,65 @@ class MainPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Text(
-                            (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
-                            style: TextStyle(
-                              color: Colors.white,
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded( // 일단 image가 중간으로 가게하기 위해서(비율 맞추기 위해) 추가함..
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(""),
                             ),
                           ),
-                        )
-                      ],
-                    ), 
+                          Expanded(
+                            flex: 3,
+                            child: Image.network(
+                              cardDocList[index]['img'],
+                              width: width,
+                              height: height * 0.6,
+                              alignment: Alignment.center,
+                            ),
+                          ),  // 카드 해당 이미지 출력
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: SingleChildScrollView( // 가로로 변경했을 때, 텍스트가 많으면 스크롤해서 볼 수 있도록 함
+                                  scrollDirection: Axis.vertical,
+                                  child: Container(
+                                    child: Text(
+                                      (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
+                                      textScaleFactor: 1,
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Column(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Center(
+                    //       child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
+                    //     ),
+                    //     Padding(
+                    //       padding: const EdgeInsets.all(10.0),
+                    //       child: Text(
+                    //         (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
+                    //         style: TextStyle(
+                    //           color: Colors.white,
+                    //         ),
+                    //       ),
+                    //     )
+                    //   ],
+                    // ),
                     Row(
                       children: [
                         IconButton(
