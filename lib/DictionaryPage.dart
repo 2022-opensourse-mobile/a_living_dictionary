@@ -42,7 +42,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   var width, height, portraitH, landscapeH;
   var isPortrait;
 
-
+  
   @override
   void initState() {
     super.initState();
@@ -54,8 +54,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     final deviceSize = MediaQuery.of(context).size;
     width = deviceSize.width; // 세로모드 및 가로모드 높이
     height = deviceSize.height;
-    portraitH = deviceSize.height * 0.25; // 세로모드 높이
-    landscapeH = deviceSize.height * 0.8; // 가로모드 높이
+    portraitH = deviceSize.height / 3.5; // 세로모드 높이
+    landscapeH = deviceSize.height / 1.2; // 가로모드 높이
     isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Column(
@@ -122,11 +122,11 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 // 나중에 삭제 검색어: @@삭제
   TextButton makeButton(String fieldName) {
     return TextButton(
-      onPressed: (){
+      onPressed: (){     
         DictionaryItem item = DictionaryItem(
-          itemnum++,
-          title: '게시글' + itemnum.toString(),
-          hashTag: fieldName,
+          itemnum++, 
+          title: '게시글' + itemnum.toString(), 
+          hashTag: fieldName, 
           date: Timestamp.now().toDate(),
           recommend: false,
           thumbnail: "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/3.png?alt=media&token=d0fdb9da-b484-48e8-924b-5727e9c749f2"
@@ -137,7 +137,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         foregroundColor: Colors.pink,
       ),
       child: Text(fieldName),
-
+      
     );
   }
 
@@ -188,7 +188,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
     if (tabName == '추천') {
       return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('best').snapshots(),
+        stream: FirebaseFirestore.instance.collection('best').snapshots(), 
         builder: (context, AsyncSnapshot snapshot) {
           if(!snapshot.hasData) {
             return CircularProgressIndicator();
@@ -213,10 +213,10 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     // recommend 삭제하는 거 (원본은 남아있음)
                     // print("@@F@@: " + documents[index].id.toString());
                     //  FirebaseFirestore.instance.collection('best').doc(documents[index].id).delete();
-
+                    
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
-
+                   
                     String clicked_id = documents[index]['item_id'];
                     PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id));
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
@@ -250,7 +250,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     //           StreamBuilder<QuerySnapshot>(
                     //             stream: FirebaseFirestore.instance.collection('dictionaryItem')
                     //                 .where('item_id', isEqualTo: documents[index]['item_id']).snapshots(),
-
+                                    
                     //             builder: (context, snapshot) {
                     //               return Text(
                     //                 snapshot.data!.docs[0]['title']
@@ -264,7 +264,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     // ),
                     child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance.collection('dictionaryItem')
-                          .where('__name__', isEqualTo: documents[index]['item_id'])
+                          .where('__name__', isEqualTo: documents[index]['item_id'])    
                           .snapshots(),
                       builder: (context, snapshot) {
 
@@ -314,10 +314,10 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           );
         }
       );
-    } else {    // 해시태그가 tabName인 Dictionaryitem db불러와서 화면 띄워주기
+    } else {    // 해시태그가 tabName인 Dictionaryitem db불러와서 화면 띄워주기 
       return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('dictionaryItem').where("hashtag", isEqualTo: tabName).snapshots(),
-
+        stream: FirebaseFirestore.instance.collection('dictionaryItem').where("hashtag", isEqualTo: tabName).snapshots(), 
+       
         builder: (context, AsyncSnapshot snapshot) {
           if(!snapshot.hasData) {
             return CircularProgressIndicator();
@@ -346,8 +346,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
-
-
+                    
+                    
                     String clicked_id = documents[index].id;  // 지금 클릭한 dictionaryItem의 item_id
 
                     PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id));
@@ -379,13 +379,13 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                                   textScaleFactor: 1,
                                 ),
                               ),
-
+                             
                               Text(
                                 // snapshot.data!.docs[0]['title']
                                 documents[index]['title']
                               )
-
-
+                                
+                              
                             ],
                           ),
                         ),
@@ -405,7 +405,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       );
     }
 
-
+    
   }
 
   // 개별 게시글
@@ -426,7 +426,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
           // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
           // Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@TODO
-        },
+        }, 
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -503,14 +503,14 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-
+                
             StreamBuilder(
               stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).snapshots(),
               builder: (context, snap) {
                 if (!snap.hasData) {
                   return new CircularProgressIndicator();
                 }
-                return Text(snap.data!['title'] );
+                return Text(snap.data!['title'] );          
               }
             ),
 
@@ -531,8 +531,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           List cardDocList;
 
           // dictionary item에 카드가 1장이라도 있을 때
-          if (snap.hasData && snap.data.size != 0) {
-
+          if (snap.hasData && snap.data.size != 0) {      
+         
             cardDocList = snap.data?.docs.toList();
 
             if (snap.connectionState == ConnectionState.waiting) {
@@ -567,93 +567,53 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                    //     Center(
-                    //       child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
-                    //     ),
-                    //     Padding(
-                    //       padding: const EdgeInsets.all(10.0),
-                    //       child: Text(
-                    //         (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
-                    //         style: TextStyle(
-                    //           color: Colors.white,
-                    //         ),
-                    //       ),
-                    //     )
-                    //   ],
-                    // ),
-                      Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded( // 일단 image가 중간으로 가게하기 위해서(비율 맞추기 위해) 추가함..
-                                flex: 1,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Text(""),
-                                ),
+                        Center(
+                          child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            
+                            child: Text(
+                              (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
+                              style: TextStyle(
+                                color: Colors.white,
                               ),
-                              Expanded(
-                                flex: 3,
-                                child: Image.network(
-                                  cardDocList[index]['img'],
-                                  width: width,
-                                  height: height * 0.6,
-                                  alignment: Alignment.center,
-                                ),
-                              ),  // 카드 해당 이미지 출력
-                              Expanded(
-                                flex: 1,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: SingleChildScrollView( // 가로로 변경했을 때, 텍스트가 많으면 스크롤해서 볼 수 있도록 함
-                                    scrollDirection: Axis.vertical,
-                                    child: Container(
-                                      child: Text(
-                                        (cardDocList[index]['content']).toString().replaceAll(RegExp(r'\\n'), '\n'),
-                                        textScaleFactor: 1,
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         )
                       ],
-                    ),
+                    ), 
                     Row(
                       children: [
                         IconButton(
                           onPressed: (){
                             FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
                               .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337"});
-                          },
+                          }, 
                           icon: Icon(Icons.add)
                         ),
                         TextButton(
                           onPressed: (){
                             //.add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.item_id, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
-
+        
                             FirebaseFirestore.instance.collection('best')
                               .add({'item_id': dic_id});
-                          },
+                          }, 
                           child: Text("best로 설정")
                         ),
                         TextButton(
                           onPressed: (){
                             FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": true});
-
-                          },
+  
+                          }, 
                           child: Text("관리자 추천 설정")
                         ),
                         TextButton(
                           onPressed: (){
                             FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": false});
-                          },
+                          }, 
                           child: Text("관리자 추천x")
                         ),
                       ],
@@ -664,7 +624,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
             );
 
           } else {    // 카드가 하나도 없을 때 화면
-
+            
             return PageView.builder(
               controller: PageController(
                 initialPage: 0,
@@ -747,14 +707,14 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                 margin: EdgeInsets.symmetric(horizontal: 0),
                 width: width / 2,
                 height: (isPortrait? (height < 750? 250 : portraitH) : landscapeH),
-
+      
                 child: InkWell(
                   onTap: () {
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
-
+      
                     // pageView(BuildContext context, String dic_id, String title)
-
+      
                     // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
                     // Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@TODO
 
@@ -763,7 +723,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id));
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
 
-                  },
+                  }, 
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
