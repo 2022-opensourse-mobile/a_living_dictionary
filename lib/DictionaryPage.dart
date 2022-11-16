@@ -217,8 +217,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => tempPage(context)));
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => pageView(context)));
                    
-                    String clicked_id = documents[0].id;
-                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id, documents[0]['title']));
+                    String clicked_id = documents[index]['item_id'];
+                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id));
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
                   },
                   child: Card(
@@ -350,7 +350,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     
                     String clicked_id = documents[index].id;  // 지금 클릭한 dictionaryItem의 item_id
 
-                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id, documents[index]['title']));
+                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id));
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
                   },
                   child: Card(
@@ -497,13 +497,23 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
   // 클릭 시, 슬라이드 페이지(카드 페이지)로 이동
-  Widget pageView(BuildContext context, String dic_id, String title) {
+  Widget pageView(BuildContext context, String dic_id) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, textScaleFactor: 1),
+                
+            StreamBuilder(
+              stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).snapshots(),
+              builder: (context, snap) {
+                if (!snap.hasData) {
+                  return new CircularProgressIndicator();
+                }
+                return Text(snap.data!['title'] );          
+              }
+            ),
+
             Icon(Icons.bookmark_outline_rounded, color: Colors.amberAccent, size: 30,),
           ],
         ),
@@ -511,8 +521,10 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         elevation: 0,
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard').snapshots(),
-        builder: (context, AsyncSnapshot snap) {
+
+
+        stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard').orderBy("card_id", descending: false).snapshots(),
+        builder: (context, AsyncSnapshot snap) {// TODO 고치기
 
           if (snap.hasError) {
             return Text(snap.error.toString());
@@ -554,15 +566,24 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                         ),
                       ),
                     ),
-                    Center(
-                      child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Image.network(cardDocList[index]['img']),  // 카드 해당 이미지 출력
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(cardDocList[index]['content']),
+                        )
+                      ],
                     ), 
                     Row(
                       children: [
                         IconButton(
                           onPressed: (){
                             FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
-                              .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337", 'item_id': itemId});
+                              .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337"});
                           }, 
                           icon: Icon(Icons.add)
                         ),
@@ -623,7 +644,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     ),
                     IconButton(onPressed: (){
                       FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
-                        .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337", 'item_id': itemId});
+                        .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337"});
 
                     }, icon: Icon(Icons.add))
                   ],
