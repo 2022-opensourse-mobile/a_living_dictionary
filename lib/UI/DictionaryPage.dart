@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:a_living_dictionary/UI/Supplementary/DictionaryCardPage.dart';
 import 'package:flutter/material.dart';
@@ -9,15 +10,13 @@ import 'Supplementary/PageRouteWithAnimation.dart';
 
 ThemeColor themeColor = ThemeColor();
 
+
 class DictionaryPage extends StatefulWidget {
   const DictionaryPage({Key? key}) : super(key: key);
 
   @override
   State<DictionaryPage> createState() => _DictionaryPageState();
 }
-
-int itemnum = 1;
-
 
 
 class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStateMixin {
@@ -77,6 +76,20 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     );
   }
 
+  List<QuerySnapshot<Object?>> getDocByFirst(String s){
+    late List<QuerySnapshot<Object?>> doc;
+    StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection(s).snapshots(),
+        builder: (context, snap) {
+          if(!snap.hasData){
+            sleep(Duration(seconds: 1));
+          }
+          doc = snap.data!.docs as List<QuerySnapshot<Object?>>;
+          return Container();
+    });
+    return doc;
+  }
+
 
 //화이팅
   Widget recommandPage(BuildContext context, DictionaryCardPage card) {
@@ -111,7 +124,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
             textBox(context, '최신글'),
             Padding(
                 padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
-                child: card.otherPostList(context, tabName)),
+                child: card.otherPostList(context, tabName)
+            ),
             Divider(thickness: 0.5,),
           ],
         )
@@ -155,8 +169,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     return TextButton(
       onPressed: (){     
         DictionaryItem item = DictionaryItem(
-          itemnum++, 
-          title: '게시글' + itemnum.toString(), 
+          0,
+          title: '게시글',
           hashTag: fieldName, 
           date: Timestamp.now().toDate(),
           recommend: false,

@@ -51,16 +51,12 @@ class DictionaryCardPage {
                 return Container(
                   margin: EdgeInsets.symmetric(horizontal: 0),
                   width: width / 2,
-                  height: (isPortrait
-                      ? (height < 750 ? 250 : portraitH)
-                      : landscapeH),
+                  height: (isPortrait?(height < 750 ? 250:portraitH):landscapeH),
                   child: InkWell(
                     onTap: () {
                       String clicked_id = documents[index]['item_id'];
-                      PageRouteWithAnimation pageRouteWithAnimation =
-                          PageRouteWithAnimation(pageView(context, clicked_id));
-                      Navigator.push(
-                          context, pageRouteWithAnimation.slideLeftToRight());
+                      PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, clicked_id));
+                      Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
                     },
                     child: Card(
                         shape: RoundedRectangleBorder(
@@ -68,11 +64,8 @@ class DictionaryCardPage {
                         ),
                         elevation: 0,
                         child: StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('dictionaryItem')
-                                .where('__name__',
-                                    isEqualTo: documents[index]['item_id'])
-                                .snapshots(),
+                            stream: FirebaseFirestore.instance.collection('dictionaryItem')
+                                .where('__name__', isEqualTo: documents[index]['item_id']).snapshots(),
                             builder: (context, snapshot) {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,6 +114,9 @@ class DictionaryCardPage {
           );
         });
   }
+
+
+
   Widget otherPostList(BuildContext context, String tabName) {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance

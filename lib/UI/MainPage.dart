@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
 import '../DB/Post.dart';
 import 'Supplementary/DictionaryCardPage.dart';
 import 'Supplementary/ThemeColor.dart';
@@ -53,12 +52,10 @@ class MainPage extends StatelessWidget {
                   children: <Widget>[
                     carouselSlide(),
                     weatherText(),
-                    todayList('요리'), //오늘의 최신 TIP (임시로 한 테스트용)
+                    todayList(), //오늘의 최신 TIP (임시로 한 테스트용)
                     textList('인기글'),
                     textList('최신글'),
-                    Divider(
-                      thickness: 0.5,
-                    ),
+                    const Divider(thickness: 0.5),
                   ],
                 ),
               ),
@@ -66,7 +63,6 @@ class MainPage extends StatelessWidget {
           },
         ));
   }
-
   Widget carouselSlide() {
     return Container(
       child: StreamBuilder(
@@ -189,13 +185,12 @@ class MainPage extends StatelessWidget {
       ),
     );
   }
-  Widget todayList(String str) {
+  Widget todayList() {
     return Container(
       child: Builder(
         builder: (BuildContext context) {
           final double width = MediaQuery.of(context).size.width;
-          double imagesize = width / 5 > 150 ? 150 : width / 5;
-
+          //double imagesize = width / 5 > 150 ? 150 : width / 5;
           DictionaryCardPage card = DictionaryCardPage(width, height, portraitH, landscapeH, isPortrait);
           return Column(
             children: [
@@ -204,7 +199,6 @@ class MainPage extends StatelessWidget {
               ),
               textPrint('오늘의 최신 TIP', 1),
               card.mainPostList(context, 2),
-
               // textPrint('인기글'),
               // Divider(thickness: 0.5,),
               // textPrint('최신글'),
@@ -221,9 +215,7 @@ class MainPage extends StatelessWidget {
         height: 200, //210
         child: Column(
           children: <Widget>[
-            Divider(
-              thickness: 0.5,
-            ),
+            Divider(thickness: 0.5,),
             Padding(
               padding: EdgeInsets.all(0),
               child: ListView(
@@ -235,9 +227,7 @@ class MainPage extends StatelessWidget {
               ),
             ),
             StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('communityDB')
-                    .snapshots(),
+                stream: FirebaseFirestore.instance.collection('communityDB').snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return CircularProgressIndicator();
