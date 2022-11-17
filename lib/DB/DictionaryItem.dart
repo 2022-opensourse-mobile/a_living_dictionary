@@ -2,10 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import '../Data.dart';
-
-int cardNum = 1;
-int itemId = 6;
+import 'Data.dart';
 
 
 class DictionaryItem extends Data<DictionaryItem>{
@@ -44,21 +41,9 @@ class DictionaryItem extends Data<DictionaryItem>{
     });
   }
 
-  void delete(DocumentSnapshot doc) {
-    FirebaseFirestore.instance.collection('dictionaryItem').doc(doc.id).delete();
-    var card_del_query = FirebaseFirestore.instance.collection('dictionaryCard').where('item_id', isEqualTo: doc['item_id']);
-    card_del_query.get().then((querySnapshot){
-      querySnapshot.docs.forEach((snp) {
-        snp.reference.delete();
-      });
-    });
-  }
-
-
   @override
   DictionaryItem getDataFromDoc(DocumentSnapshot<Object?> doc) {
-    Timestamp stamp = Timestamp.now();
-    DateTime date = stamp.toDate();
+    DateTime date = Timestamp.now().toDate();
     return DictionaryItem(
         doc['post_id'],
         title: doc['title'],
@@ -71,6 +56,11 @@ class DictionaryItem extends Data<DictionaryItem>{
     );
   }
 }
+
+
+
+
+
 
 class MyCard extends Data<MyCard>{
   MyCard(this.card_id, this.item_id, this.img, this.content);
@@ -89,43 +79,6 @@ class MyCard extends Data<MyCard>{
   void add(E) {
     FirebaseFirestore.instance.collection('dictionaryCard').add(
         {'card_id': E.card_id, 'content': E.content, 'img': E.img, 'item_id': E.post_id}
-    );
-  }
-
-  Widget buildCardPage(Map data, int index){
-    return Column(
-      children: [
-        Expanded(
-          child: Container(
-            height: 200,
-            margin: EdgeInsets.only(top: 10, bottom: 30, right: 10, left: 10),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: NetworkImage(data['img']),
-                )
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-              data['content'],
-              style: TextStyle(fontSize:15)
-          ),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        //카드추가용코드
-        IconButton(
-            onPressed: (){
-              //add(MyCard(cardNum++, itemId, "",""));
-            },
-            icon: Icon(Icons.add)
-        )
-      ],
     );
   }
 }
