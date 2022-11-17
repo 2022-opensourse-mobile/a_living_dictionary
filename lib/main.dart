@@ -49,7 +49,6 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
         '/writePost':(context)=>WritePostPage(),
-        '/dictionaryItemCard':(context)=>CardPage(),
         '/writeDictionary':(context)=>WriteDictionaryPage(),
       },
     );
@@ -155,16 +154,5 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       //   items: myTabs
       // ),
     );
-  }
-
-  Widget _getPage(){
-    switch(_curIndex){
-      case 0: return MainPage(tabController: _tabController);
-      case 1: return DictionaryPage();
-      case 2: return CommunityPage();
-      case 3: return RestaurantPage();
-      case 4: return MyPage();
-      default: return MainPage(tabController: _tabController);
-    }
   }
 }
