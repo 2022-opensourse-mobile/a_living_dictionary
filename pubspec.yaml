@@ -20,6 +20,8 @@ dependencies:
   firebase_storage: ^11.0.5
   file_picker: ^5.2.2
   provider: ^6.0.4
+  google_maps_flutter: ^2.2.1
+  location: ^4.4.0
 
 dev_dependencies:
   flutter_test:
