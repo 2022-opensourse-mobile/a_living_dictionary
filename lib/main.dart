@@ -42,7 +42,10 @@ class MyApp extends StatelessWidget {
             data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);
       },
       title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: themeColor.getWhiteMaterialColor()),
+      theme: ThemeData(
+        primarySwatch: themeColor.getWhiteMaterialColor(),
+        scaffoldBackgroundColor: Colors.white,
+      ),
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
         '/writePost':(context)=>WritePostPage(),
@@ -67,29 +70,29 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   late TabController _tabController;
   int _curIndex = 0;
 
-  final List<Widget> myTabs = <Widget>[
-    // new Tab(
-    //   icon: Icon(Icons.ad_units),
-    //   text: 'LEFT'
-    // ),
-    // new Tab(text: 'RIGHT'),
-    // BottomNavigationBarItem(icon: Icon(Icons.home,), label: '홈', backgroundColor: themeColor.getColor(),),
-    // BottomNavigationBarItem(icon: Icon(Icons.book,), label: '사전', backgroundColor: themeColor.getColor(),),
-    // BottomNavigationBarItem(icon: Icon(Icons.people,), label: '게시판', backgroundColor: themeColor.getColor(),),
-    // BottomNavigationBarItem(icon: Icon(Icons.map_outlined,), label: '혼밥 맵', backgroundColor: themeColor.getColor(),),
-    // BottomNavigationBarItem(icon: Icon(Icons.info,), label: '내 정보', backgroundColor: themeColor.getColor(),),
-    Tab(icon: Icon(Icons.home,), text: '홈', ),
-    Tab(icon: Icon(Icons.book,), text: '사전'),
-    Tab(icon: Icon(Icons.people,), text: '게시판'),
-    Tab(icon: Icon(Icons.map_outlined,), text: '혼밥 맵'),
-    Tab(icon: Icon(Icons.info,), text: '내 정보'),
-
-  ];
+  // final List<Widget> myTabs = <Widget>[
+  //   // new Tab(
+  //   //   icon: Icon(Icons.ad_units),
+  //   //   text: 'LEFT'
+  //   // ),
+  //   // new Tab(text: 'RIGHT'),
+  //   // BottomNavigationBarItem(icon: Icon(Icons.home,), label: '홈', backgroundColor: themeColor.getColor(),),
+  //   // BottomNavigationBarItem(icon: Icon(Icons.book,), label: '사전', backgroundColor: themeColor.getColor(),),
+  //   // BottomNavigationBarItem(icon: Icon(Icons.people,), label: '게시판', backgroundColor: themeColor.getColor(),),
+  //   // BottomNavigationBarItem(icon: Icon(Icons.map_outlined,), label: '혼밥 맵', backgroundColor: themeColor.getColor(),),
+  //   // BottomNavigationBarItem(icon: Icon(Icons.info,), label: '내 정보', backgroundColor: themeColor.getColor(),),
+  //   Tab(icon: Icon(Icons.home_outlined), text: '홈', ),
+  //   Tab(icon: Icon(Icons.book_outlined,), text: '사전'),
+  //   Tab(icon: Icon(Icons.people_alt_outlined,), text: '게시판'),
+  //   Tab(icon: Icon(Icons.map_outlined,), text: '혼밥 맵'),
+  //   Tab(icon: Icon(Icons.info_outline,), text: '내 정보'),
+  //
+  // ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(vsync: this, length: myTabs.length);
+    _tabController = new TabController(vsync: this, length: 5);
   }
 
   @override
@@ -127,11 +130,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       // Center(child: _getPage()),
       bottomNavigationBar: TabBar(
         controller: _tabController,
-        tabs: myTabs,
+        tabs: <Widget>[
+          Tab(icon: _curIndex == 0? Icon(Icons.home) : Icon(Icons.home_outlined), child: Text('홈', textScaleFactor: 1,), ),
+          Tab(icon: _curIndex == 1? Icon(Icons.book) : Icon(Icons.book_outlined,), child: Text('사전', textScaleFactor: 1,),),
+          Tab(icon: _curIndex == 2? Icon(Icons.people_alt) : Icon(Icons.people_alt_outlined), child: Text('게시판', textScaleFactor: 1,),),
+          Tab(icon: _curIndex == 3? Icon(Icons.map) : Icon(Icons.map_outlined,), child: Text('혼밥 맵', textScaleFactor: 1,),),
+          Tab(icon: _curIndex == 4? Icon(Icons.info) : Icon(Icons.info_outline,), child: Text('내 정보', textScaleFactor: 1,),),
+        ],
         onTap: (index) {
           setState(() {_curIndex = index;});
         },
-        // labelColor: ?,
       ),
 
 
