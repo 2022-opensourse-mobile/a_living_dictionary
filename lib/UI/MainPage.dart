@@ -3,14 +3,14 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'ThemeColor.dart';
+import 'Supplementary//ThemeColor.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'community/Post.dart';
+import '../DB/Post.dart';
 import 'DictionaryPage.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'main.dart';
+import '../firebase_options.dart';
+import '../main.dart';
 
 
 ThemeColor themeColor = ThemeColor();

@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'ThemeColor.dart';
-import 'community/Post.dart';
-import 'community/writePost.dart';
+import 'Supplementary//ThemeColor.dart';
+import '../DB/Post.dart';
+import 'Supplementary/CommunityWritePage.dart';
 
 ThemeColor themeColor = ThemeColor();
 

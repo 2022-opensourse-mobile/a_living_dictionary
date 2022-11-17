@@ -1,17 +1,17 @@
-import 'package:a_living_dictionary/Search.dart';
+import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-import 'CommunityPage.dart';
-import 'MainPage.dart';
-import 'MyPage.dart';
-import 'RestaurantPage.dart';
-import 'DictionaryPage.dart';
-import 'ThemeColor.dart';
-import 'community/writePost.dart';
-import 'Dictionary/CardPage.dart';
-import 'Dictionary/WriteDictionaryPage.dart';
+import 'UI/CommunityPage.dart';
+import 'UI/MainPage.dart';
+import 'UI/MyPage.dart';
+import 'UI/RestaurantPage.dart';
+import 'UI/DictionaryPage.dart';
+import 'UI/Supplementary//ThemeColor.dart';
+import 'UI/Supplementary/CommunityWritePage.dart';
+import 'UI/Supplementary/DictionaryCardPage.dart';
+import 'UI/Supplementary/WriteDictionaryPage.dart';
 
 
 //123

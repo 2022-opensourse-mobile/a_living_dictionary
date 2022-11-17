@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:a_living_dictionary/main.dart';
-import 'ThemeColor.dart';
+import 'Supplementary//ThemeColor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'Dictionary/DictionaryItem.dart';
+import '../DB/DictionaryItem.dart';
 
 /* 백과사전: 청소, 빨래, 요리, 기타 */
 

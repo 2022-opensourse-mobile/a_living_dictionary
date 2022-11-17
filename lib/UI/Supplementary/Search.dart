@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'ThemeColor.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import '../../firebase_options.dart';
 
 // 복붙한거니까 수정필요
 
