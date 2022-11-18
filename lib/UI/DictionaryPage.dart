@@ -91,20 +91,20 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
 
-//화이팅
+  // 추천 탭 페이지
   Widget recommandPage(BuildContext context, DictionaryCardPage card) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          // 추가할 때 필요한 코드 @@삭제
-          // Row(
-          //   children: [
-          //     makeButton("청소"),
-          //     makeButton("빨래"),
-          //     makeButton("요리"),
-          //     makeButton("기타"),
-          //   ],
-          // ),
+          //추가할 때 필요한 코드 @@삭제
+          Row(
+            children: [
+              makeButton("청소"),
+              makeButton("빨래"),
+              makeButton("요리"),
+              makeButton("기타"),
+            ],
+          ),
           startxtIcon(context, '인기 TOP 4'),
           card.recommendPostList(context),
           Divider(thickness: 0.5,),
@@ -115,6 +115,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       ),
     );
   }
+
+  // 추천탭이 아닌 탭(청소, 빨래 등)
   Widget otherPage(BuildContext context, DictionaryCardPage card, String tabName) {
     return SingleChildScrollView(
         child: Column(
@@ -131,40 +133,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         )
     );
   }
-  Widget tempPage(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("제목", textScaleFactor: 1),
-            Icon(Icons.bookmark, color: Colors.amberAccent, size: 30,),
-          ],
-        ),
-        titleSpacing: 0,
-        elevation: 0,
-      ),
-      body: ListView.builder(
-        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-        itemCount: 15,
-        itemBuilder: (context, index) {
-          return ListTile(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("ListTile $index", textScaleFactor: 1),
-                  Image.network('https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d'),  // 임의 사진
-                ],
-              )
-          );
-        },
-      ),
-    );
-  }
 
-
-
-  //나중에 삭제 검색어: @@삭제
+  // 데이터베이스 추가 위한 검색어: @@삭제
   TextButton makeButton(String fieldName) {
     return TextButton(
       onPressed: (){     
@@ -174,9 +144,9 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           hashTag: fieldName, 
           date: Timestamp.now().toDate(),
           recommend: false,
-          thumbnail: "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/3.png?alt=media&token=d0fdb9da-b484-48e8-924b-5727e9c749f2"
+          thumbnail: "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d"
         );
-        FirebaseFirestore.instance.collection('dictionaryItem').add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.item_id, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
+        FirebaseFirestore.instance.collection('dictionaryItem').add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
         },
       style: TextButton.styleFrom(
         foregroundColor: Colors.pink,
@@ -184,6 +154,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       child: Text(fieldName),
     );
   }
+
   // 텍스트 + 아이콘
   Widget startxtIcon(BuildContext context, String str) {
     return Row(
@@ -229,7 +200,6 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           }
 
           return Row(
-            //   Widget post(BuildContext context, int index, String tabName, List<String> imgList, List<String> textList) {
             children: List.generate(snap.data!.size, (index){
               return Container(
                 margin: EdgeInsets.symmetric(horizontal: 0),
@@ -238,9 +208,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       
                 child: InkWell(
                   onTap: () {
-                    // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
-                    // Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@TODO
-                    String clicked_id = snap.data!.docs[index].id;  // 지금 클릭한 dictionaryItem의 item_id
+                    String clicked_id = snap.data!.docs[index].id;  // 지금 클릭한 dictionaryItem의 도큐먼트 아이디
                     PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, clicked_id));
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
 

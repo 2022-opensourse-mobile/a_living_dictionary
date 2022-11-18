@@ -63,22 +63,22 @@ class DictionaryItem extends Data<DictionaryItem>{
 
 
 class MyCard extends Data<MyCard>{
-  MyCard(this.card_id, this.item_id, this.img, this.content);
+  MyCard(this.doc_id, this.card_id, this.img, this.content);
+  String doc_id;    // card가 포함된 dictionaryItem document의 id
   int card_id;
-  int item_id;
   String img;
   String content;
 
 
-
   @override
   MyCard getDataFromDoc(DocumentSnapshot<Object?> doc) {
-    return MyCard(doc['card_id'], doc['item_id'], doc['img'], doc['content']);
+    return MyCard('', doc['card_id'], doc['img'], doc['content']);
   }
+
   @override
   void add(E) {
-    FirebaseFirestore.instance.collection('dictionaryCard').add(
-        {'card_id': E.card_id, 'content': E.content, 'img': E.img, 'item_id': E.post_id}
+    FirebaseFirestore.instance.collection('dictionaryItem').doc(E.doc_id).collection('dictionaryCard')
+          .add({'card_id': E.card_id, 'content': E.content, 'img': E.img}
     );
   }
 }
