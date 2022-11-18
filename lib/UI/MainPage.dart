@@ -94,7 +94,7 @@ class MainPage extends StatelessWidget {
                 autoPlay: true,
               ),
               items: slideList.map((item) {
-                // item['item_id']가 아이디인 dictionary item을 가져와서 img필드 -> Image에 출력
+                // item['item_id']가 id인 dictionary item을 가져와서 img필드 -> Image에 출력
                 return StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance.collection('dictionaryItem').where('__name__', isEqualTo: item['item_id']).snapshots(),
                     builder: (context, snapshot) {
@@ -107,7 +107,7 @@ class MainPage extends StatelessWidget {
                               child: GestureDetector(
                                   child: Image(image: NetworkImage(snapshot.data!.docs[0]['thumbnail'])),
                                   onTap: (() {
-                                    String clicked_id = snapshot.data!.docs[0].id; // 지금 클릭한 dictionaryItem의 item_id
+                                    String clicked_id = snapshot.data!.docs[0].id; // 지금 클릭한 dictionaryItem의 도큐먼트 id
                                     PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, clicked_id));
                                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
                                   })))

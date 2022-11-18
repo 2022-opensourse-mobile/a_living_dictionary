@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:a_living_dictionary/DB/DictionaryItem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -299,7 +300,7 @@ class DictionaryCardPage {
             }
 
             if (!snap.hasData || snap.data.size == 0) {
-              return nonExistentCard();
+              return nonExistentCard(dic_id);
             }
             else{
               cardDocList = snap.data?.docs.toList();
@@ -346,47 +347,81 @@ class DictionaryCardPage {
                             child: Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Text(
-                                cardDocList[index]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),
+                                cardDocList[index]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
                                 style: TextStyle(color: Colors.white,),
                               ),
                             ),
+                          ),
+                          // @@삭제 카드 
+                          StreamBuilder(
+                            stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).snapshots(),
+                            builder: (context, snap) {
+                              return IconButton(onPressed: (){
+                                
+                                // 카드id를 할당하기 위한 코드들 FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).snapshots(),
+                                int card_num = snap.data!['card_num'] - 1;    // dictionaryItem의 card_num값을 1 감소시킨다
+
+                                // dictionaryItem의 card_num값을 갱신
+                                FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"card_num": card_num});
+
+                                // 데이터베이스에서 삭제
+                                FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
+                                .doc(cardDocList[index].id).delete();
+
+                              }, icon: Icon(Icons.delete));
+                            }
                           )
                         ],
                       ),
                       // @@삭제 추가하는 코드
-                      // Row(
-                      //   children: [
-                      //     IconButton(
-                      //       onPressed: (){
-                      //         FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
-                      //           .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337"});
-                      //       },
-                      //       icon: Icon(Icons.add)
-                      //     ),
-                      //     TextButton(
-                      //       onPressed: (){
-                      //         //.add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.item_id, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
+                      Row(
+                        children: [
+                          StreamBuilder(
+                            stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).snapshots(),
+                            builder: (context, snap) {
+                              return IconButton(
+                                onPressed: (){
+                                  // 카드id를 할당하기 위한 코드들 
+                                  int card_num = snap.data!['card_num'] + 1;    // dictionaryItem의 card_num값을 1 증가시킨다.
+                                  var cardCollection = FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard').get();
 
-                      //         FirebaseFirestore.instance.collection('best')
-                      //           .add({'item_id': dic_id});
-                      //       },
-                      //       child: Text("best로 설정")
-                      //     ),
-                      //     TextButton(
-                      //       onPressed: (){
-                      //         FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": true});
+                                  // dictionaryItem의 card_num값을 갱신
+                                  FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"card_num": card_num});
 
-                      //       },
-                      //       child: Text("관리자 추천 설정")
-                      //     ),
-                      //     TextButton(
-                      //       onPressed: (){
-                      //         FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": false});
-                      //       },
-                      //       child: Text("관리자 추천x")
-                      //     ),
-                      //   ],
-                      // )
+                                  // 추가할 MyCard객체
+                                  var cardtemp = MyCard(dic_id, card_num, "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d", "asdf");
+                                  
+                                  // 데이터베이스에 추가
+                                  cardtemp.add(cardtemp);
+                                },
+                                icon: Icon(Icons.add)
+                              );
+                            }
+                          ),
+                          TextButton(
+                            onPressed: (){
+                              //.add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.item_id, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
+
+                              FirebaseFirestore.instance.collection('best')
+                                .add({'item_id': dic_id});
+                            },
+                            child: Text("best로 설정")
+                          ),
+                          TextButton(
+                            onPressed: (){
+                              FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": true});
+
+                            },
+                            child: Text("관리자 추천 설정")
+                          ),
+                          TextButton(
+                            onPressed: (){
+                              FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({"recommend": false});
+                            },
+                            child: Text("관리자 추천x")
+                          ),
+                        ],
+                      )
                     ],
                   );
                 },
@@ -395,7 +430,8 @@ class DictionaryCardPage {
           }),
     );
   }
-  Widget nonExistentCard() {
+
+  Widget nonExistentCard(String dic_id) {
     return PageView.builder(
       controller: PageController(
         initialPage: 0,
@@ -423,12 +459,7 @@ class DictionaryCardPage {
                 ),
               ),
             ),
-            // @@삭제 카드 추가하는 코드
-            // IconButton(onPressed: (){
-            //   FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).collection('dictionaryCard')
-            //     .add({'card_id': cardnum++, 'content': "asdf", 'img': "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/6.png?alt=media&token=e193e837-f3d5-4023-b540-4bb6052ca337"});
-
-            // }, icon: Icon(Icons.add))
+            
           ],
         );
       },
