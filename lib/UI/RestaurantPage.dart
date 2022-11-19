@@ -14,12 +14,15 @@ class RestaurantPage extends StatelessWidget {
           restaurantSearch(),
           tempMap(),
           recommendList(),
-          editButten(),
         ],
-      )
+      ),
+      floatingActionButton: editButton(),
     );
   }
 }
+
+
+
 
 /* -------------------------------- 검색 위젯: 일단 3개 작성 (삭제 금지) */
 Widget restaurantSearch(){
@@ -94,17 +97,15 @@ Widget textfieldSearch() {
   );
 }
 
-
 /* -------------------------------- Map 불러올 임시 공간 */
 Widget tempMap() {
   return Container(
     width: double.infinity,
     height: 400,
     color: Colors.grey,
-    child: Text('Map'),
+    child: Center(child: Text('Map', style: TextStyle(color: Colors.white))),
   );
 }
-
 
 /* -------------------------------- 추천 리스트 (수정 중) */
 Widget recommendList(){
@@ -112,13 +113,22 @@ Widget recommendList(){
     child: Column(
       children: [
 
-
-        Row(
-          children: [
-            Text('추천 리스트', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.22),
-            Icon(Icons.star_rounded, color: Colors.amberAccent),
-          ],
+        Padding(
+          padding: EdgeInsets.fromLTRB(10,20,10,10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text('맛집 목록 (수정 중)', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.25),
+                  Icon(Icons.star_rounded, color: Colors.amberAccent),
+                ],
+              ),
+              postList(),
+            ],
+          ),
         ),
+
 
 
       ],
@@ -126,24 +136,66 @@ Widget recommendList(){
   );
 }
 
+/* -------------------------------- 게시글 출력 (수정 중) */
+Widget postList() {
+  return Padding(
+    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+    child: Column(
+      children: [
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+        Text('금오공대점'),
+
+
+      ],
+    )
+  );
+}
 
 /* -------------------------------- 글 쓰기 버튼 (수정 중) */
-Widget editButten(){
-  return Padding(
-    padding: EdgeInsets.all(5),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+Widget editButton() {
+  return Stack(
       children: [
-        FloatingActionButton(
-          onPressed: () {},
-          child: Icon(Icons.edit),
-          backgroundColor: themeColor.getColor(),
-          elevation: 0,
-          hoverElevation: 0,
-          focusElevation: 0,
-          highlightElevation: 0,
+        Align(
+          alignment: Alignment(Alignment.bottomRight.x, Alignment.bottomRight.y - 0.21),
+          child: FloatingActionButton(
+            onPressed: () {},
+            child: Icon(Icons.arrow_upward_rounded),
+            backgroundColor: themeColor.getColor(),
+            elevation: 0,
+            hoverElevation: 0,
+            focusElevation: 0,
+            highlightElevation: 0,
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: FloatingActionButton(
+            onPressed: () {},
+            child: Icon(Icons.edit),
+            backgroundColor: themeColor.getColor(),
+            elevation: 0,
+            hoverElevation: 0,
+            focusElevation: 0,
+            highlightElevation: 0,
+          ),
         ),
       ],
-    ),
   );
 }
