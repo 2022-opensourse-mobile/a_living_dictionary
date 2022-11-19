@@ -1,9 +1,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="kr.ac.kumoh.team_mobile.a_living_dictionary">
+
+    <!-- 인터넷 사용 권한 설정(카카오 로그인)-->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
    <application
         android:label="a_living_dictionary"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <activity 
+            android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity"
+            android:exported="true">
+            <intent-filter android:label="flutter_web_auth">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Redirect URI, "kakao${YOUR_NATIVE_APP_KEY}://oauth" 형식 -->
+                <data android:scheme="kakaob599e335086be99a1a5e12a1e9f80e68" android:host="oauth"/>
+            </intent-filter>
+        </activity>
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
