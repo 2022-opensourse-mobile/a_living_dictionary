@@ -77,7 +77,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
-  final viewModel = new MainViewModel(KakaoLogin());
+  late var viewModel;
 
   final List<String> list = List.generate(10, (index) => "Text $index");
   late TabController _tabController;
@@ -102,14 +102,28 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       stream: FirebaseAuth.instance.authStateChanges(), // 로그인 되고 안될때마다 새로운 스트림이 들어옴
       builder: (context, snapshot) {
         // if(!snapshot.hasData) { // 로그인이 안 된 상태
-        //   return ElevatedButton(
-        //     onPressed: () async {
+        //   return Column(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       ElevatedButton(
+        //         onPressed: () async {
+        //           viewModel = new MainViewModel(KakaoLogin());
+        //           await viewModel.login();
+        //           setState((){}); // 화면 갱신만 하는 것 
 
-        //       await viewModel.login();
-        //       setState((){}); // 화면 갱신만 하는 것 
+        //         }, 
+        //         child: const Text('카카오로 로그인')
+        //       ),
+        //       ElevatedButton(
+        //         onPressed: () async {
+        //           viewModel = new MainViewModel(KakaoLogin());
+        //           await viewModel.login();
+        //           setState((){}); // 화면 갱신만 하는 것 
 
-        //     }, 
-        //     child: const Text('login')
+        //         }, 
+        //         child: const Text('이메일로 로그인')
+        //       ),
+        //     ],
         //   );
         // }
 
@@ -119,6 +133,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               title: Text(widget.title, style: TextStyle(color: themeColor.getColor()),),
               elevation: 0.0,
               actions: <Widget>[
+                // ElevatedButton(
+                //   onPressed: () async {
+                //     await viewModel.logout();
+                //     setState((){}); // 화면 갱신만 하는 것 
+                //   }, 
+                //   child: const Text('logout')
+                // ),
                 IconButton(
                   icon: new Icon(Icons.search),
                   onPressed: () => {
