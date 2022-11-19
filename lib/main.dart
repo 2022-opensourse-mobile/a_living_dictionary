@@ -9,9 +9,13 @@ import 'UI/MyPage.dart';
 import 'UI/RestaurantPage.dart';
 import 'UI/DictionaryPage.dart';
 import 'UI/Supplementary//ThemeColor.dart';
+
 import 'UI/Supplementary/CommunityWritePage.dart';
+import 'UI/Supplementary/CommunityPostPage.dart';
+
 import 'UI/Supplementary/DictionaryCardPage.dart';
 import 'UI/Supplementary/WriteDictionaryPage.dart';
+
 
 
 //123
@@ -38,9 +42,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       builder: (context,child) {
-        return MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);
-      },
+        return MediaQuery(data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);},
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: themeColor.getWhiteMaterialColor(),
@@ -48,7 +50,8 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
-        '/writePost':(context)=>WritePostPage(),
+        //'/communityPost':(context)=>CommunityPostPage(),
+        '/communityWrite':(context)=>CommunityWritePage(),
         '/writeDictionary':(context)=>WriteDictionaryPage(),
       },
     );

@@ -1,4 +1,5 @@
 
+import 'package:a_living_dictionary/UI/Supplementary/CommunityPostPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'Data.dart';
@@ -45,7 +46,7 @@ class Post extends Data<Post>{
 
   //일반 build
   @override
-  Widget build(DocumentSnapshot<Object?> doc) {
+  Widget build(DocumentSnapshot<Object?> doc, BuildContext context) {
     final post = getDataFromDoc(doc);
     String t = '${post.time!.hour.toString()}:${post.time!.minute.toString()}';
     return Padding(
@@ -59,7 +60,24 @@ class Post extends Data<Post>{
                 side: BorderSide(style: BorderStyle.none)),
             trailing: Text(t),
             style: ListTileStyle.list,
-            onTap: (){},
+            onTap: (){
+              String tabName;
+              switch(post.boardType){
+                case 1:
+                  tabName = "인기게시판";
+                  break;
+                case 2:
+                  tabName = "공지게시판";
+                  break;
+                default:
+                  tabName = "자유게시판";
+                  break;
+              }
+
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => CommunityPostPage(tabName))
+              );
+            },
           ),
         )
     );
