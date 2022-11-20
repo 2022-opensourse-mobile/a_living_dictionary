@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class WritePostPage extends StatelessWidget {
-  const WritePostPage({Key? key}) : super(key: key);
+class CommunityWritePage extends StatelessWidget {
+  const CommunityWritePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -10,8 +10,6 @@ class WritePostPage extends StatelessWidget {
           children: [
             Row(
               children: <Widget>[
-                //TextField(decoration: InputDecoration(labelText: '제목'),),
-                //TextField(decoration: InputDecoration(labelText: '내용'),),
                 ElevatedButton(
                   child: Text('확인'),
                   onPressed: (){

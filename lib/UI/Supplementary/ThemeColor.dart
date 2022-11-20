@@ -14,6 +14,8 @@ class ThemeColor {
   Color _whiteColor = Color(0xffFFFFFF);
   MaterialColor _whiteMaterialColor = createMaterialColor(Color(0xffFFFFFF));
 
+  Color cc = Color(0xff99eeff);
+
   Color getColor() {
     return _themeColor;
   }

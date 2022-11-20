@@ -83,7 +83,7 @@ class _MyComminityState extends State<MyCommunity> {
           return Expanded(
               child: ListView(
                   shrinkWrap: true,
-                  children: documents.map((doc)=> p.build(doc)).toList()
+                  children: documents.map((doc)=> p.build(doc, context)).toList()
               )
           );
         }),
@@ -92,7 +92,7 @@ class _MyComminityState extends State<MyCommunity> {
         children: <Widget>[
           FloatingActionButton(
             onPressed: (){
-              Navigator.pushNamed(context, '/writePost');
+              Navigator.pushNamed(context, '/communityWrite');
               //_addPost();
             },
             tooltip: 'write',

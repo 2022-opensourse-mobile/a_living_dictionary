@@ -186,6 +186,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       ],
     );
   }
+
   // 가로 스크롤 리스트
   Widget slide(BuildContext context, String tabName){
     return SingleChildScrollView(
