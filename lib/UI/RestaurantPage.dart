@@ -133,33 +133,6 @@ class _MapState extends State<Map> {
   static int id2 = 0; // DB에서 긁어올 임시 id
   final List<Marker> markers = []; // 마커를 등록할 목록
 
-  // Widget getMarker(BuildContext context) {
-  //   return StreamBuilder<QuerySnapshot>(
-  //     stream: FirebaseFirestore.instance.collection('MapDB').snapshots(),
-  //     builder: (context, AsyncSnapshot snapshot) {
-  //       if (!snapshot.hasData) {
-  //         return CircularProgressIndicator();
-  //       }
-  //       var documents = snapshot.data!.docs;
-  //
-  //       for (int i=0; i<documents.length; i++) {
-  //         var lat = documents[i].latitude;
-  //         var lon = documents[i].longitude;
-  //         addMarker(LatLng(lat, lon));
-  //       }
-  //     },
-  //   );
-  // }
-
-  // Future<void> getMarker(BuildContext context) async {
-  //   dynamic i;
-  //   final documents = FirebaseFirestore.instance.collection('MapDB').snapshots();
-  //   for (i=0; i<documents.length; i++) {
-  //     var lat = ()
-  //
-  //   }
-  // }
-
   // 지도 클릭 시, 마커 등록
   void addMarker(coordinate) {
     setState(() {
@@ -170,15 +143,6 @@ class _MapState extends State<Map> {
             showModalBottomSheet(
               context: context,
               builder: (BuildContext context) {
-                // 마커 클릭 시 가게 이름, 주소, 좋아요 수, 후기 출력해야 함
-                // return Container(
-                //   child: Column(
-                //     children: [
-                //       Text('임시 페이지'),
-                //       Text("id: $id"),
-                //     ],
-                //   ),
-                // );
                 return StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance.collection('MapDB')
                     .where('latitude', isEqualTo: coordinate.latitude)
@@ -189,16 +153,15 @@ class _MapState extends State<Map> {
                       return CircularProgressIndicator();
                     final documents = snapshot.data!.docs;
 
-
                     return Column(
                       children: [
                         Text("가게 이름: ${documents[0]['store'].toString()}"),
                         Text("주소: ${documents[0]['address'].toString()}"),
                         Text("좋아요 수: ${documents[0]['like'].toString()}"),
-                        Text("markId: ${documents[0]['markId'].toString()}"),
+                        // Text("markId: ${documents[0]['markId'].toString()}"),
                       ],
                     );
-                 },
+                  },
                 );
               },
             );
@@ -209,9 +172,9 @@ class _MapState extends State<Map> {
 
   // // addMarker_마커 위에 달리는 정보
   // infoWindow: InfoWindow(
-  //     onTap: () {
-  //       Navigator.push(context, MaterialPageRoute(builder: (context) => ShowInformation()));
-  //     }
+  //   onTap: () {
+  //   Navigator.push(context, MaterialPageRoute(builder: (context) => ShowInformation()));
+  //   }
   // )
 
   // DB에 저장된 마커 지도에 추가하기
@@ -233,6 +196,20 @@ class _MapState extends State<Map> {
             position: LatLng(lat, lng),
             // markerId: MarkerId(documents[i]['markId'].toString()), // TODO: 마커 정리되면 코드 이걸로 변경
             markerId: MarkerId((++id2).toString()),
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return Column(
+                    children: [
+                      Text("가게 이름: ${documents[i]['store'].toString()}"),
+                      Text("주소: ${documents[i]['address'].toString()}"),
+                      Text("좋아요 수: ${documents[i]['like'].toString()}"),
+                    ],
+                  );
+                }
+              );
+            }
           ));
         }
         return googleMap();
@@ -257,7 +234,7 @@ class _MapState extends State<Map> {
       onTap: (coordinate) { // 클릭한 위치 중앙에 표시
         _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
         addMarker(coordinate); // 마커 추가
-        saveLocation(coordinate.latitude, coordinate.longitude, id); // 마커 위치 DB에 저장
+        saveLocation(context, coordinate.latitude, coordinate.longitude, id); // 마커 위치 DB에 저장
       },
       gestureRecognizers: {
         Factory<OneSequenceGestureRecognizer>(
@@ -273,32 +250,35 @@ class _MapState extends State<Map> {
     zoom: 16.0,
   );
 
+  // DB에 마커 위치 저장
+  Future<void> saveLocation(BuildContext context, lat, double lng, int id) async {
+    var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat}, ${lng}&key=${_mapApiKey}&language=ko';
+
+    var response = await http.get(Uri.parse(url));
+    var responseBody = convert.utf8.decode(response.bodyBytes);
+
+    var address = convert.jsonDecode(responseBody)['results'][0]['formatted_address'];
+
+    FirebaseFirestore.instance.collection('MapDB').add({
+      'latitude': lat, 'longitude': lng, 'like': 0,
+      'address': address,
+      'store': "테스트 $id",
+      'markId': id,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: getMarker(context),
     );
   }
-
 }
 
-Future<void> saveLocation(double lat, double lng, int id) async {
-  var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat}, ${lng}&key=${_mapApiKey}&language=ko';
-
-  var response = await http.get(Uri.parse(url));
-  var responseBody = convert.utf8.decode(response.bodyBytes);
-
-  var address = convert.jsonDecode(responseBody)['results'][0]['formatted_address'];
-
-  FirebaseFirestore.instance.collection('MapDB').add({
-    'latitude': lat, 'longitude': lng, 'like': 0,
-    'address': address,
-    'store': '테스트($id)',
-    'markId': id,
-  });
 
 
-}
+
+
 
 /* -------------------------------- 추천 리스트 (수정 중) */
 Widget recommendList(){
