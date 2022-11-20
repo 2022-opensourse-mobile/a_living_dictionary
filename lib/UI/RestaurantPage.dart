@@ -16,6 +16,8 @@ ThemeColor themeColor = ThemeColor();
 // Google Map API Key
 final _mapApiKey = 'AIzaSyDV1uWDF4S16dDx5oQAAJ399p3e9Cbot90';
 
+final GlobalKey searchKey = GlobalKey(); // 키 생성
+
 
 class RestaurantPage extends StatelessWidget {
   const RestaurantPage({Key? key}) : super(key: key);
@@ -25,6 +27,7 @@ class RestaurantPage extends StatelessWidget {
     return Scaffold(
       body: ListView(
         children: [
+
           restaurantSearch(),
           tempMap(),
           recommendList(),
@@ -38,6 +41,7 @@ class RestaurantPage extends StatelessWidget {
 /* -------------------------------- 검색 위젯: 일단 3개 작성 (삭제 금지) */
 Widget restaurantSearch(){
   return Row(
+    key: searchKey,
     children: [
       Expanded(
         child: Padding(
@@ -112,7 +116,7 @@ Widget textfieldSearch() {
 Widget tempMap() {
   return Container(
     width: double.infinity,
-    height: 400,
+    height: 450,
     color: Colors.grey,
     child: Map(),
   );
@@ -285,7 +289,6 @@ Widget recommendList(){
   return Container(
     child: Column(
       children: [
-
         Padding(
           padding: EdgeInsets.fromLTRB(10,20,10,10),
           child: Column(
@@ -293,82 +296,88 @@ Widget recommendList(){
             children: [
               Row(
                 children: [
-                  Text('맛집 목록 (수정 중)', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.25),
-                  Icon(Icons.star_rounded, color: Colors.amberAccent),
+                  Text('근처 추천 맛집', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.4),
+                  //Icon(Icons.star_rounded, color: Colors.amberAccent),
                 ],
               ),
-              postList(),
+              postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
+              postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
+              postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
+              postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
+              postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
             ],
           ),
         ),
-
-
-
       ],
     )
   );
 }
 
 /* -------------------------------- 게시글 출력 (수정 중) */
-Widget postList() {
-  return Padding(
-    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-    child: Column(
-      children: [
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-        Text('금오공대점'),
-
-
-      ],
-    )
+Widget postList(String text, String star, String description) {
+  return Row(
+    children: [
+      Expanded(
+        child: Card(
+          margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text('$text', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.20), //가게명
+                    Icon(Icons.star_rounded, color: Colors.amberAccent,),
+                    Text('$star', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.20), //별점
+                  ],
+                ),
+                Text('$description', style: TextStyle(color: Colors.grey), textScaleFactor: 1.0), //평가 (서술)
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
   );
 }
 
 /* -------------------------------- 글 쓰기 버튼 (수정 중) */
 Widget editButton() {
   return Stack(
-      children: [
-        Align(
-          alignment: Alignment(Alignment.bottomRight.x, Alignment.bottomRight.y - 0.21),
-          child: FloatingActionButton(
-            onPressed: () {},
-            child: Icon(Icons.arrow_upward_rounded),
-            backgroundColor: themeColor.getColor(),
-            elevation: 0,
-            hoverElevation: 0,
-            focusElevation: 0,
-            highlightElevation: 0,
+    children: [
+      Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              tooltip: "맨 위로",
+              onPressed: () { Scrollable.ensureVisible(searchKey.currentContext!); },
+              child: Icon(Icons.arrow_upward_rounded),
+              backgroundColor: themeColor.getColor(),
+              elevation: 0,
+              hoverElevation: 0,
+              focusElevation: 0,
+              highlightElevation: 0,
+            ),
           ),
-        ),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: FloatingActionButton(
-            onPressed: () {},
-            child: Icon(Icons.edit),
-            backgroundColor: themeColor.getColor(),
-            elevation: 0,
-            hoverElevation: 0,
-            focusElevation: 0,
-            highlightElevation: 0,
+          SizedBox(height: 5),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              tooltip: "글 쓰기",
+              onPressed: () {},
+              child: Icon(Icons.edit),
+              backgroundColor: themeColor.getColor(),
+              elevation: 0,
+              hoverElevation: 0,
+              focusElevation: 0,
+              highlightElevation: 0,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
+    ],
   );
 }

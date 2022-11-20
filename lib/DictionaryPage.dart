@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:a_living_dictionary/main.dart';
 import 'ThemeColor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'Dictionary/DictionaryItem.dart';
+import 'DB/DictionaryItem.dart';
+import 'UI/Supplementary/ThemeColor.dart';
 
 /* 백과사전: 청소, 빨래, 요리, 기타 */
 
