@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../main.dart';
 import 'Search.dart';
@@ -6,10 +7,12 @@ import 'ThemeColor.dart';
 ThemeColor themeColor = ThemeColor();
 
 class CommunityPostPage extends StatelessWidget {
-  CommunityPostPage(this.tabName, {super.key});
+  CommunityPostPage(this.tabName, this.doc_id, {super.key});
 
   final tabName;
+  final String doc_id;
   late var width;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -40,34 +43,44 @@ class CommunityPostPage extends StatelessWidget {
             ],
           ),
           //Body : 싱글 스크롤
-          body: Align(
-            alignment: Alignment.topCenter,
-            child: SingleChildScrollView(
-                child: Container(
-                  width: (width > 750) ? (750) : (width),
-                  color: Colors.white,
-                  child: Column(
-                    //전체 Column
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      getTitleWidget(), //제목 위젯
-                      getBodyWidget(), // 본문 위젯
-                      getCommentWriteWidget(), // 댓글 작성 위젯
-                      getCommentWidget(), // 댓글 위젯
-                      getCommentWidget(), // 댓글 위젯
-                      getCommentWidget(), // 댓글 위젯
-                      getCommentWidget(), // 댓글 위젯
-                    ],
-                  ),
-                ), //expanded
-            ),
+          body: StreamBuilder(
+            stream: FirebaseFirestore.instance.collection("CommunityDB").doc(doc_id).snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return CircularProgressIndicator();
+              }
+              final item = snapshot.data!;
+
+              return Align(
+                alignment: Alignment.topCenter,
+                child: SingleChildScrollView(
+                    child: Container(
+                      width: (width > 750) ? (750) : (width),
+                      color: Colors.white,
+                      child: Column(
+                        //전체 Column
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          getTitleWidget(item['title'], item['writer_id']), //제목 위젯
+                          getBodyWidget(item['body']), // 본문 위젯
+                          getCommentWriteWidget(), // 댓글 작성 위젯
+                          getCommentWidget(), // 댓글 위젯
+                          getCommentWidget(), // 댓글 위젯
+                          getCommentWidget(), // 댓글 위젯
+                          getCommentWidget(), // 댓글 위젯
+                        ],
+                      ),
+                    ), //expanded
+                ),
+              );
+            }
           ),
         ));
   }
 
-  Widget getTitleWidget() {
+  Widget getTitleWidget(String title, String writer) {
     return Column(children: [
       Container(
         width: (width > 750) ? (750) : (width),
@@ -76,12 +89,12 @@ class CommunityPostPage extends StatelessWidget {
         decoration: const BoxDecoration(
             border: Border(
               top: BorderSide(color: Color(0xAAdadada), width: 1.5),
-              bottom: const BorderSide(color: Color(0xAAdadada), width: 1.3),
+              bottom: BorderSide(color: Color(0xAAdadada), width: 1.3),
             ),
-            color: const Color(0xAAefefef)),
-        child: const Padding(
+            color: Color(0xAAefefef)),
+        child: Padding(
           padding: EdgeInsets.fromLTRB(15.0, 0, 0, 0),
-          child: Text("title1", style: TextStyle(fontSize: 25)),
+          child: Text(title, style: TextStyle(fontSize: 25)),
         ),
       ),
       Container(
@@ -91,15 +104,15 @@ class CommunityPostPage extends StatelessWidget {
         decoration: const BoxDecoration(
             border: Border(
                 bottom: BorderSide(color: Color(0xAAdadada), width: 1.3))),
-        child: const Padding(
-          padding: EdgeInsets.fromLTRB(15.0, 0, 0, 0),
-          child: Text("writer1", style: TextStyle(fontSize: 15)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(15.0, 0, 0, 0),
+          child: Text(writer, style: TextStyle(fontSize: 15)),
         ),
       ),
     ]);
   }
 
-  Widget getBodyWidget() {
+  Widget getBodyWidget(String body) {
     return Container(
       width: (width > 750) ? (750) : (width),
       height: 300,
@@ -113,8 +126,7 @@ class CommunityPostPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //Divider(),
-          Text("body1", style: TextStyle(fontSize: 15)),
+          Text(body , style: TextStyle(fontSize: 15)),
         ],
       ),
     );
@@ -131,11 +143,13 @@ class CommunityPostPage extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: (width > 650) ? (650) : (width),
+            width: (width > 750) ? (650) : (width-100),
             height: 120,
             child: const TextField(
               decoration: InputDecoration(
-                hintText: "댓글 입력"
+                hintText: "댓글 입력",
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
               ),
               maxLines: null,
               maxLength: 100,
