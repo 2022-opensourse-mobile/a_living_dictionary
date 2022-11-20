@@ -1,5 +1,12 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'Supplementary//ThemeColor.dart';
+import 'dart:async';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
 ThemeColor themeColor = ThemeColor();
 
@@ -103,9 +110,86 @@ Widget tempMap() {
     width: double.infinity,
     height: 400,
     color: Colors.grey,
-    child: Center(child: Text('Map', style: TextStyle(color: Colors.white))),
+    child: Map(),
   );
 }
+
+class Map extends StatefulWidget {
+  const Map({Key? key}) : super(key: key);
+
+  @override
+  State<Map> createState() => _MapState();
+}
+
+class _MapState extends State<Map> {
+  late GoogleMapController _controller;
+
+  int id = 1;
+  // 마커를 등록할 목록
+  final List<Marker> markers = [];
+
+  // 지도 클릭 시, 마커 등록
+  void addMarker(coordinate) {
+    setState(() {
+      markers.add(Marker(
+        position: coordinate,
+        markerId: MarkerId((++id).toString()),
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              // locationInfo(coordinate.latitude, coordinate.longitude);
+              return Container(
+                child: Center(child: Text("임시로 넣어놓은 페이지"),),
+              );
+            },
+          );
+        },
+        // infoWindow: InfoWindow(
+        //   onTap: () {
+        //     Navigator.push(context, MaterialPageRoute(builder: (context) => ShowInformation()));
+        //   }
+        // )
+      ));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: GoogleMap(
+        mapType: MapType.normal,
+        initialCameraPosition: _initialLocation,
+
+        onMapCreated: (GoogleMapController controller) {
+          setState(() {
+            _controller = controller;
+          });
+        },
+        markers: markers.toSet(),
+        myLocationEnabled: true, // 현재 위치를 파란색 점으로 표시
+        myLocationButtonEnabled: true, // 현재 위치 버튼
+        onTap: (coordinate) { // 클릭한 위치 중앙에 표시
+          _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
+          addMarker(coordinate);
+        },
+        gestureRecognizers: {
+          Factory<OneSequenceGestureRecognizer>(
+              () => EagerGestureRecognizer()
+          )
+        },
+      ),
+    );
+  }
+
+  // 초기 위치 설정(금오공대)
+  static final CameraPosition _initialLocation = CameraPosition(
+    target: LatLng(36.1461382, 128.3934882),
+    zoom: 16.0,
+  );
+}
+
+
 
 /* -------------------------------- 추천 리스트 (수정 중) */
 Widget recommendList(){
