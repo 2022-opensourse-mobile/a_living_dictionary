@@ -25,13 +25,14 @@ class RestaurantPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        children: [
-
-          restaurantSearch(),
-          tempMap(),
-          recommendList(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            restaurantSearch(),
+            tempMap(),
+            recommendList(),
+          ],
+        ),
       ),
       floatingActionButton: editButton(),
     );
@@ -45,14 +46,14 @@ Widget restaurantSearch(){
     children: [
       Expanded(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(10,0,10,10),
+          padding: EdgeInsets.fromLTRB(10,0,10,5),
           child: TextButton(
             onPressed: () {}, //버튼 눌렀을 때 주소 검색지로 이동해야 함
             style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color(0xfff2f3f6))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('위치 검색', style: TextStyle(color: Color(0xff81858d)), textScaleFactor: 1.1),
+                Text('위치 검색', style: TextStyle(color: Color(0xff81858d), leadingDistribution: TextLeadingDistribution.even,), textScaleFactor: 1.1),
                 Icon(Icons.search_rounded, color: Color(0xff81858d)),
               ],
             ),
@@ -305,6 +306,10 @@ Widget recommendList(){
               postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
               postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
               postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
+              postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
+              postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
+              postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
+              postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
             ],
           ),
         ),
@@ -353,7 +358,12 @@ Widget editButton() {
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
               tooltip: "맨 위로",
-              onPressed: () { Scrollable.ensureVisible(searchKey.currentContext!); },
+              onPressed: () {
+                Scrollable.ensureVisible(
+                    searchKey.currentContext!,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.easeInOut);
+                },
               child: Icon(Icons.arrow_upward_rounded),
               backgroundColor: themeColor.getColor(),
               elevation: 0,
