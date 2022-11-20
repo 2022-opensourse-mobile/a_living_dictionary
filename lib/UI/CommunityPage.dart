@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'Supplementary//ThemeColor.dart';
-import '../DB/Post.dart';
+import '../DB/CommunityItem.dart';
 import 'Supplementary/CommunityWritePage.dart';
 
 ThemeColor themeColor = ThemeColor();
@@ -23,7 +23,7 @@ class MyCommunity extends StatefulWidget {
 }
 
 class _MyComminityState extends State<MyCommunity> {
-  Post p = Post();
+  CommunityItem p = CommunityItem();
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +74,7 @@ class _MyComminityState extends State<MyCommunity> {
         ),
       ),
       StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('communityDB').snapshots(),
+        stream: FirebaseFirestore.instance.collection('CommunityDB').snapshots(),
         builder: (context, snapshot) {
           if(!snapshot.hasData){
             return CircularProgressIndicator();
@@ -94,6 +94,7 @@ class _MyComminityState extends State<MyCommunity> {
             onPressed: (){
               Navigator.pushNamed(context, '/communityWrite');
               //_addPost();
+              //p.postAdd();
             },
             tooltip: 'write',
             child: Icon(Icons.add),

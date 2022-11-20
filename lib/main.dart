@@ -59,7 +59,6 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
-        //'/communityPost':(context)=>CommunityPostPage(),
         '/communityWrite':(context)=>CommunityWritePage(),
         '/writeDictionary':(context)=>WriteDictionaryPage(),
       },
