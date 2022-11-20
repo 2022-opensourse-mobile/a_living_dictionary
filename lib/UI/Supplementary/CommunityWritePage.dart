@@ -1,3 +1,4 @@
+import 'package:a_living_dictionary/DB/CommunityItem.dart';
 import 'package:flutter/material.dart';
 import '../../main.dart';
 import 'Search.dart';
@@ -11,6 +12,7 @@ class CommunityWritePage extends StatelessWidget {
   late var width;
   TextEditingController titleController = TextEditingController();
   TextEditingController bodyController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
 
 
   @override
@@ -56,7 +58,14 @@ class CommunityWritePage extends StatelessWidget {
                   children: <Widget>[
                     getTitleWidget(), //제목 위젯
                     getBodyWidget(), // 본문 위젯
-                    TextButton(onPressed: (){}, child: Text("등록", style: TextStyle(color: Colors.black),))
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        getRegWidget(context),
+                        getCancelWidget(context)
+                      ],
+                    ) // 등록 버튼
                   ],
                 ),
               ), //expanded
@@ -72,20 +81,38 @@ class CommunityWritePage extends StatelessWidget {
         width: (width > 750) ? (750) : (width),
         height: 40,
         alignment: Alignment.centerLeft,
-        decoration: const BoxDecoration(
-            border: Border(
-              //bottom: const BorderSide(color: Color(0xAAdadada), width: 1.3)
-            )
+        decoration: BoxDecoration(
+            border: Border.all()
         ),
-        child: TextField(
-          controller: titleController,
-          showCursor: true,
-          cursorColor: Colors.black,
-          decoration: const InputDecoration(
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.7, color: Color(0xAAbababa))),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.7, color: Color(0xAA333333))),
-            hintText: "제목"
-          ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: (width > 750) ? (500) : (width/2-1),
+              child: TextField(
+                controller: titleController,
+                showCursor: true,
+                cursorColor: Colors.black,
+                decoration: const InputDecoration(
+                  hintText: "제목",
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: (width > 750) ? (240) : (width/2-1),
+              child: TextField(
+                controller: nameController,
+                showCursor: true,
+                cursorColor: Colors.black,
+                decoration: const InputDecoration(
+                    hintText: "닉네임",
+                    enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                  ),
+                ),
+            ),
+          ],
         )
       ),
     ]);
@@ -109,6 +136,34 @@ class CommunityWritePage extends StatelessWidget {
               hintText: "본문"
           ),
         )
+    );
+  }
+  Widget getRegWidget(BuildContext context){
+    return ElevatedButton(
+      child: Text("등록", style: TextStyle(color: Colors.black)),
+      onPressed: (){
+        CommunityItem item = CommunityItem(
+            title: titleController.text,
+            body: bodyController.text,
+            writer_id: nameController.text,
+            boardType: 0,
+            hashTag: "자유"
+        );
+        item.add();
+        titleController.text = "";
+        bodyController.text = "";
+        nameController.text = "";
+        Navigator.pop(context);
+      },
+
+    );
+  }
+  Widget getCancelWidget(BuildContext context){
+    return ElevatedButton(
+      child: Text("취소"),
+      onPressed: (){
+        Navigator.pop(context);
+      },
     );
   }
 }

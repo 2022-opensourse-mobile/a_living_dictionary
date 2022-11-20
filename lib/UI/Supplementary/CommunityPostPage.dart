@@ -1,3 +1,4 @@
+import 'package:a_living_dictionary/DB/CommunityItem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../main.dart';
@@ -11,12 +12,13 @@ class CommunityPostPage extends StatelessWidget {
 
   final tabName;
   final String doc_id;
-  late var width;
-  
+  late var width, height;
+  TextEditingController commentController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
+    height = MediaQuery.of(context).size.height;
 
     return MaterialApp(
         builder: (context, child) {
@@ -51,32 +53,30 @@ class CommunityPostPage extends StatelessWidget {
               }
               final item = snapshot.data!;
 
-              return Align(
-                alignment: Alignment.topCenter,
-                child: SingleChildScrollView(
+                return Align(
+                  alignment: Alignment.topCenter,
+                  child: SingleChildScrollView(
                     child: Container(
                       width: (width > 750) ? (750) : (width),
+                      //width: width,
+                      height: (height > 1000) ? (1000) : (height),
                       color: Colors.white,
                       child: Column(
-                        //전체 Column
+                        //TODO
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          getTitleWidget(item['title'], item['writer_id']), //제목 위젯
-                          getBodyWidget(item['body']), // 본문 위젯
-                          getCommentWriteWidget(), // 댓글 작성 위젯
-                          getCommentWidget(), // 댓글 위젯
-                          getCommentWidget(), // 댓글 위젯
-                          getCommentWidget(), // 댓글 위젯
-                          getCommentWidget(), // 댓글 위젯
+                        children: [
+                          getTitleWidget(item['title'], item['writer_id']),
+                          getBodyWidget(item['body']),
+                          getCommentWriteWidget(),
+                          getCommentWidget()
                         ],
                       ),
-                    ), //expanded
-                ),
-              );
-            }
-          ),
+                    ),
+                  ),
+                );
+              }),
         ));
   }
 
@@ -111,7 +111,6 @@ class CommunityPostPage extends StatelessWidget {
       ),
     ]);
   }
-
   Widget getBodyWidget(String body) {
     return Container(
       width: (width > 750) ? (750) : (width),
@@ -131,7 +130,6 @@ class CommunityPostPage extends StatelessWidget {
       ),
     );
   }
-
   Widget getCommentWriteWidget(){
     return Container(
       width: (width > 750) ? (750) : (width),
@@ -145,19 +143,26 @@ class CommunityPostPage extends StatelessWidget {
           SizedBox(
             width: (width > 750) ? (650) : (width-100),
             height: 120,
-            child: const TextField(
-              decoration: InputDecoration(
+            child: TextField(
+              decoration: const InputDecoration(
                 hintText: "댓글 입력",
                 enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
                 focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
               ),
+              controller: commentController,
               maxLines: null,
               maxLength: 100,
               cursorColor: Colors.black,
             ),
           ),
           TextButton(
-              onPressed: (){},
+              onPressed: (){
+                final it = CommentItem(
+                    writer_id: "a", body: commentController.text, time:DateTime.now()
+                );
+                it.add(doc_id);
+                commentController.text = "";
+              },
               child: Text("등록", style: TextStyle(color: Colors.black))
           )
         ],
@@ -166,21 +171,40 @@ class CommunityPostPage extends StatelessWidget {
   }
 
   Widget getCommentWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        ListTile(
-          title: Text("com_writer1",
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
+          }
+          if (snapshot.hasError) {
+            return const Text("has error");
+          }
+
+          final doc = snapshot.data!.docs;
+
+          return Expanded(
+              child: ListView(
+            shrinkWrap: true,
+            children: doc.map((e) => (buildComWidget(e))).toList(),
+          ));
+        }
+    );
+  }
+  Widget buildComWidget(QueryDocumentSnapshot doc) {
+    final it = CommentItem.getDatafromDoc(doc);
+    return Padding(
+        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: ListTile(
+          title: Text(it.writer_id,
+              style: TextStyle(fontSize: 14, color: Colors.black)),
+          subtitle: Text(it.body,
               style: TextStyle(fontSize: 14, color: Colors.black)),
           leading: Icon(Icons.account_box),
+          minVerticalPadding: 0,
+
         ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-          child: Text("com_body1"),
-        ),
-        Divider(thickness: 1.0,)
-      ],
-    );
+        //Divider(thickness: 1.0,)
+      );
   }
 }

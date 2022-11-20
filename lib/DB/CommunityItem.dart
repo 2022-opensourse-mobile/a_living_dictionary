@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'Data.dart';
 
-class CommunityItem extends Data<CommunityItem>{
+class CommunityItem{
   String title;
   String writer_id;
   String body;
@@ -20,39 +20,24 @@ class CommunityItem extends Data<CommunityItem>{
     this.like = 0,
     this.time,
     this.boardType = 1,
-    this.hashTag = ''}) {}
+    this.hashTag = ''}) {
+    this.time = DateTime.now();
+  }
 
   //add Post
   @override
-  void add(E) {
-    CommunityItem it = E as CommunityItem;
-    Timestamp stamp = Timestamp.fromDate(it.time!);
+  void add() {
+    Timestamp stamp = Timestamp.fromDate(this.time!);
     FirebaseFirestore.instance.collection('CommunityDB').add({
-      'title': it.title,
-      'like': it.like,
-      'writer_id': it.writer_id,
-      'body':it.body,
+      'title': this.title,
+      'like': this.like,
+      'writer_id': this.writer_id,
+      'body':this.body,
       'time': stamp,
-      'boardType':it.boardType,
-      'hashTag':it.hashTag
+      'boardType':this.boardType,
+      'hashTag':this.hashTag
     });
   }
-
-  void postAdd(){
-    for(int i = 0; i < 10; i++){
-      CommunityItem it = CommunityItem(
-        writer_id: "a",
-        boardType: 0,
-        title: i.toString(),
-        body: i.toString(),
-        hashTag: "자유",
-        like: i,
-        time: DateTime.now()
-      );
-      add(it);
-    }
-  }
-
 
   //일반 build
   @override
@@ -126,4 +111,35 @@ class CommunityItem extends Data<CommunityItem>{
     var dl = d.map((e) => buildMain(e)).toList();
     return dl;
   }
+}
+
+
+class CommentItem{
+  String writer_id;
+  String body;
+  DateTime? time;
+  CommentItem({this.writer_id = '', this.body = '', this.time});
+  
+  void add(String doc_id){
+    if(time == null){
+      print("comment add error : there's no time");
+      return;
+    }
+    FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB').add({
+      'body': this.body,
+      'writer_id':this.writer_id,
+      'time':this.time
+    });
+  }
+  static CommentItem getDatafromDoc(DocumentSnapshot doc){
+    Timestamp stamp = doc['time'];
+    final item = CommentItem(
+      writer_id : doc['writer_id'],
+      body : doc['body'], 
+      time : stamp.toDate()
+    );
+    return item;
+  }
+
+  
 }
