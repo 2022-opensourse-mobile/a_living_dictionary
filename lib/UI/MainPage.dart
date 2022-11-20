@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import '../DB/Post.dart';
+import '../DB/CommunityItem.dart';
 import 'Supplementary/DictionaryCardPage.dart';
 import 'Supplementary/ThemeColor.dart';
 import 'Supplementary/PageRouteWithAnimation.dart';
@@ -210,7 +210,7 @@ class MainPage extends StatelessWidget {
     );
   }
   Container textList(String communityTitle) {
-    Post p = Post();
+    CommunityItem p = CommunityItem();
     return Container(
         height: 200, //210
         child: Column(
