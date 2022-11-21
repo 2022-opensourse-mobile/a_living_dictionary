@@ -57,6 +57,18 @@ class CommunityWritePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     getTitleWidget(), //제목 위젯
+                    Container(
+                      decoration: const BoxDecoration(
+                          border: Border(
+                            left: BorderSide(color: Color(0xAAaaaaaa)),
+                            right: BorderSide(color: Color(0xAAaaaaaa)),
+                          )
+                      ),
+                      child: const Divider(
+                        color: Color(0xAAaaaaaa),
+                        thickness: 0.3,
+                      ),
+                    ),
                     getBodyWidget(), // 본문 위젯
 
                     Row(
@@ -78,11 +90,16 @@ class CommunityWritePage extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       //const Text("제목"),
       Container(
+        padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
         width: (width > 750) ? (750) : (width),
         height: 40,
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
-            border: Border.all()
+            border: Border(
+              top: BorderSide(color: Color(0xAAaaaaaa)),
+              left: BorderSide(color: Color(0xAAaaaaaa)),
+              right: BorderSide(color: Color(0xAAaaaaaa)),
+            )
         ),
         child: Row(
           children: [
@@ -101,7 +118,7 @@ class CommunityWritePage extends StatelessWidget {
             ),
             SizedBox(
               width: (width > 750) ? (240) : (width/2-1),
-              child: TextField(
+              /*child: TextField(
                 controller: nameController,
                 showCursor: true,
                 cursorColor: Colors.black,
@@ -110,7 +127,8 @@ class CommunityWritePage extends StatelessWidget {
                     enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
                     focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
                   ),
-                ),
+                ),*/
+              //child: Text("닉네임"),
             ),
           ],
         )
@@ -120,10 +138,15 @@ class CommunityWritePage extends StatelessWidget {
   Widget getBodyWidget() {
     return Container(
         width: (width > 750) ? (750) : (width),
+        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
         height: 300,
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.center,
         decoration: BoxDecoration(
-          border: Border.all()
+            border: Border(
+              bottom: BorderSide(color: Color(0xAAaaaaaa)),
+              left: BorderSide(color: Color(0xAAaaaaaa)),
+              right: BorderSide(color: Color(0xAAaaaaaa)),
+            )
         ),
         child: TextField(
           showCursor: true,
