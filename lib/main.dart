@@ -15,7 +15,6 @@ import 'UI/DictionaryPage.dart';
 import 'UI/Supplementary//ThemeColor.dart';
 
 import 'UI/Supplementary/CommunityWritePage.dart';
-import 'UI/Supplementary/CommunityPostPage.dart';
 
 import 'UI/Supplementary/DictionaryCardPage.dart';
 import 'UI/Supplementary/WriteDictionaryPage.dart';
