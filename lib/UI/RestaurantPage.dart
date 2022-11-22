@@ -1,3 +1,4 @@
+import 'package:a_living_dictionary/DB/Review.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -7,7 +8,6 @@ import 'Supplementary//ThemeColor.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -17,7 +17,6 @@ ThemeColor themeColor = ThemeColor();
 final _mapApiKey = 'AIzaSyDV1uWDF4S16dDx5oQAAJ399p3e9Cbot90';
 
 final GlobalKey searchKey = GlobalKey(); // 키 생성
-
 
 class RestaurantPage extends StatelessWidget {
   const RestaurantPage({Key? key}) : super(key: key);
@@ -78,8 +77,8 @@ Widget searchDesign() {
           child: Row(
             children: [
               IconButton(
-                  onPressed: () => {},
-                  icon: Icon(Icons.search_rounded, color: Color(0xff81858d)),
+                onPressed: () => {},
+                icon: Icon(Icons.search_rounded, color: Color(0xff81858d)),
               ),
               Text("검색", style: TextStyle(color: Color(0xff81858d)),),
             ],
@@ -132,11 +131,13 @@ class Map extends StatefulWidget {
 
 class _MapState extends State<Map> {
   late GoogleMapController _controller;
-
+  TextEditingController reviewController = TextEditingController();
+  
   // TODO: DB marker 정리
   static int id = 0; // 마커 id
   static int id2 = 0; // DB에서 긁어올 임시 id
   final List<Marker> markers = []; // 마커를 등록할 목록
+  String m_id = "";
 
   // 지도 클릭 시, 마커 등록
   void addMarker(coordinate) {
@@ -145,42 +146,29 @@ class _MapState extends State<Map> {
           position: coordinate,
           markerId: MarkerId((++id).toString()),
           onTap: () {
+            // TODO: 페이지 이동으로 변경
             showModalBottomSheet(
-              context: context,
-              builder: (BuildContext context) {
-                return StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection('MapDB')
-                    .where('latitude', isEqualTo: coordinate.latitude)
-                    .where('longitude', isEqualTo: coordinate.longitude).snapshots(),
+                context: context,
+                builder: (context) {
+                  return StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection('MapDB')
+                        .where('latitude', isEqualTo: coordinate.latitude)
+                        .where('longitude', isEqualTo: coordinate.longitude).snapshots(),
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (!snapshot.hasData)
+                        return CircularProgressIndicator();
+                      final documents = snapshot.data!.docs;
+                      m_id = documents[0].id;
 
-                  builder: (context, AsyncSnapshot snapshot) {
-                    if (!snapshot.hasData)
-                      return CircularProgressIndicator();
-                    final documents = snapshot.data!.docs;
-
-                    return Column(
-                      children: [
-                        Text("가게 이름: ${documents[0]['store'].toString()}"),
-                        Text("주소: ${documents[0]['address'].toString()}"),
-                        Text("좋아요 수: ${documents[0]['like'].toString()}"),
-                        // Text("markId: ${documents[0]['markId'].toString()}"),
-                      ],
-                    );
-                  },
-                );
-              },
+                      return detailPage(context, m_id, documents[0]['store'], documents[0]['address'], documents[0]['like']);
+                    },
+                  );
+                }
             );
           }
       ));
     });
   }
-
-  // // addMarker_마커 위에 달리는 정보
-  // infoWindow: InfoWindow(
-  //   onTap: () {
-  //   Navigator.push(context, MaterialPageRoute(builder: (context) => ShowInformation()));
-  //   }
-  // )
 
   // DB에 저장된 마커 지도에 추가하기
   Widget getMarker(BuildContext context) {
@@ -188,37 +176,122 @@ class _MapState extends State<Map> {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('MapDB').snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData) {
+        if (!snapshot.hasData)
           return CircularProgressIndicator();
-        }
 
         final documents = snapshot.data!.docs;
 
         for (int i=0; i<documents.length; i++) {
           lat = double.parse(documents[i]['latitude'].toString());
           lng = double.parse(documents[i]['longitude'].toString());
+
           markers.add(Marker(
-            position: LatLng(lat, lng),
-            // markerId: MarkerId(documents[i]['markId'].toString()), // TODO: 마커 정리되면 코드 이걸로 변경
-            markerId: MarkerId((++id2).toString()),
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return Column(
-                    children: [
-                      Text("가게 이름: ${documents[i]['store'].toString()}"),
-                      Text("주소: ${documents[i]['address'].toString()}"),
-                      Text("좋아요 수: ${documents[i]['like'].toString()}"),
-                    ],
-                  );
-                }
-              );
-            }
+              position: LatLng(lat, lng),
+              // markerId: MarkerId(documents[i]['markId'].toString()), // TODO: 마커 정리되면 코드 이걸로 변경
+              markerId: MarkerId((++id2).toString()),
+              onTap: () {
+                m_id = documents[i].id;
+                Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => detailPage(context, m_id, documents[i]['store'], documents[i]['address'], documents[i]['like']))
+                );
+              }
           ));
         }
         return googleMap();
       },
+    );
+  }
+
+  // 마커 클릭 시 나오는 페이지
+  Widget detailPage(BuildContext context, String id, String store, String address, int like) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(store),
+      ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').snapshots(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData)
+            return CircularProgressIndicator();
+
+          final documents = snapshot.data!.docs;
+
+          return Column(
+              children: [
+                ListTile(title: Text(store),), Divider(),
+                ListTile(title: Text(like.toString()),), Divider(),
+                ListTile(title: Text("주소: ${address}"),), Divider(),
+                ListTile(title: Text("$store 후기"),), Divider(),
+                ElevatedButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => reviewPage(),
+                    ));
+                  },
+                  child: Text("후기 작성"),
+                ),
+                Divider(),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: documents.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text("후기${index}: ${documents[index]['content'].toString()}"),
+                    );
+                  },
+                ),
+              ],
+          );
+        },
+      ),
+    );
+  }
+
+  // review 작성 페이지
+  Widget reviewPage() {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: Text("후기 작성"),
+      ),
+      body: Column(
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height / 3,
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: "후기 작성",
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    width: 1.0,
+                  ),
+                ),
+              ),
+              controller: reviewController,
+              maxLines: null,
+              maxLength: 50,
+              cursorColor: Colors.black,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: (){
+              if (reviewController.text != "") {
+                FirebaseFirestore.instance.collection('MapDB')
+                    .doc(m_id)
+                    .collection('reviewDB')
+                    .add({
+                  'content': reviewController.text.toString(),
+                  'writer': '작성자',
+                });
+                reviewController.text = "";
+              }
+            },
+            child: Text("후기 등록", textScaleFactor: 1,),
+          ),
+        ],
+      ),
     );
   }
 
@@ -281,40 +354,36 @@ class _MapState extends State<Map> {
 }
 
 
-
-
-
-
 /* -------------------------------- 추천 리스트 (수정 중) */
 Widget recommendList(){
   return Container(
-    child: Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(10,20,10,10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text('근처 추천 맛집', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.4),
-                  //Icon(Icons.star_rounded, color: Colors.amberAccent),
-                ],
-              ),
-              postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
-              postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
-              postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
-              postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
-              postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
-              postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
-              postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
-              postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
-              postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
-            ],
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(10,20,10,10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text('근처 추천 맛집', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.4),
+                    //Icon(Icons.star_rounded, color: Colors.amberAccent),
+                  ],
+                ),
+                postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
+                postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
+                postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
+                postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
+                postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
+                postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
+                postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
+                postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
+                postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
+              ],
+            ),
           ),
-        ),
-      ],
-    )
+        ],
+      )
   );
 }
 
@@ -357,13 +426,14 @@ Widget editButton() {
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
+              heroTag: 'up', // 에러나서 floatingActionButton 구분할 Tag 추가
               tooltip: "맨 위로",
               onPressed: () {
                 Scrollable.ensureVisible(
                     searchKey.currentContext!,
                     duration: Duration(milliseconds: 500),
                     curve: Curves.easeInOut);
-                },
+              },
               child: Icon(Icons.arrow_upward_rounded),
               backgroundColor: themeColor.getColor(),
               elevation: 0,
@@ -376,6 +446,7 @@ Widget editButton() {
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
+              heroTag: 'write', // 에러나서 floatingActionButton 구분할 Tag 추가
               tooltip: "글 쓰기",
               onPressed: () {},
               child: Icon(Icons.edit),
