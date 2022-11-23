@@ -1,18 +1,29 @@
 import 'package:a_living_dictionary/DB/CommunityItem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../main.dart';
 import 'Search.dart';
 import 'ThemeColor.dart';
 
 ThemeColor themeColor = ThemeColor();
 
-class CommunityPostPage extends StatelessWidget {
-  CommunityPostPage(this.tabName, this.doc_id, {super.key});
 
-  final tabName;
+class CommunityPostPage extends StatefulWidget {
+  const CommunityPostPage(this.tabName, this.doc_id, {Key? key}) : super(key: key);
+  final String tabName;
   final String doc_id;
+  @override
+  State<CommunityPostPage> createState() => _CommunityPostPageState(tabName, doc_id);
+}
+
+class _CommunityPostPageState extends State<CommunityPostPage> {
+  _CommunityPostPageState(this.tabName, this.doc_id);
+
+  final String tabName, doc_id;
+  Icon likeIcon = Icon(Icons.thumb_up_off_alt);
   late var width, height;
+  bool isClicked = false;
   TextEditingController commentController = TextEditingController();
 
   @override
@@ -38,7 +49,8 @@ class CommunityPostPage extends StatelessWidget {
             actions: <Widget>[
               IconButton(
                 icon: new Icon(Icons.search),
-                onPressed: () => {
+                onPressed: () =>
+                {
                   //showSearch(context: context, delegate:Search(null))
                 },
               )
@@ -46,12 +58,13 @@ class CommunityPostPage extends StatelessWidget {
           ),
           //Body : 싱글 스크롤
           body: StreamBuilder(
-            stream: FirebaseFirestore.instance.collection("CommunityDB").doc(doc_id).snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return CircularProgressIndicator();
-              }
-              final item = snapshot.data!;
+              stream: FirebaseFirestore.instance.collection("CommunityDB").doc(
+                  doc_id).snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return CircularProgressIndicator();
+                }
+                final item = snapshot.data!;
 
                 return Align(
                   alignment: Alignment.topCenter,
@@ -69,6 +82,11 @@ class CommunityPostPage extends StatelessWidget {
                         children: [
                           getTitleWidget(item['title'], item['writer_id']),
                           getBodyWidget(item['body']),
+                          getLikeWidget(),
+                          Divider(
+                            thickness: 1.0,
+                            color: Color(0xaadddddd),
+                          ),
                           getCommentWriteWidget(),
                           getCommentWidget()
                         ],
@@ -79,7 +97,6 @@ class CommunityPostPage extends StatelessWidget {
               }),
         ));
   }
-
   Widget getTitleWidget(String title, String writer) {
     return Column(children: [
       Container(
@@ -115,11 +132,11 @@ class CommunityPostPage extends StatelessWidget {
     return Container(
       width: (width > 750) ? (750) : (width),
       height: 300,
-      decoration: const BoxDecoration(
-          border: Border(
-            bottom: const BorderSide(color: Color(0xAAdadada), width: 1.3),
-          ),
-      ),
+      // decoration: const BoxDecoration(
+      //     border: Border(
+      //       bottom: const BorderSide(color: Color(0xAAdadada), width: 1.3),
+      //     ),
+      // ),
       padding: const EdgeInsets.fromLTRB(15, 5, 0, 0),
       margin: const EdgeInsets.fromLTRB(0, 0, 0, 15),
       child: Column(
@@ -130,12 +147,35 @@ class CommunityPostPage extends StatelessWidget {
       ),
     );
   }
+  Widget getLikeWidget(){
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Row(
+        children: [
+          IconButton(
+            icon: likeIcon,
+            style: ButtonStyle(
+              mouseCursor: MaterialStateProperty.all(MouseCursor.defer),
+            ),
+            //mouseCursor: MouseCursor,
+            onPressed: (){
+              setState(() {
+                likeIcon = (isClicked)?(Icon(Icons.thumb_up_off_alt)):(Icon(Icons.thumb_up_off_alt_rounded));
+                isClicked = !isClicked;
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget getCommentWriteWidget(){
     return Container(
       width: (width > 750) ? (750) : (width),
       height: 100,
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xAAdadada), width: 1.0)
+          border: Border.all(color: const Color(0xAAdadada), width: 1.0)
       ),
       padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
       child: Row(
@@ -169,7 +209,6 @@ class CommunityPostPage extends StatelessWidget {
       ),
     );
   }
-
   Widget getCommentWidget() {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB').snapshots(),
@@ -185,26 +224,29 @@ class CommunityPostPage extends StatelessWidget {
 
           return Expanded(
               child: ListView(
-            shrinkWrap: true,
-            children: doc.map((e) => (buildComWidget(e))).toList(),
-          ));
+                shrinkWrap: true,
+                children: doc.map((e) => (buildComWidget(e))).toList(),
+              ));
         }
     );
   }
   Widget buildComWidget(QueryDocumentSnapshot doc) {
     final it = CommentItem.getDatafromDoc(doc);
     return Padding(
-        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: ListTile(
-          title: Text(it.writer_id,
-              style: TextStyle(fontSize: 14, color: Colors.black)),
-          subtitle: Text(it.body,
-              style: TextStyle(fontSize: 14, color: Colors.black)),
-          leading: Icon(Icons.account_box),
-          minVerticalPadding: 0,
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: ListTile(
+        title: Text(it.writer_id,
+            style: TextStyle(fontSize: 14, color: Colors.black)),
+        subtitle: Text(it.body,
+            style: TextStyle(fontSize: 14, color: Colors.black)),
+        leading: Icon(Icons.account_box),
+        minVerticalPadding: 0,
 
-        ),
-        //Divider(thickness: 1.0,)
-      );
+      ),
+      //Divider(thickness: 1.0,)
+    );
   }
 }
+
+
+
