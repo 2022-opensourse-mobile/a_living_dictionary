@@ -33,7 +33,6 @@ class DictionaryItem extends Data<DictionaryItem>{
       'author': E.author,
       'date': E.date,
       'hashtag': E.hashTag,
-      'post_id': E.post_id,
       'scrapnum': E.scrapnum,
       'title': E.title,
       'recommend': E.recommend,
