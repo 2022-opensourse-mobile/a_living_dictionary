@@ -9,10 +9,11 @@ class KakaoLogin implements SocialLogin {
       bool isInstalled = await kakao.isKakaoTalkInstalled();  // 카카오톡이 설치되어 있는지 확인
 
 
-      // print("@@!isInstalled: " + isInstalled.toString());
+      print("@@!isInstalled: " + isInstalled.toString());
       if (isInstalled) {    // 카카오톡으로 인증
         try {
           await kakao.UserApi.instance.loginWithKakaoTalk();
+          print("@@!loginWithKakaoTalk: ");
           return true;
         } catch (e) {
           return false;

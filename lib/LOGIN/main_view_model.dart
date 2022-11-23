@@ -1,3 +1,5 @@
+import 'package:a_living_dictionary/LOGIN/kakao_login.dart';
+import 'package:a_living_dictionary/LOGIN/naver_login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:a_living_dictionary/LOGIN/firebase_auth_remote_data_source.dart';
@@ -25,9 +27,13 @@ class MainViewModel {
   Future login() async {
 
     isLogined = await _socialLogin.login();
+    print("@@!isLogined?? " + isLogined.toString());
+    if (!isLogined) {
+      return;
+    }
 
 
-    if (isLogined) {
+    if (_socialLogin.runtimeType is KakaoLogin) {
       user = await kakao.UserApi.instance.me();
 
       // 토큰 발급은 user정보를 얻은 후 해야함. USER정보 보내야하니까
@@ -41,7 +47,9 @@ class MainViewModel {
 
 
       await FirebaseAuth.instance.signInWithCustomToken(token);
-    } 
+    } else if (_socialLogin.runtimeType is NaverLogin) {
+      
+    }
   }
 
   Future logout() async {
