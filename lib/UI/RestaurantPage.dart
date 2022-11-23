@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'Supplementary//ThemeColor.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -132,38 +133,36 @@ class Map extends StatefulWidget {
 class _MapState extends State<Map> {
   late GoogleMapController _controller;
   TextEditingController reviewController = TextEditingController();
-  
-  // TODO: DB marker 정리
-  static int id = 0; // 마커 id
-  static int id2 = 0; // DB에서 긁어올 임시 id
+
+  static int id = 1; // 마커 id
   final List<Marker> markers = []; // 마커를 등록할 목록
   String m_id = "";
 
-  // 지도 클릭 시, 마커 등록
-  void addMarker(coordinate) {
+  // 지도 클릭 시, 마커 등록 TODO: 없애야 함
+  void addMarker(coordinate, BuildContext context) {
     setState(() {
       markers.add(Marker(
           position: coordinate,
           markerId: MarkerId((++id).toString()),
           onTap: () {
-            // TODO: 페이지 이동으로 변경
             showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection('MapDB')
-                        .where('latitude', isEqualTo: coordinate.latitude)
-                        .where('longitude', isEqualTo: coordinate.longitude).snapshots(),
-                    builder: (context, AsyncSnapshot snapshot) {
-                      if (!snapshot.hasData)
-                        return CircularProgressIndicator();
-                      final documents = snapshot.data!.docs;
-                      m_id = documents[0].id;
+              isScrollControlled: true,
+              context: context,
+              builder: (context) {
+                return StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('MapDB')
+                      .where('latitude', isEqualTo: coordinate.latitude)
+                      .where('longitude', isEqualTo: coordinate.longitude).snapshots(),
+                  builder: (context, AsyncSnapshot snapshot) {
+                    if (!snapshot.hasData)
+                      return CircularProgressIndicator();
+                    final documents = snapshot.data!.docs;
+                    m_id = documents[0].id;
 
-                      return detailPage(context, m_id, documents[0]['store'], documents[0]['address'], documents[0]['like']);
-                    },
-                  );
-                }
+                    return detailPage(context, m_id, documents[0]['store'], documents[0]['address'], documents[0]['like']);
+                  },
+                );
+              }
             );
           }
       ));
@@ -184,42 +183,46 @@ class _MapState extends State<Map> {
         for (int i=0; i<documents.length; i++) {
           lat = double.parse(documents[i]['latitude'].toString());
           lng = double.parse(documents[i]['longitude'].toString());
-
-          markers.add(Marker(
-              position: LatLng(lat, lng),
-              // markerId: MarkerId(documents[i]['markId'].toString()), // TODO: 마커 정리되면 코드 이걸로 변경
-              markerId: MarkerId((++id2).toString()),
-              onTap: () {
-                m_id = documents[i].id;
-                Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => detailPage(context, m_id, documents[i]['store'], documents[i]['address'], documents[i]['like']))
-                );
-              }
-          ));
+          if (int.parse(documents[i]['like'].toString()) >= 100) {
+            markers.add(Marker(
+                position: LatLng(lat, lng),
+                markerId: MarkerId(documents[i]['markId'].toString()),
+                onTap: () {
+                  m_id = documents[i].id;
+                  id = documents[i]['markId'];
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (context) {
+                      return detailPage(context, m_id, documents[i]['store'], documents[i]['address'], documents[i]['like']);
+                    }
+                  );
+                }
+            ));
+          }
         }
-        return googleMap();
+        return googleMap(context);
       },
     );
   }
 
   // 마커 클릭 시 나오는 페이지
   Widget detailPage(BuildContext context, String id, String store, String address, int like) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(store),
-      ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').snapshots(),
-        builder: (context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData)
-            return CircularProgressIndicator();
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.6,
+      child: SingleChildScrollView(
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').snapshots(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData)
+              return CircularProgressIndicator();
 
-          final documents = snapshot.data!.docs;
+            final documents = snapshot.data!.docs;
 
-          return Column(
+            return Column(
               children: [
                 ListTile(title: Text(store),), Divider(),
-                ListTile(title: Text(like.toString()),), Divider(),
+                ListTile(title: Text("좋아요 수: ${like}"),), Divider(),
                 ListTile(title: Text("주소: ${address}"),), Divider(),
                 ListTile(title: Text("$store 후기"),), Divider(),
                 ElevatedButton(
@@ -241,8 +244,9 @@ class _MapState extends State<Map> {
                   },
                 ),
               ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -286,6 +290,7 @@ class _MapState extends State<Map> {
                   'writer': '작성자',
                 });
                 reviewController.text = "";
+                Navigator.pop(context);
               }
             },
             child: Text("후기 등록", textScaleFactor: 1,),
@@ -296,7 +301,7 @@ class _MapState extends State<Map> {
   }
 
   // 구글 지도
-  Widget googleMap() {
+  Widget googleMap(BuildContext context) {
     return GoogleMap(
       mapType: MapType.normal,
       initialCameraPosition: _initialLocation,
@@ -311,7 +316,7 @@ class _MapState extends State<Map> {
       myLocationButtonEnabled: true, // 현재 위치 버튼
       onTap: (coordinate) { // 클릭한 위치 중앙에 표시
         _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
-        addMarker(coordinate); // 마커 추가
+        addMarker(coordinate, context); // 마커 추가
         saveLocation(context, coordinate.latitude, coordinate.longitude, id); // 마커 위치 DB에 저장
       },
       gestureRecognizers: {
@@ -343,6 +348,46 @@ class _MapState extends State<Map> {
       'store': "테스트 $id",
       'markId': id,
     });
+  }
+
+  // 현재 위치 구하기
+  void _currentLocation() async {
+    Location location = new Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData? _currentLocation;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    // 위치 권한 확인
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.granted) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _currentLocation = await location.getLocation();
+    double curLat = _currentLocation.latitude!;
+    double curLng = _currentLocation.longitude!;
+
+    // 현재 위치로 카메라(뷰) 이동
+    // _controller.animateCamera(CameraUpdate.newCameraPosition(
+    //   CameraPosition(
+    //     bearing: 0,
+    //     target: LatLng(_currentLocation.latitude!, _currentLocation.longitude!),
+    //     tilt: 0,
+    //     zoom: 17.0,
+    //   ),
+    // ));
   }
 
   @override
@@ -426,7 +471,7 @@ Widget editButton() {
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
-              heroTag: 'up', // 에러나서 floatingActionButton 구분할 Tag 추가
+              // heroTag: 'up', // 에러나서 floatingActionButton 구분할 Tag 추가
               tooltip: "맨 위로",
               onPressed: () {
                 Scrollable.ensureVisible(
@@ -446,7 +491,7 @@ Widget editButton() {
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
-              heroTag: 'write', // 에러나서 floatingActionButton 구분할 Tag 추가
+              // heroTag: 'write', // 에러나서 floatingActionButton 구분할 Tag 추가
               tooltip: "글 쓰기",
               onPressed: () {},
               child: Icon(Icons.edit),
