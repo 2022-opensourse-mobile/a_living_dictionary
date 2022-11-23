@@ -146,23 +146,23 @@ class _MapState extends State<Map> {
           markerId: MarkerId((++id).toString()),
           onTap: () {
             showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              builder: (context) {
-                return StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection('MapDB')
-                      .where('latitude', isEqualTo: coordinate.latitude)
-                      .where('longitude', isEqualTo: coordinate.longitude).snapshots(),
-                  builder: (context, AsyncSnapshot snapshot) {
-                    if (!snapshot.hasData)
-                      return CircularProgressIndicator();
-                    final documents = snapshot.data!.docs;
-                    m_id = documents[0].id;
+                isScrollControlled: true,
+                context: context,
+                builder: (BuildContext context) {
+                  return StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection('MapDB')
+                        .where('latitude', isEqualTo: coordinate.latitude)
+                        .where('longitude', isEqualTo: coordinate.longitude).snapshots(),
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (!snapshot.hasData)
+                        return CircularProgressIndicator();
+                      final documents = snapshot.data!.docs;
+                      m_id = documents[0].id;
 
-                    return detailPage(context, m_id, documents[0]['store'], documents[0]['address'], documents[0]['like']);
-                  },
-                );
-              }
+                      return detailPage(context, m_id, documents[0]['store'], documents[0]['address'], documents[0]['like']);
+                    },
+                  );
+                }
             );
           }
       ));
@@ -191,11 +191,11 @@ class _MapState extends State<Map> {
                   m_id = documents[i].id;
                   id = documents[i]['markId'];
                   showModalBottomSheet(
-                    isScrollControlled: true,
-                    context: context,
-                    builder: (context) {
-                      return detailPage(context, m_id, documents[i]['store'], documents[i]['address'], documents[i]['like']);
-                    }
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (context) {
+                        return detailPage(context, m_id, documents[i]['store'], documents[i]['address'], documents[i]['like']);
+                      }
                   );
                 }
             ));
@@ -334,7 +334,7 @@ class _MapState extends State<Map> {
   );
 
   // DB에 마커 위치 저장
-  Future<void> saveLocation(BuildContext context, lat, double lng, int id) async {
+  Future<void> saveLocation(BuildContext context, double lat, double lng, int id) async {
     var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat}, ${lng}&key=${_mapApiKey}&language=ko';
 
     var response = await http.get(Uri.parse(url));
