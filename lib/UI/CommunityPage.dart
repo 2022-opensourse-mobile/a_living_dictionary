@@ -22,85 +22,93 @@ class MyCommunity extends StatefulWidget {
   State<MyCommunity> createState() => _MyComminityState();
 }
 
-class _MyComminityState extends State<MyCommunity> {
+class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin{
   CommunityItem p = CommunityItem();
+  late TabController _tabController;
+
+  static const FREEBOARD = 0;
+  static const HOTBOARD = 1;
+  static const NOTICEBOARD = 2;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = new TabController(length: 3, vsync: this);
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Container(
-        //color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            TextButton(
-                onPressed: () {
-                  setState(() {
-                    //curPostList = genaralPostList;
-                  });
-                },
-                child: Text('전체글'),
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(110, 37)),
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                  alignment: Alignment(-1.0, -1.0),
-                )),
-            TextButton(
-                onPressed: () {
-                  setState(() {
-                    //curPostList = hotPostList;
-                  });
-                },
-                child: Text('인기글'),
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(110, 37)),
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                  alignment: Alignment(0.0, -1.0),
-                )),
-            TextButton(
-                onPressed: () {
-                  setState(() {
-                    //curPostList = noticePostList;
-                  });
-                },
-                child: Text('공지글'),
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(110, 37)),
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                  alignment: Alignment(1.0, -1.0),
-                )),
+    return Scaffold(
+        floatingActionButton: getWriteButton(),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            TabBar(
+              controller: _tabController,
+              labelColor: themeColor.getColor(),
+              indicatorColor: themeColor.getColor(),
+              unselectedLabelColor: Colors.black,
+              tabs: const [
+                Tab(text: "자유 게시판"),
+                Tab(text: "인기 게시판"),
+                Tab(text: "공지 게시판"),
+              ],
+            ),
+            // 탭 내용
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  getCommunityList(FREEBOARD),
+                  getCommunityList(HOTBOARD),
+                  getCommunityList(NOTICEBOARD),
+                ],
+              ),
+            )
           ],
+        ));
+  }
+
+
+  Widget getWriteButton(){
+    return Container(
+      decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+              color: Colors.black12, width: 1
+          )
+      ),
+      child: FloatingActionButton(
+        focusColor: Colors.white54,
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        focusElevation: 0.0,
+        highlightElevation: 0.0,
+        hoverElevation: 0.0,
+        onPressed: () {
+          Navigator.pushNamed(context, '/communityWrite');
+        },
+        child: const Icon(
+          Icons.add,
+          color: Colors.black,
         ),
       ),
-      StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('CommunityDB').snapshots(),
+    );
+  }
+  Widget getCommunityList(int boardType) {
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('CommunityDB')
+            .where('boardType', isEqualTo: boardType).snapshots(),
         builder: (context, snapshot) {
-          if(!snapshot.hasData){
+          if (!snapshot.hasData) {
             return CircularProgressIndicator();
           }
           final documents = snapshot.data!.docs;
-          return Expanded(
-              child: ListView(
-                  shrinkWrap: true,
-                  children: documents.map((doc)=> p.build(doc, context)).toList()
-              )
-          );
-        }),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          FloatingActionButton(
-            onPressed: (){
-              Navigator.pushNamed(context, '/communityWrite');
-              //_addPost();
-              //p.postAdd();
-            },
-            tooltip: 'write',
-            child: Icon(Icons.add),
-          ),
-        ],
-      )
-    ]);
+          return ListView(
+              shrinkWrap: true,
+              children: documents.map((doc) => p.build(doc, context)).toList());
+        });
   }
 }

@@ -280,7 +280,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         // 로그인이 된 상태
         return Scaffold(
           appBar: AppBar(
-              title: Text(widget.title, style: TextStyle(color: themeColor.getColor()),),
+              title: Text(
+                widget.title,
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
               elevation: 0.0,
               actions: <Widget>[
                 TextButton(

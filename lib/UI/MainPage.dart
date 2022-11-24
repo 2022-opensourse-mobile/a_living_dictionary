@@ -27,6 +27,9 @@ class MainPage extends StatelessWidget {
   var width, height, portraitH, landscapeH;
   var isPortrait;
 
+  static const FREEBOARD = 0;
+  static const HOTBOARD = 1;
+
   @override
   Widget build(BuildContext context) {
     items = List<String>.generate(5, (i) => 'Item $i');
@@ -53,8 +56,8 @@ class MainPage extends StatelessWidget {
                     carouselSlide(),
                     weatherText(),
                     todayList(), //오늘의 최신 TIP (임시로 한 테스트용)
-                    textList('인기글'),
-                    textList('최신글'),
+                    textList('인기글', HOTBOARD),
+                    textList('최신글', FREEBOARD),
                     const Divider(thickness: 0.5),
                   ],
                 ),
@@ -209,7 +212,7 @@ class MainPage extends StatelessWidget {
       ),
     );
   }
-  Container textList(String communityTitle) {
+  Container textList(String communityTitle, int boardType) {
     CommunityItem p = CommunityItem();
     return Container(
         height: 200, //210
@@ -227,7 +230,7 @@ class MainPage extends StatelessWidget {
               ),
             ),
             StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('communityDB').snapshots(),
+                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time').snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return CircularProgressIndicator();
@@ -237,7 +240,8 @@ class MainPage extends StatelessWidget {
                       child: ListView(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          children: p.getWidgetList(documents)));
+                          children: p.getWidgetList(context, documents, boardType))
+                  );
                 }),
           ],
         ));
