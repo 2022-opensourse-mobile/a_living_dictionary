@@ -45,37 +45,40 @@ class CommunityItem{
     final item = getDataFromDoc(doc);
     String t = '${item.time!.hour.toString()}:${item.time!.minute.toString()}';
     return Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
-        child: Card(
-          child: ListTile(
-            title: Text(item.title.toString() + " " + item.writer_id),
+      padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text("${item.title}  ${item.writer_id}"),
             subtitle: Text(item.body),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(style: BorderStyle.none)),
+            shape: const RoundedRectangleBorder(
+                side: BorderSide(style: BorderStyle.none)
+            ),
             trailing: Text(t),
             style: ListTileStyle.list,
-            onTap: (){
-              String tabName;
-              switch(item.boardType){
-                case 1:
-                  tabName = "인기게시판";
-                  break;
-                case 2:
-                  tabName = "공지게시판";
-                  break;
-                default:
-                  tabName = "자유게시판";
-                  break;
-              }
-
-              Navigator.push(context,
+            onTap: () {
+              String tabName = getTabName(item.boardType);
+              Navigator.push(
+                  context,
                   MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, doc.id))
               );
             },
           ),
-        )
+          const Divider(thickness: 1.0)
+        ],
+      ),
     );
+  }
+
+  String getTabName(int boardType){
+    switch(boardType){
+      case 1:
+        return "인기게시판";
+      case 2:
+        return "공지게시판";
+      default:
+        return "자유게시판";
+    }
   }
 
   //Firebase db의 데이터를 Post로 변환
