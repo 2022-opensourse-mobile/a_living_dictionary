@@ -97,7 +97,7 @@ class Authentication extends StatelessWidget {
 
 
               // 금방 로그인한 유저에 대한 정보로 객체 만듦
-              Logineduser loginedUser = new Logineduser(user_id, '', FirebaseAuth.instance.currentUser!.email ?? '');
+              Logineduser loginedUser = new Logineduser(user_id, '', FirebaseAuth.instance.currentUser!.email ?? '', '');
 
               // 데이터베이스에 유저가 저장되어있는지 확인
             
@@ -105,7 +105,7 @@ class Authentication extends StatelessWidget {
               FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
                
                 if (snap.size == 0) { // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                  FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': loginedUser.nickName, 'email': loginedUser.email});
+                  FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl});
                   // print("@@! i make new user!");
                 }
 
