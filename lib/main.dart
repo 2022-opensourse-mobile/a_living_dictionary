@@ -89,7 +89,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
-  var viewModel = new MainViewModel(KakaoLogin());
+  MainViewModel viewModel = new MainViewModel(KakaoLogin());
 
   final List<String> list = List.generate(10, (index) => "Text $index");
   
@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
     
     var response = await http.post(tokenUrl);
-    Map<String, dynamic> accessTokenResult = json.decode(response.body);
+    var accessTokenResult = json.decode(response.body);
     var responseCustomToken = await http.post(
       Uri.parse("https://loveyou.run.goorm.io/callbacks/naver/token"),
       body: {"accessToken": accessTokenResult['access_token']}
@@ -150,124 +150,122 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
 
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(), // 로그인 되고 안될때마다 새로운 스트림이 들어옴
+      stream: FirebaseAuth.instance.authStateChanges() , // 로그인 되고 안될때마다 새로운 스트림이 들어옴
       builder: (BuildContext context, snapshot) {
-        print("@@! snapshot has data?? " + snapshot.hasData.toString());
-        if(!snapshot.hasData) { // 로그인이 안 된 상태
+        
+        if(!snapshot.hasData) { // 로그인이 안 된 상태 - 로그인 화면
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // ElevatedButton(
-              //   onPressed: () async {
-              //     viewModel = new MainViewModel(KakaoLogin());
-                  
-              //     await viewModel.login();
-              //     print("@@!" + FirebaseAuth.instance.currentUser.toString());
+              ElevatedButton(
+                onPressed: () async {
+                  viewModel = new MainViewModel(KakaoLogin());
 
-              //      // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
-              //     String user_id = '';
-              //     String user_nickname = '';
-              //     String user_email = '';
+                  setState((){}); // 화면 갱신만 하는 것 
 
-              //     if (FirebaseAuth.instance.currentUser != null) {
-              //       user_id = FirebaseAuth.instance.currentUser!.uid;
-              //       user_nickname = viewModel.user?.kakaoAccount?.profile?.nickname ?? '';
-              //       user_email = viewModel.user?.kakaoAccount?.email  ?? '';
-              //     }
+                   // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
+                  String user_id = '';
+                  String user_nickname = '';
+                  String user_email = '';
+                  String user_profileImageUrl = '';
+
+                  if (FirebaseAuth.instance.currentUser != null) {
+                    user_id = FirebaseAuth.instance.currentUser!.uid;
+                    user_nickname = viewModel.user?.kakaoAccount?.profile?.nickname ?? '';
+                    user_email = viewModel.user?.kakaoAccount?.email  ?? '';
+                    user_profileImageUrl = viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? '';
+                  }
 
                  
-              //     // 금방 로그인한 유저에 대한 정보로 객체 만듦
-              //     loginedUser = new Logineduser(user_id, user_nickname, user_email);
+                  // 금방 로그인한 유저에 대한 정보로 객체 만듦
+                  loginedUser = new Logineduser(user_id, user_nickname, user_email, user_profileImageUrl);
 
-              //     // 데이터베이스에 유저가 저장되어있는지 확인
-              //     bool hasUserData = false;
-              //     FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-              //       snap.docs.forEach((doc) {
-              //         hasUserData = true;
-              //       });
-              //       }
-              //     );
+                  // 데이터베이스에 유저가 저장되어있는지 확인
+                  bool hasUserData = false;
+                  FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
+                    snap.docs.forEach((doc) {
+                      hasUserData = true;
+                    });
+                    }
+                  );
 
-              //     // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-              //     if (!hasUserData && user_id != '') {
-              //       FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': user_nickname, 'email': user_email});
-              //     }
+                  // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                  if (!hasUserData && user_id != '') {
+                    FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': user_nickname, 'email': user_email, 'profileImageUrl': user_profileImageUrl});
+                  }
 
-              //     print("@@!+ 추가완");
+                 
+                }, 
+                child: const Text('카카오로 로그인')
+              ),
+              ElevatedButton(
+                // onPressed: () async {
+                //   String naver_url = 'https://loveyou.run.goorm.io/naver';
+                //   var _nToken = await Navigator.of(context).push(
+                //     MaterialPageRoute(
+                //       builder: (BuildContext context) => WebviewScaffold(
+                //         url: naver_url,
+                //         javascriptChannels: Set.from([
+                //           JavascriptChannel(
+                //             name: "james",
+                //             onMessageReceived: (JavascriptMessage result) async {
+                //               if (result.message != null)
+                //                 return Navigator.of(context).pop(result.message);
 
-              //     setState((){}); // 화면 갱신만 하는 것 
-              //   }, 
-              //   child: const Text('카카오로 로그인')
-              // ),
-              // ElevatedButton(
-              //   // onPressed: () async {
-              //   //   String naver_url = 'https://loveyou.run.goorm.io/naver';
-              //   //   var _nToken = await Navigator.of(context).push(
-              //   //     MaterialPageRoute(
-              //   //       builder: (BuildContext context) => WebviewScaffold(
-              //   //         url: naver_url,
-              //   //         javascriptChannels: Set.from([
-              //   //           JavascriptChannel(
-              //   //             name: "james",
-              //   //             onMessageReceived: (JavascriptMessage result) async {
-              //   //               if (result.message != null)
-              //   //                 return Navigator.of(context).pop(result.message);
-
-              //   //               return Navigator.of(context).pop();
-              //   //             }
-              //   //           )
-              //   //         ])
-              //   //       )
-              //   //     )
+                //               return Navigator.of(context).pop();
+                //             }
+                //           )
+                //         ])
+                //       )
+                //     )
                   
-              //   //   );
+                //   );
 
-              //   //   // if(_nToken != null) return Navigator.of(context).pushAndRemoveUntil(
-              //   //   //   MaterialPageRoute(
-              //   //   //     builder: (BuildContext context) => MainPage(userName: _textEditingController.text)
-              //   //   //   ),
-              //   //   //   (route) => false
-              //   //   // );
+                //   // if(_nToken != null) return Navigator.of(context).pushAndRemoveUntil(
+                //   //   MaterialPageRoute(
+                //   //     builder: (BuildContext context) => MainPage(userName: _textEditingController.text)
+                //   //   ),
+                //   //   (route) => false
+                //   // );
                   
 
-              //   //   // viewModel = new MainViewModel(KakaoLogin());
-              //   //   // await viewModel.login();
-              //   //   // setState((){}); // 화면 갱신만 하는 것 
+                //   // viewModel = new MainViewModel(KakaoLogin());
+                //   // await viewModel.login();
+                //   // setState((){}); // 화면 갱신만 하는 것 
 
-              //   // }, 
-              //   onPressed: (){
-              //     signInWithNaver();
+                // }, 
+                onPressed: (){
+                  signInWithNaver();
 
-              //     // // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
-              //     // String user_id = FirebaseAuth.instance.currentUser!.uid;
-              //     // String user_nickname = viewModel.user?.kakaoAccount?.profile?.nickname ?? '';
-              //     // String user_email = viewModel.user?.kakaoAccount?.email  ?? '';
+                  // // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
+                  // String user_id = FirebaseAuth.instance.currentUser!.uid;
+                  // String user_nickname = viewModel.user?.kakaoAccount?.profile?.nickname ?? '';
+                  // String user_email = viewModel.user?.kakaoAccount?.email  ?? '';
 
 
-              //     // // 금방 로그인한 유저에 대한 정보로 객체 만듦
-              //     // loginedUser = new Logineduser(user_id, user_nickname, user_email);
+                  // // 금방 로그인한 유저에 대한 정보로 객체 만듦
+                  // loginedUser = new Logineduser(user_id, user_nickname, user_email);
 
-              //     // // 데이터베이스에 유저가 저장되어있는지 확인
-              //     // bool hasUserData = false;
-              //     // FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-              //     //   snap.docs.forEach((doc) {
-              //     //     hasUserData = true;
-              //     //   });
-              //     //   }
-              //     // );
+                  // // 데이터베이스에 유저가 저장되어있는지 확인
+                  // bool hasUserData = false;
+                  // FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
+                  //   snap.docs.forEach((doc) {
+                  //     hasUserData = true;
+                  //   });
+                  //   }
+                  // );
 
-              //     // // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-              //     // if (!hasUserData) {
-              //     //   FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': user_nickname, 'email': user_email});
-              //     // }
+                  // // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                  // if (!hasUserData) {
+                  //   FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': user_nickname, 'email': user_email});
+                  // }
 
-              //   },
-              //   child: const Text('네이버로 로그인')
-              // ),
+                },
+                child: const Text('네이버로 로그인')
+              ),
               ElevatedButton(
                 onPressed: () async {
                   loginedUser = await Navigator.pushNamed(context, '/authPage') as Logineduser;

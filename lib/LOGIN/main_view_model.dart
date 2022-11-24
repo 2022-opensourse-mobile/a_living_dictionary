@@ -17,21 +17,17 @@ import 'package:a_living_dictionary/LOGIN/social_login.dart';
 class MainViewModel {
   final _firebaseAuthDataSource = FirebaseAuthRemoteDataSource();
   final SocialLogin _socialLogin;
-
   bool isLogined = false;
-
   kakao.User? user;
 
   MainViewModel(this._socialLogin);
 
   Future login() async {
-
     isLogined = await _socialLogin.login();
-    print("@@!isLogined?? " + isLogined.toString());
+
     if (!isLogined) {
       return;
     }
-
 
     if (_socialLogin.runtimeType is KakaoLogin) {
       user = await kakao.UserApi.instance.me();
@@ -40,13 +36,13 @@ class MainViewModel {
       // 인증이 된다. 필요 데이터 던져주기
       final token = await _firebaseAuthDataSource.createCustomToken({
         'uid': user!.id.toString(),
-        // 'displayName': user!.kakaoAccount!.profile!.nickname,
-        // 'email': user!.kakaoAccount!.email!,
-        // 'photoURL': user!.kakaoAccount!.profile!.profileImageUrl!,
+        'displayName': user!.kakaoAccount!.profile!.nickname,
+        'email': user!.kakaoAccount!.email!,
+        'photoURL': user!.kakaoAccount!.profile!.profileImageUrl!,
       });
 
-
       await FirebaseAuth.instance.signInWithCustomToken(token);
+
     } else if (_socialLogin.runtimeType is NaverLogin) {
       
     }
@@ -58,9 +54,5 @@ class MainViewModel {
 
     isLogined = false;
     user = null;
-
-    
-
-
   }
 }
