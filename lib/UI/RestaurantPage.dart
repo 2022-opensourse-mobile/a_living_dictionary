@@ -132,17 +132,19 @@ class Map extends StatefulWidget {
 
 class _MapState extends State<Map> {
   late GoogleMapController _controller;
-  TextEditingController reviewController = TextEditingController();
+  TextEditingController _textEditingController = TextEditingController();
 
   static int id = 1; // 마커 id
   final List<Marker> markers = []; // 마커를 등록할 목록
-  String m_id = "";
+  String m_id = "", store = ""; // Map Id & 선택한 장소
+  bool isCancle = false; // 장소 입력 시, 취소 버튼 클릭 확인용
 
-  // 지도 클릭 시, 마커 등록 TODO: 없애야 함
-  void addMarker(coordinate, BuildContext context) {
+  // 지도 클릭 시, 마커 등록
+  void addMarker(BuildContext context, double lat, double lng) {
     setState(() {
       markers.add(Marker(
-          position: coordinate,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // 마커 파란색
+          position: LatLng(lat, lng),
           markerId: MarkerId((++id).toString()),
           onTap: () {
             showModalBottomSheet(
@@ -151,8 +153,8 @@ class _MapState extends State<Map> {
                 builder: (BuildContext context) {
                   return StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance.collection('MapDB')
-                        .where('latitude', isEqualTo: coordinate.latitude)
-                        .where('longitude', isEqualTo: coordinate.longitude).snapshots(),
+                        .where('latitude', isEqualTo: lat)
+                        .where('longitude', isEqualTo: lng).snapshots(),
                     builder: (context, AsyncSnapshot snapshot) {
                       if (!snapshot.hasData)
                         return CircularProgressIndicator();
@@ -273,7 +275,7 @@ class _MapState extends State<Map> {
                   ),
                 ),
               ),
-              controller: reviewController,
+              controller: _textEditingController,
               maxLines: null,
               maxLength: 50,
               cursorColor: Colors.black,
@@ -281,15 +283,15 @@ class _MapState extends State<Map> {
           ),
           ElevatedButton(
             onPressed: (){
-              if (reviewController.text != "") {
+              if (_textEditingController.text != "") {
                 FirebaseFirestore.instance.collection('MapDB')
                     .doc(m_id)
                     .collection('reviewDB')
                     .add({
-                  'content': reviewController.text.toString(),
+                  'content': _textEditingController.text.toString(),
                   'writer': '작성자',
                 });
-                reviewController.text = "";
+                _textEditingController.text = "";
                 Navigator.pop(context);
               }
             },
@@ -316,7 +318,6 @@ class _MapState extends State<Map> {
       myLocationButtonEnabled: true, // 현재 위치 버튼
       onTap: (coordinate) { // 클릭한 위치 중앙에 표시
         _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
-        addMarker(coordinate, context); // 마커 추가
         saveLocation(context, coordinate.latitude, coordinate.longitude, id); // 마커 위치 DB에 저장
       },
       gestureRecognizers: {
@@ -324,6 +325,46 @@ class _MapState extends State<Map> {
                 () => EagerGestureRecognizer()
         )
       },
+    );
+  }
+
+  // 장소 입력받을 다이얼로그창
+  Future<void> inputStore(BuildContext context, double lat, double lng) async {
+    String valueText = "";
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('장소를 입력하세요'),
+            content: TextField(
+              onChanged: (value) {
+                valueText = value;
+              },
+              controller: _textEditingController,
+              decoration: InputDecoration(hintText: "장소 입력"),
+              cursorColor: Colors.black,
+            ),
+            actions: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  isCancle = true;
+                  _textEditingController.text = "";
+                  Navigator.pop(context);
+                },
+                child: Text("취소"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  store = valueText;
+                  isCancle = false;
+                  _textEditingController.text = "";
+                  Navigator.pop(context);
+                },
+                child: Text("완료"),
+              ),
+            ],
+          );
+        }
     );
   }
 
@@ -342,12 +383,17 @@ class _MapState extends State<Map> {
 
     var address = convert.jsonDecode(responseBody)['results'][0]['formatted_address'];
 
-    FirebaseFirestore.instance.collection('MapDB').add({
-      'latitude': lat, 'longitude': lng, 'like': 0,
-      'address': address,
-      'store': "테스트 $id",
-      'markId': id,
-    });
+    await inputStore(context, lat, lng);
+
+    if (!isCancle) {
+      addMarker(context, lat, lng); // 마커 추가
+      FirebaseFirestore.instance.collection('MapDB').add({
+        'latitude': lat, 'longitude': lng, 'like': 0,
+        'address': address,
+        'store': store,
+        'markId': id,
+      });
+    }
   }
 
   // 현재 위치 구하기
@@ -379,7 +425,9 @@ class _MapState extends State<Map> {
     double curLat = _currentLocation.latitude!;
     double curLng = _currentLocation.longitude!;
 
-    // 현재 위치로 카메라(뷰) 이동
+    var pos = LatLng(curLat, curLng);
+
+    // // 현재 위치로 카메라(뷰) 이동
     // _controller.animateCamera(CameraUpdate.newCameraPosition(
     //   CameraPosition(
     //     bearing: 0,
