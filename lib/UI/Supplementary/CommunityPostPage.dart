@@ -149,7 +149,24 @@ class _CommunityPostPageState extends State<CommunityPostPage> {
             onPressed: (){
               setState(() {
                 likeIcon = (isClicked)?(Icon(Icons.thumb_up_off_alt)):(Icon(Icons.thumb_up_off_alt_rounded));
+                int num = (isClicked)?(1):(-1);
                 isClicked = !isClicked;
+                StreamBuilder(
+                    stream: FirebaseFirestore.instance.collection("CommunityDB").doc(doc_id).snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return CircularProgressIndicator();
+                      }
+                      final item = snapshot.data!;
+
+                      int like = item.get('like')+num;
+                      
+                      FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).update({
+                        'like': like
+                      });
+
+                      return Container();
+                    });
               });
             },
           ),

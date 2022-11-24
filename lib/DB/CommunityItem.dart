@@ -95,24 +95,31 @@ class CommunityItem{
     return item;
   }
   //MainPage에서 사용, 하나의 doc을 받아서 하나의 리스트 원소 출력
-  Widget buildMain(DocumentSnapshot doc) {
+  Widget buildMain(DocumentSnapshot<Object?> doc, BuildContext context) {
     final item = getDataFromDoc(doc);
     String t = '${item.time!.hour.toString()}:${item.time!.minute.toString()}';
     return Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
         child: ListTile(
           title: Text(item.title),
-          visualDensity: VisualDensity(vertical: -4),
+          visualDensity: const VisualDensity(vertical: -4),
           dense: true,
           trailing: Text(t),
-          onTap: (){},
+          onTap: (){
+            String tabName = getTabName(item.boardType);
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, doc.id))
+            );
+          },
         ));
   }
   //document 리스트를 일부 elements만 뽑아서 return
-  List<Widget> getWidgetList(List<QueryDocumentSnapshot<Object?>> doc){
-    final d = doc.where((doc){return doc['id'] < 7 == true;});
-    var dl = d.map((e) => buildMain(e)).toList();
-    return dl;
+  List<Widget> getWidgetList(BuildContext context, List<QueryDocumentSnapshot<Object?>> doc, int boardType){
+    final board = doc.where((item)=> item['boardType'] == boardType).toList();
+    final subList = board.sublist(0,4);
+    final buildList = subList.map((item) => buildMain(item, context)).toList();
+    return buildList;
   }
 }
 
