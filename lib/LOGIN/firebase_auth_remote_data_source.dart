@@ -7,7 +7,7 @@ import 'dart:io';
 class FirebaseAuthRemoteDataSource {
     // 서버구축하면 url을 넣는다.
     final String kakaoUrl = 'https://loveyou.run.goorm.io/kakao';      // 백엔드 서버 url
-    final String naverUrl = 'https://loveyou.run.goorm.io/naver';
+    // final String naverUrl = 'https://loveyou.run.goorm.io/naver';
     
 
     // 서버와 통신해서 토큰을 만들어주는
