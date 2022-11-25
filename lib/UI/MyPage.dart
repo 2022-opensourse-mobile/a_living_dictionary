@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'Supplementary//ThemeColor.dart';
 
@@ -46,6 +47,12 @@ class Settings extends StatelessWidget {
                       leading: Icon(Icons.person_outline),
                       title: Text('아이디'),
                     ),
+                    ListTile(
+                      title: Text('로그아웃'),
+                      onTap: (){
+                        FirebaseAuth.instance.signOut();
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -81,6 +88,7 @@ class Settings extends StatelessWidget {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => scrapList(context)));
                       },
                     ),
+                    
                     // Divider(thickness: 0.5),
                   ],
                 ),

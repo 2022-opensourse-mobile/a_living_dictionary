@@ -78,51 +78,58 @@ class Authentication extends StatelessWidget {
              },
               
               // showAuthActionSwitch: false,  
-          
-          
-          
             ),
           );
         } 
 
-
         return Container(
-          child: TextButton(
-            onPressed: () async {
-              // await viewModel.logout();
-              // setState((){}); // 화면 갱신만 하는 것
+          color: Colors.white,
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(height: 50),
+              Text("사용 Tip", style: TextStyle( fontSize: 25, color: Colors.black, fontWeight: FontWeight.bold)),
+              Text("자취 백과사전 환영합니다!", style: TextStyle(fontSize: 25, color: Colors.black, fontWeight: FontWeight.normal)),
+              Row(
+                children: [
+                  Expanded(child: SizedBox()),
+                  TextButton(
+                    onPressed: () async {
+                      // await viewModel.logout();
+                      // setState((){}); // 화면 갱신만 하는 것
 
-              // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
-              String user_id = FirebaseAuth.instance.currentUser!.uid;
+                      // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
+                      String user_id = FirebaseAuth.instance.currentUser!.uid;
 
+                      // 금방 로그인한 유저에 대한 정보로 객체 만듦
+                      Logineduser loginedUser = new Logineduser(user_id, '', FirebaseAuth.instance.currentUser!.email ?? '', '');
 
-              // 금방 로그인한 유저에 대한 정보로 객체 만듦
-              Logineduser loginedUser = new Logineduser(user_id, '', FirebaseAuth.instance.currentUser!.email ?? '', '');
+                      // 데이터베이스에 유저가 저장되어있는지 확인
+                      FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
+                        
+                        if (snap.size == 0) { // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                          FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl});
+                          // print("@@! i make new user!");
+                        }
 
-              // 데이터베이스에 유저가 저장되어있는지 확인
-            
+                        snap.docs.forEach((doc) {
+                          loginedUser.nickName = doc['nickName'];
+                          loginedUser.email = doc['email'];
+                        });
+                        }
+                      );
 
-              FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-               
-                if (snap.size == 0) { // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                  FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl});
-                  // print("@@! i make new user!");
-                }
-
-                snap.docs.forEach((doc) {
-                  loginedUser.nickName = doc['nickName'];
-                  loginedUser.email = doc['email'];
-                });
-                }
-              );
-              
-
-              Navigator.pop(context, loginedUser);
-            }, 
-            child:  Container(
-              decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
-              child: Text('로그인 완료시 클릭', style: TextStyle(fontSize: 20, color: Colors.amber),))
-            ),
+                      Navigator.pop(context, loginedUser);
+                    }, 
+                    child:  Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+                      child: Text('로그인 완료시 클릭',  style: TextStyle(fontSize: 20, color: Colors.black),))
+                    ),
+                ],
+              ),
+            ],
+          ),
         );
         
       }
