@@ -96,15 +96,15 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     return SingleChildScrollView(
       child: Column(
         children: [
-          //추가할 때 필요한 코드 @@삭제
-          Row(
-            children: [
-              makeButton("청소"),
-              makeButton("빨래"),
-              makeButton("요리"),
-              makeButton("기타"),
-            ],
-          ),
+          // //추가할 때 필요한 코드 @@삭제
+          // Row(
+          //   children: [
+          //     makeButton("청소"),
+          //     makeButton("빨래"),
+          //     makeButton("요리"),
+          //     makeButton("기타"),
+          //   ],
+          // ),
           startxtIcon(context, '인기 TOP 4'),
           card.recommendPostList(context),
           Divider(thickness: 0.5,),
@@ -134,26 +134,26 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     );
   }
 
-  // 데이터베이스 추가 위한 검색어: @@삭제
-  TextButton makeButton(String fieldName) {
-    return TextButton(
-      onPressed: (){     
-        DictionaryItem item = DictionaryItem(
-          0,
-          title: '게시글',
-          hashTag: fieldName, 
-          date: Timestamp.now().toDate(),
-          recommend: false,
-          thumbnail: "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d"
-        );
-        FirebaseFirestore.instance.collection('dictionaryItem').add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
-        },
-      style: TextButton.styleFrom(
-        foregroundColor: Colors.pink,
-      ),
-      child: Text(fieldName),
-    );
-  }
+  // // 데이터베이스 추가 위한 검색어: @@삭제
+  // TextButton makeButton(String fieldName) {
+  //   return TextButton(
+  //     onPressed: (){     
+  //       DictionaryItem item = DictionaryItem(
+  //         0,
+  //         title: '게시글',
+  //         hashTag: fieldName, 
+  //         date: Timestamp.now().toDate(),
+  //         recommend: false,
+  //         thumbnail: "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d"
+  //       );
+  //       FirebaseFirestore.instance.collection('dictionaryItem').add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
+  //       },
+  //     style: TextButton.styleFrom(
+  //       foregroundColor: Colors.pink,
+  //     ),
+  //     child: Text(fieldName),
+  //   );
+  // }
 
   // 텍스트 + 아이콘
   Widget startxtIcon(BuildContext context, String str) {

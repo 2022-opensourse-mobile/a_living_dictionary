@@ -34,7 +34,6 @@ import 'package:uuid/uuid.dart';
 // android/app/src/google-services.json과 firebase_options.dart는 gitignore
 // https://funncy.github.io/flutter/2021/03/10/firebase-auth/
 
-
 //123
 //page0 : Main
 //page1 : Dictionary
@@ -165,7 +164,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   viewModel = new MainViewModel(KakaoLogin());
 
                   await viewModel.login();
-                    
 
                   setState((){}); // 화면 갱신만 하는 것 
 
@@ -283,19 +281,19 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ),
               elevation: 0.0,
               actions: <Widget>[
-                TextButton(
-                  onPressed: () async {
-                    if (viewModel != null) {    // social login
-                      await viewModel.logout();
-                    } else {                    // email login
-                      FirebaseAuth.instance.signOut();
-                    }              
-                    setState((){}); // 화면 갱신만 하는 것 
-                  }, 
-                  child:  Container(
-                    decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
-                    child: Text('logout', style: TextStyle(fontSize: 20, color: Colors.amber),))
-                ),
+                // TextButton(
+                //   onPressed: () async {
+                //     if (viewModel != null) {    // social login
+                //       await viewModel.logout();
+                //     } else {                    // email login
+                //       FirebaseAuth.instance.signOut();
+                //     }              
+                //     setState((){}); // 화면 갱신만 하는 것 
+                //   }, 
+                //   child:  Container(
+                //     decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
+                //     child: Text('logout', style: TextStyle(fontSize: 20, color: Colors.amber),))
+                // ),
                 // Text(loginedUser.nickName),
                 IconButton(
                   icon: new Icon(Icons.search),
