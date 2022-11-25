@@ -164,6 +164,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 onPressed: () async {
                   viewModel = new MainViewModel(KakaoLogin());
 
+                  await viewModel.login();
+                    
+
                   setState((){}); // 화면 갱신만 하는 것 
 
                    // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
@@ -183,21 +186,24 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   // 금방 로그인한 유저에 대한 정보로 객체 만듦
                   loginedUser = new Logineduser(user_id, user_nickname, user_email, user_profileImageUrl);
 
+
                   // 데이터베이스에 유저가 저장되어있는지 확인
-                  bool hasUserData = false;
-                  FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-                    snap.docs.forEach((doc) {
-                      hasUserData = true;
-                    });
+                    FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
+                      String doc_id = '';
+
+                      if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                        FirebaseFirestore.instance.collection('userInfo').add({
+                          'uid': loginedUser.uid, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl, 'docID': ''
+                        }).then((value) {
+                          doc_id =  value.id.toString();
+
+                          FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                            'docID': doc_id
+                          });
+                        });
+                      }
                     }
-                  );
-
-                  // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                  if (!hasUserData && user_id != '') {
-                    FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': user_nickname, 'email': user_email, 'profileImageUrl': user_profileImageUrl});
-                  }
-
-                 
+                    );
                 }, 
                 child: const Text('카카오로 로그인')
               ),
@@ -237,40 +243,89 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 //   // setState((){}); // 화면 갱신만 하는 것 
 
                 // }, 
-                onPressed: (){
-                  signInWithNaver();
+                onPressed: () async {
+                  await signInWithNaver();
 
-                  // // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
-                  // String user_id = FirebaseAuth.instance.currentUser!.uid;
-                  // String user_nickname = viewModel.user?.kakaoAccount?.profile?.nickname ?? '';
-                  // String user_email = viewModel.user?.kakaoAccount?.email  ?? '';
+                   // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
+                  String user_id = '';
+                  String user_nickname = '';
+                  String user_email = '';
+                  String user_profileImageUrl = '';
 
+                  print("@@!: " + FirebaseAuth.instance.currentUser.toString());
+                  if (FirebaseAuth.instance.currentUser != null) {
+                    user_id = FirebaseAuth.instance.currentUser!.uid;
+                    user_nickname = '';
+                    user_email = '';
+                    user_profileImageUrl = '';
 
-                  // // 금방 로그인한 유저에 대한 정보로 객체 만듦
-                  // loginedUser = new Logineduser(user_id, user_nickname, user_email);
+                    // 금방 로그인한 유저에 대한 정보로 객체 만듦
+                    loginedUser = new Logineduser(user_id, user_nickname, user_email, user_profileImageUrl);
 
-                  // // 데이터베이스에 유저가 저장되어있는지 확인
-                  // bool hasUserData = false;
-                  // FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-                  //   snap.docs.forEach((doc) {
-                  //     hasUserData = true;
-                  //   });
-                  //   }
-                  // );
+                    // 데이터베이스에 유저가 저장되어있는지 확인
+                    FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
+                      String doc_id = '';
 
-                  // // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                  // if (!hasUserData) {
-                  //   FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': user_nickname, 'email': user_email});
-                  // }
+                      if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                        FirebaseFirestore.instance.collection('userInfo').add({
+                          'uid': loginedUser.uid, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl, 'docID': ''
+                        }).then((value) {
+                          doc_id =  value.id.toString();
+                          print("@@! doc_id: " + doc_id);
 
+                          FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                            'docID': doc_id
+                          });
+                        });
+                        
+                      }
+                    }
+                    );
+                  }
                 },
                 child: const Text('네이버로 로그인')
               ),
               ElevatedButton(
                 onPressed: () async {
                   loginedUser = await Navigator.pushNamed(context, '/authPage') as Logineduser;
+
+                  FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: loginedUser.uid).get().then( (QuerySnapshot snap) {
+                    String doc_id = '';
+
+                    if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                      FirebaseFirestore.instance.collection('userInfo').add({
+                        'uid': loginedUser.uid, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl, 'docID': ''
+                      }).then((value) {
+                        doc_id =  value.id.toString();
+
+                        FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                          'docID': doc_id
+                        });
+                      });
+                      
+                    }
+                  }
+                  );
                 }, 
-                child: const Text('이메일로 로그인')
+                child: const Text('이메일로 로그인')  /// 여기 데베코드 추가
+                // // 데이터베이스에 유저가 저장되어있는지 확인
+                //     FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
+                //       String doc_id = '';
+
+                //       if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                //         FirebaseFirestore.instance.collection('userInfo').add({
+                //           'uid': user_id, 'nickName': user_nickname, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': ''
+                //         }).then((value) {
+                //           doc_id =  value.id.toString();
+
+                //           FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                //             'docID': doc_id
+                //           });
+                //         });
+                        
+                //       }
+                //     }
+                //     );
               ),
             ],
           );
