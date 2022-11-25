@@ -182,7 +182,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     user_profileImageUrl = viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? '';
                   }
 
-                 
                   // 금방 로그인한 유저에 대한 정보로 객체 만듦
                   loginedUser = new Logineduser(user_id, user_nickname, user_email, user_profileImageUrl);
 
@@ -208,41 +207,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 child: const Text('카카오로 로그인')
               ),
               ElevatedButton(
-                // onPressed: () async {
-                //   String naver_url = 'https://loveyou.run.goorm.io/naver';
-                //   var _nToken = await Navigator.of(context).push(
-                //     MaterialPageRoute(
-                //       builder: (BuildContext context) => WebviewScaffold(
-                //         url: naver_url,
-                //         javascriptChannels: Set.from([
-                //           JavascriptChannel(
-                //             name: "james",
-                //             onMessageReceived: (JavascriptMessage result) async {
-                //               if (result.message != null)
-                //                 return Navigator.of(context).pop(result.message);
-
-                //               return Navigator.of(context).pop();
-                //             }
-                //           )
-                //         ])
-                //       )
-                //     )
-                  
-                //   );
-
-                //   // if(_nToken != null) return Navigator.of(context).pushAndRemoveUntil(
-                //   //   MaterialPageRoute(
-                //   //     builder: (BuildContext context) => MainPage(userName: _textEditingController.text)
-                //   //   ),
-                //   //   (route) => false
-                //   // );
-                  
-
-                //   // viewModel = new MainViewModel(KakaoLogin());
-                //   // await viewModel.login();
-                //   // setState((){}); // 화면 갱신만 하는 것 
-
-                // }, 
                 onPressed: () async {
                   await signInWithNaver();
 
@@ -252,12 +216,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   String user_email = '';
                   String user_profileImageUrl = '';
 
-                  print("@@!: " + FirebaseAuth.instance.currentUser.toString());
                   if (FirebaseAuth.instance.currentUser != null) {
                     user_id = FirebaseAuth.instance.currentUser!.uid;
-                    user_nickname = '';
-                    user_email = '';
-                    user_profileImageUrl = '';
+                    user_nickname = FirebaseAuth.instance.currentUser!.displayName ?? '';
+                    user_email = FirebaseAuth.instance.currentUser!.email ?? '';
+                    user_profileImageUrl = FirebaseAuth.instance.currentUser!.photoURL ?? '';
 
                     // 금방 로그인한 유저에 대한 정보로 객체 만듦
                     loginedUser = new Logineduser(user_id, user_nickname, user_email, user_profileImageUrl);
@@ -271,7 +234,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           'uid': loginedUser.uid, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl, 'docID': ''
                         }).then((value) {
                           doc_id =  value.id.toString();
-                          print("@@! doc_id: " + doc_id);
 
                           FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
                             'docID': doc_id
@@ -302,35 +264,15 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           'docID': doc_id
                         });
                       });
-                      
                     }
                   }
                   );
                 }, 
-                child: const Text('이메일로 로그인')  /// 여기 데베코드 추가
-                // // 데이터베이스에 유저가 저장되어있는지 확인
-                //     FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-                //       String doc_id = '';
-
-                //       if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                //         FirebaseFirestore.instance.collection('userInfo').add({
-                //           'uid': user_id, 'nickName': user_nickname, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': ''
-                //         }).then((value) {
-                //           doc_id =  value.id.toString();
-
-                //           FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
-                //             'docID': doc_id
-                //           });
-                //         });
-                        
-                //       }
-                //     }
-                //     );
+                child: const Text('이메일로 로그인')  
               ),
             ],
           );
         }
-
 
         // 로그인이 된 상태
         return Scaffold(
