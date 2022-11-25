@@ -45,37 +45,40 @@ class CommunityItem{
     final item = getDataFromDoc(doc);
     String t = '${item.time!.hour.toString()}:${item.time!.minute.toString()}';
     return Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
-        child: Card(
-          child: ListTile(
-            title: Text(item.title.toString() + " " + item.writer_id),
+      padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text("${item.title}  ${item.writer_id}"),
             subtitle: Text(item.body),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(style: BorderStyle.none)),
+            shape: const RoundedRectangleBorder(
+                side: BorderSide(style: BorderStyle.none)
+            ),
             trailing: Text(t),
             style: ListTileStyle.list,
-            onTap: (){
-              String tabName;
-              switch(item.boardType){
-                case 1:
-                  tabName = "인기게시판";
-                  break;
-                case 2:
-                  tabName = "공지게시판";
-                  break;
-                default:
-                  tabName = "자유게시판";
-                  break;
-              }
-
-              Navigator.push(context,
+            onTap: () {
+              String tabName = getTabName(item.boardType);
+              Navigator.push(
+                  context,
                   MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, doc.id))
               );
             },
           ),
-        )
+          const Divider(thickness: 1.0)
+        ],
+      ),
     );
+  }
+
+  String getTabName(int boardType){
+    switch(boardType){
+      case 1:
+        return "인기게시판";
+      case 2:
+        return "공지게시판";
+      default:
+        return "자유게시판";
+    }
   }
 
   //Firebase db의 데이터를 Post로 변환
@@ -92,24 +95,31 @@ class CommunityItem{
     return item;
   }
   //MainPage에서 사용, 하나의 doc을 받아서 하나의 리스트 원소 출력
-  Widget buildMain(DocumentSnapshot doc) {
+  Widget buildMain(DocumentSnapshot<Object?> doc, BuildContext context) {
     final item = getDataFromDoc(doc);
     String t = '${item.time!.hour.toString()}:${item.time!.minute.toString()}';
     return Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
         child: ListTile(
           title: Text(item.title),
-          visualDensity: VisualDensity(vertical: -4),
+          visualDensity: const VisualDensity(vertical: -4),
           dense: true,
           trailing: Text(t),
-          onTap: (){},
+          onTap: (){
+            String tabName = getTabName(item.boardType);
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, doc.id))
+            );
+          },
         ));
   }
   //document 리스트를 일부 elements만 뽑아서 return
-  List<Widget> getWidgetList(List<QueryDocumentSnapshot<Object?>> doc){
-    final d = doc.where((doc){return doc['id'] < 7 == true;});
-    var dl = d.map((e) => buildMain(e)).toList();
-    return dl;
+  List<Widget> getWidgetList(BuildContext context, List<QueryDocumentSnapshot<Object?>> doc, int boardType){
+    final board = doc.where((item)=> item['boardType'] == boardType).toList();
+    final subList = board.sublist(0,4);
+    final buildList = subList.map((item) => buildMain(item, context)).toList();
+    return buildList;
   }
 }
 
