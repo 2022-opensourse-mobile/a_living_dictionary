@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:a_living_dictionary/UI/DictionaryPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -98,24 +99,38 @@ class MainPage extends StatelessWidget {
               ),
               items: slideList.map((item) {
                 // item['item_id']가 id인 dictionary item을 가져와서 img필드 -> Image에 출력
+
+
                 return StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection('dictionaryItem').where('__name__', isEqualTo: item['item_id']).snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return CircularProgressIndicator();
-                      }
-                      DictionaryCardPage card = DictionaryCardPage(width, height, portraitH, landscapeH, isPortrait);
-                      return Container(
-                          child: Center(
-                              child: GestureDetector(
-                                  child: Image(image: NetworkImage(snapshot.data!.docs[0]['thumbnail'])),
-                                  onTap: (() {
-                                    String clicked_id = snapshot.data!.docs[0].id; // 지금 클릭한 dictionaryItem의 도큐먼트 id
-                                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, clicked_id));
-                                    Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
-                                  })))
-                      );
-                    });
+                  stream: FirebaseFirestore.instance.collection('dictionaryItem').where('__name__', isEqualTo: item['item_id']).snapshots(),
+                  // stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(item['item_id']).snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return CircularProgressIndicator();
+                    }
+                    DictionaryCardPage card = DictionaryCardPage(width, height, portraitH, landscapeH, isPortrait);
+                    return Container(
+                      child: Center(
+                        child: GestureDetector(
+                          child: Image(image: NetworkImage(snapshot.data!.docs[0]['thumbnail'])),
+                          onTap: (() {
+                            String clicked_id = snapshot.data!.docs[0].id; // 지금 클릭한 dictionaryItem의 도큐먼트 id
+                            DictionaryItemInfo dicItemInfo;
+
+                            var doc = FirebaseFirestore.instance.collection('dictionaryItem').doc(snapshot.data!.docs[0].id).get().then((doc) {
+                              
+                              dicItemInfo = DictionaryItemInfo(snapshot.data!.docs[0].id, snapshot.data!.docs[0]['author'], snapshot.data!.docs[0]['card_num'], snapshot.data!.docs[0]['date'], snapshot.data!.docs[0]['hashtag'], snapshot.data!.docs[0]['scrapnum'], snapshot.data!.docs[0]['thumbnail'], snapshot.data!.docs[0]['title']);
+                              
+                              PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
+                              Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
+                            });
+                                  
+                      })))
+                    );
+                  });
+
+
+                    
               }).toList(),
             );
           }

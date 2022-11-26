@@ -18,6 +18,19 @@ class DictionaryPage extends StatefulWidget {
   State<DictionaryPage> createState() => _DictionaryPageState();
 }
 
+class DictionaryItemInfo {
+  var doc_id;
+  var author;
+  var card_num;
+  var date;
+  var hashtag;
+  var scrapnum;
+  var thumbnail;
+  var title;
+
+  DictionaryItemInfo(this.doc_id, this.author, this.card_num, this.date, this.hashtag, this.scrapnum, this.thumbnail, this.title);
+}
+
 
 class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStateMixin {
   late TabController _tabController;
@@ -141,12 +154,12 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   //       DictionaryItem item = DictionaryItem(
   //         0,
   //         title: '게시글',
-  //         hashTag: fieldName, 
+  //         hashtag: fieldName, 
   //         date: Timestamp.now().toDate(),
   //         recommend: false,
   //         thumbnail: "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d"
   //       );
-  //       FirebaseFirestore.instance.collection('dictionaryItem').add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
+  //       FirebaseFirestore.instance.collection('dictionaryItem').add({'author': item.author, 'date': item.date, 'hashtag': item.hashtag, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
   //       },
   //     style: TextButton.styleFrom(
   //       foregroundColor: Colors.pink,
@@ -210,9 +223,10 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                 child: InkWell(
                   onTap: () {
                     String clicked_id = snap.data!.docs[index].id;  // 지금 클릭한 dictionaryItem의 도큐먼트 아이디
-                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, clicked_id));
+                    DictionaryItemInfo dicItemInfo = DictionaryItemInfo(clicked_id, snap.data!.docs[index]['author'], snap.data!.docs[index]['card_num'], snap.data!.docs[index]['date'], snap.data!.docs[index]['hashtag'], snap.data!.docs[index]['scrapnum'], snap.data!.docs[index]['thumbnail'], snap.data!.docs[index]['title']);
+                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
+                   
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
-
                   }, 
                   child: Card(
                     shape: RoundedRectangleBorder(
