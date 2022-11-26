@@ -123,6 +123,7 @@ class Authentication extends StatelessWidget {
                           loginedUser.email = doc['email'];
                           loginedUser.doc_id = doc.id;
                           Provider.of<Logineduser>(context, listen: false).setDocID(doc.id);
+                          Provider.of<Logineduser>(context, listen: false).notifyListeners();
                         });
                         }
                       );
