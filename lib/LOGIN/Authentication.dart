@@ -1,9 +1,12 @@
 
+import 'dart:html';
+
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:provider/provider.dart';
 
 
 //https://firebase.google.com/codelabs/firebase-auth-in-flutter-apps#5
@@ -105,6 +108,7 @@ class Authentication extends StatelessWidget {
                       // 금방 로그인한 유저에 대한 정보로 객체 만듦
                       Logineduser loginedUser = new Logineduser();
                       loginedUser.setInfo(user_id, '', FirebaseAuth.instance.currentUser!.email ?? '', '');
+                      Provider.of<Logineduser>(context, listen: false).setInfo(user_id, '', FirebaseAuth.instance.currentUser!.email ?? '', '');
 
                       // 데이터베이스에 유저가 저장되어있는지 확인
                       FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
@@ -117,9 +121,12 @@ class Authentication extends StatelessWidget {
                         snap.docs.forEach((doc) {
                           loginedUser.nickName = doc['nickName'];
                           loginedUser.email = doc['email'];
+                          loginedUser.doc_id = doc.id;
+                          Provider.of<Logineduser>(context, listen: false).setDocID(doc.id);
                         });
                         }
                       );
+
 
                       Navigator.pop(context, loginedUser);
                     }, 
