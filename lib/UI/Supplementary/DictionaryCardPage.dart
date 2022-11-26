@@ -1,8 +1,12 @@
 import 'dart:ui';
 
-import 'package:a_living_dictionary/DB/DictionaryItem.dart';
+
+import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
+import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 
 import '../DictionaryPage.dart';
 import 'PageRouteWithAnimation.dart';
@@ -57,8 +61,8 @@ class DictionaryCardPage {
                   child: InkWell(
                     onTap: () {
                       String clicked_id = documents[index]['item_id'];
-                      DictionaryItemInfo dicItemInfo = DictionaryItemInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
-            
+                      DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
+                      dicItemInfo.setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
 
                       PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, dicItemInfo));
                       Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
@@ -152,7 +156,8 @@ class DictionaryCardPage {
                     onTap: () {
                       // @@@@@@@@@@@@@@@@@@
                       String clicked_id = documents[index].id; // 지금 클릭한 dictionaryItem의 item_id
-                      DictionaryItemInfo dicItemInfo = DictionaryItemInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
+                      DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
+                      dicItemInfo.setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
 
                       PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, dicItemInfo));
                       Navigator.push(
@@ -214,7 +219,7 @@ class DictionaryCardPage {
   Widget post(BuildContext context, int index) {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('dictionaryItem').orderBy('date', descending: false).snapshots(),
-        builder: (context, snapshot) {
+        builder: (contextR, snapshot) {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
           }
@@ -222,7 +227,7 @@ class DictionaryCardPage {
 
           int i = (documents.length - index - 1 > 0)?(documents.length - index - 1):(0);
           final it = documents.elementAt(i);
-
+          
           return Container(
             margin: EdgeInsets.symmetric(horizontal: 0),
             width: width / 2,
@@ -230,7 +235,8 @@ class DictionaryCardPage {
                 (isPortrait ? (height < 750 ? 250 : portraitH) : landscapeH),
             child: InkWell(
               onTap: () {
-                DictionaryItemInfo dicItemInfo = DictionaryItemInfo(it.id, it['author'], it['card_num'], it['date'], it['hashtag'], it['scrapnum'], it['thumbnail'], it['title']);
+                DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
+                dicItemInfo.setInfo(it.id, it['author'], it['card_num'], it['date'], it['hashtag'], it['scrapnum'], it['thumbnail'], it['title']);
 
                 PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, dicItemInfo));
                 Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
@@ -275,24 +281,33 @@ class DictionaryCardPage {
   }
   Widget pageView(BuildContext context, DictionaryItemInfo? dicItemInfo) {
     return Scaffold(
+      
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(dicItemInfo!.title, style: TextStyle(fontSize: 17)),
             Expanded(child: SizedBox()),
-            Text(dicItemInfo.scrapnum.toString(), style: TextStyle(fontSize: 17), textAlign: TextAlign.center,),
+            Consumer<DictionaryItemInfo>(
+              builder: (context, provider, child) {
+                return Text(
+                  provider.scrapnum.toString(), style: TextStyle(fontSize: 17), textAlign: TextAlign.center,);
+              }
+            ),
+
             IconButton(
               icon: Icon(
+                // if (context.watch<DictionaryItemInfo>)
                 Icons.bookmark_outline_rounded,
                 color: Colors.amberAccent,
-                size: 30,
-              ),
+                size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
+              ), 
               onPressed: (){
-                // dicItemInfo.scrapnum --;
-                // FirebaseFirestore.instance.collection('dictionaryItem').doc(dicItemInfo.doc_id).update({
-                //   'scrapnum': dicItemInfo.scrapnum
-                // }); 
+                Provider.of<DictionaryItemInfo>(context, listen: false).addScrapNum(dicItemInfo.doc_id);
+                // context.read<DictionaryItemInfo>().addScrapNum(dicItemInfo.doc_id);
+                FirebaseFirestore.instance.collection('dictionaryItem').doc(dicItemInfo.doc_id).update({
+                  'scrapnum': dicItemInfo.scrapnum
+                }); 
                 
 
               },

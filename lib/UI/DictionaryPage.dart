@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/UI/Supplementary/DictionaryCardPage.dart';
 import 'package:flutter/material.dart';
 
@@ -18,18 +19,18 @@ class DictionaryPage extends StatefulWidget {
   State<DictionaryPage> createState() => _DictionaryPageState();
 }
 
-class DictionaryItemInfo {
-  var doc_id;
-  var author;
-  var card_num;
-  var date;
-  var hashtag;
-  var scrapnum;
-  var thumbnail;
-  var title;
+// class DictionaryItemInfo {
+//   var doc_id;
+//   var author;
+//   var card_num;
+//   var date;
+//   var hashtag;
+//   var scrapnum;
+//   var thumbnail;
+//   var title;
 
-  DictionaryItemInfo(this.doc_id, this.author, this.card_num, this.date, this.hashtag, this.scrapnum, this.thumbnail, this.title);
-}
+//   DictionaryItemInfo(this.doc_id, this.author, this.card_num, this.date, this.hashtag, this.scrapnum, this.thumbnail, this.title);
+// }
 
 
 class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStateMixin {
@@ -223,7 +224,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                 child: InkWell(
                   onTap: () {
                     String clicked_id = snap.data!.docs[index].id;  // 지금 클릭한 dictionaryItem의 도큐먼트 아이디
-                    DictionaryItemInfo dicItemInfo = DictionaryItemInfo(clicked_id, snap.data!.docs[index]['author'], snap.data!.docs[index]['card_num'], snap.data!.docs[index]['date'], snap.data!.docs[index]['hashtag'], snap.data!.docs[index]['scrapnum'], snap.data!.docs[index]['thumbnail'], snap.data!.docs[index]['title']);
+                    DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
+                    dicItemInfo.setInfo(clicked_id, snap.data!.docs[index]['author'], snap.data!.docs[index]['card_num'], snap.data!.docs[index]['date'], snap.data!.docs[index]['hashtag'], snap.data!.docs[index]['scrapnum'], snap.data!.docs[index]['thumbnail'], snap.data!.docs[index]['title']);
                     PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
                    
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());

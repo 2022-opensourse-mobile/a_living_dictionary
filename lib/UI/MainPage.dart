@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:a_living_dictionary/UI/DictionaryPage.dart';
+import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -119,8 +119,9 @@ class MainPage extends StatelessWidget {
 
                             var doc = FirebaseFirestore.instance.collection('dictionaryItem').doc(snapshot.data!.docs[0].id).get().then((doc) {
                               
-                              dicItemInfo = DictionaryItemInfo(snapshot.data!.docs[0].id, snapshot.data!.docs[0]['author'], snapshot.data!.docs[0]['card_num'], snapshot.data!.docs[0]['date'], snapshot.data!.docs[0]['hashtag'], snapshot.data!.docs[0]['scrapnum'], snapshot.data!.docs[0]['thumbnail'], snapshot.data!.docs[0]['title']);
-                              
+                              dicItemInfo = DictionaryItemInfo();
+                              dicItemInfo.setInfo(snapshot.data!.docs[0].id, snapshot.data!.docs[0]['author'], snapshot.data!.docs[0]['card_num'], snapshot.data!.docs[0]['date'], snapshot.data!.docs[0]['hashtag'], snapshot.data!.docs[0]['scrapnum'], snapshot.data!.docs[0]['thumbnail'], snapshot.data!.docs[0]['title']);
+
                               PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
                               Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
                             });

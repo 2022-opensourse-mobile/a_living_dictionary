@@ -1,4 +1,5 @@
-import 'package:a_living_dictionary/LOGIN/Logineduser.dart';
+
+import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -102,7 +103,8 @@ class Authentication extends StatelessWidget {
                       String user_id = FirebaseAuth.instance.currentUser!.uid;
 
                       // 금방 로그인한 유저에 대한 정보로 객체 만듦
-                      Logineduser loginedUser = new Logineduser(user_id, '', FirebaseAuth.instance.currentUser!.email ?? '', '');
+                      Logineduser loginedUser = new Logineduser();
+                      loginedUser.setInfo(user_id, '', FirebaseAuth.instance.currentUser!.email ?? '', '');
 
                       // 데이터베이스에 유저가 저장되어있는지 확인
                       FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
