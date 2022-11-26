@@ -1,5 +1,6 @@
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 class Logineduser  with ChangeNotifier {
@@ -7,6 +8,7 @@ class Logineduser  with ChangeNotifier {
   String nickName ='';
   String email ='';
   String profileImageUrl = '';
+  String doc_id = '';
 
 
   void setInfo(uid, nickName, email, profileImageUrl) {
@@ -14,5 +16,8 @@ class Logineduser  with ChangeNotifier {
     this.nickName = nickName;
     this.email = email;
     this.profileImageUrl = profileImageUrl;
+  }
+  void setDocID(doc_id){
+    this.doc_id = doc_id;
   }
 }

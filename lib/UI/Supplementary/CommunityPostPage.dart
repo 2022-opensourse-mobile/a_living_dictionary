@@ -1,7 +1,9 @@
 import 'package:a_living_dictionary/DB/CommunityItem.dart';
+import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../main.dart';
 import 'Search.dart';
 import 'ThemeColor.dart';
@@ -10,21 +12,25 @@ ThemeColor themeColor = ThemeColor();
 
 
 class CommunityPostPage extends StatefulWidget {
-  const CommunityPostPage(this.tabName, this.doc_id, {Key? key}) : super(key: key);
+  const CommunityPostPage(this.tabName, this.item, {Key? key}) : super(key: key);
   final String tabName;
-  final String doc_id;
+  final CommunityItem item;
   @override
-  State<CommunityPostPage> createState() => _CommunityPostPageState(tabName, doc_id);
+  State<CommunityPostPage> createState() => _CommunityPostPageState(tabName, item);
 }
 
-class _CommunityPostPageState extends State<CommunityPostPage> {
-  _CommunityPostPageState(this.tabName, this.doc_id);
+class _CommunityPostPageState extends State<CommunityPostPage> with SingleTickerProviderStateMixin {
+  _CommunityPostPageState(this.tabName, this.item);
 
-  final String tabName, doc_id;
+  TextEditingController commentController = TextEditingController();
   Icon likeIcon = Icon(Icons.thumb_up_off_alt);
+  final CommunityItem item;
   late var width, height;
   bool isClicked = false;
-  TextEditingController commentController = TextEditingController();
+  final String tabName;
+
+  late Logineduser user = Provider.of<Logineduser>(context, listen: true);
+
 
   @override
   Widget build(BuildContext context) {
@@ -55,39 +61,25 @@ class _CommunityPostPageState extends State<CommunityPostPage> {
                 )
               ],
             ),
-            //Body : 싱글 스크롤
-            body: StreamBuilder(
-                    stream: FirebaseFirestore.instance.collection("CommunityDB")
-                        .doc(doc_id).snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return CircularProgressIndicator();
-                      }
-                      final item = snapshot.data!;
-
-                      return Align(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                          width: (width > 750) ? (750) : (width),
-                          color: Colors.white,
-                          child: ListView(
-                            children: [
-                              getTitleWidget(item['title'], item['writer_id']),
-                              getBodyWidget(item['body']),
-                              getLikeWidget(),
-                              Divider(
-                                thickness: 1.0,
-                                color: Color(0xaadddddd),
-                              ),
-                              getCommentWriteWidget(),
-                              getCommentWidget()
-                            ],
-                          ),
-                        ),
-                      );
-                    })
-        )
-    );
+          //Body : 싱글 스크롤
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              width: (width > 750) ? (750) : (width),
+              color: Colors.white,
+              child: ListView(
+                children: [
+                  getTitleWidget(item.title, item.writer_id),
+                  getBodyWidget(item.body),
+                  getLikeWidget(),
+                  const Divider(thickness: 1.0, color: Color(0xaadddddd)),
+                  getCommentWriteWidget(),
+                  getCommentWidget()
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 
   Widget getTitleWidget(String title, String writer) {
@@ -137,42 +129,46 @@ class _CommunityPostPageState extends State<CommunityPostPage> {
   }
   Widget getLikeWidget(){
     return Align(
-      alignment: Alignment.bottomRight,
-      child: Row(
-        children: [
-          IconButton(
-            icon: likeIcon,
-            style: ButtonStyle(
-              mouseCursor: MaterialStateProperty.all(MouseCursor.defer),
-            ),
-            //mouseCursor: MouseCursor,
-            onPressed: (){
-              setState(() {
-                likeIcon = (isClicked)?(Icon(Icons.thumb_up_off_alt)):(Icon(Icons.thumb_up_off_alt_rounded));
-                int num = (isClicked)?(1):(-1);
-                isClicked = !isClicked;
-                StreamBuilder(
-                    stream: FirebaseFirestore.instance.collection("CommunityDB").doc(doc_id).snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return CircularProgressIndicator();
-                      }
-                      final item = snapshot.data!;
+        alignment: Alignment.bottomRight,
+        child: Row(
+            children: [
+              IconButton(
+                icon: likeIcon,
+                style: ButtonStyle(
+                  mouseCursor: MaterialStateProperty.all(MouseCursor.defer),
+                ),
+                //mouseCursor: MouseCursor,
+                onPressed: (){
+                  setState(() {
+                    likeIcon = (isClicked)?(Icon(Icons.thumb_up_off_alt)):(Icon(Icons.thumb_up_off_alt_rounded));
+                    int num = (isClicked)?(1):(-1);
+                    isClicked = !isClicked;
+                    StreamBuilder(
+                        stream: FirebaseFirestore.instance.collection("CommunityDB").doc(doc_id).snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return CircularProgressIndicator();
+                          }
+                          final item = snapshot.data!;
 
-                      int like = item.get('like')+num;
-                      
-                      FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).update({
-                        'like': like
-                      });
+                          int like = item.get('like')+num;
 
-                      return Container();
-                    });
-              });
-            },
-          ),
-        ],
-      ),
+                          FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).update({
+                            'like': like
+                          });
+
+                          return Container();
+                        });
+                  });
+                },
+              ),
+            ]
+        )
     );
+  }
+
+  void getClicked(){
+
   }
 
   Widget getCommentWriteWidget(){
@@ -205,7 +201,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> {
                 final it = CommentItem(
                     writer_id: "a", body: commentController.text, time:DateTime.now()
                 );
-                it.add(doc_id);
+                it.add(item.doc_id);
                 commentController.text = "";
               },
               child: Text("등록", style: TextStyle(color: Colors.black))
@@ -216,7 +212,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> {
   }
   Widget getCommentWidget() {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id)
+        stream: FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id)
             .collection('CommentDB').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
