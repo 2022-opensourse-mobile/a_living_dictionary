@@ -7,23 +7,6 @@ import 'package:flutter/material.dart';
 import '../DictionaryPage.dart';
 import 'PageRouteWithAnimation.dart';
 
-
-class MyWidget extends StatefulWidget {
-  const MyWidget({super.key});
-
-  @override
-  State<MyWidget> createState() => _MyWidgetState();
-}
-
-class _MyWidgetState extends State<MyWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-
-
 class DictionaryCardPage {
   DictionaryCardPage(this.width, this.height, this.portraitH, this.landscapeH, this.isPortrait);
 
@@ -247,9 +230,7 @@ class DictionaryCardPage {
                 (isPortrait ? (height < 750 ? 250 : portraitH) : landscapeH),
             child: InkWell(
               onTap: () {
-                
                 DictionaryItemInfo dicItemInfo = DictionaryItemInfo(it.id, it['author'], it['card_num'], it['date'], it['hashtag'], it['scrapnum'], it['thumbnail'], it['title']);
-
 
                 PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, dicItemInfo));
                 Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
@@ -428,5 +409,4 @@ class DictionaryCardPage {
       },
     );
   }
-  
 }
