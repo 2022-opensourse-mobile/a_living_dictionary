@@ -2,17 +2,19 @@ import 'dart:convert';
 // import 'dart:html';
 
 import 'package:a_living_dictionary/LOGIN/Authentication.dart';
-import 'package:a_living_dictionary/LOGIN/Logineduser.dart';
 import 'package:a_living_dictionary/LOGIN/kakao_login.dart';
 import 'package:a_living_dictionary/LOGIN/main_view_model.dart';
+import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
+import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:flutterfire_ui/auth.dart';
+import 'package:provider/provider.dart';
+// import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+// import 'package:flutterfire_ui/auth.dart';
 import 'firebase_options.dart';
 
 import 'UI/CommunityPage.dart';
@@ -24,7 +26,7 @@ import 'UI/Supplementary//ThemeColor.dart';
 
 import 'UI/Supplementary/CommunityWritePage.dart';
 
-import 'UI/Supplementary/DictionaryCardPage.dart';
+// import 'UI/Supplementary/DictionaryCardPage.dart';
 import 'UI/Supplementary/WriteDictionaryPage.dart';
 
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
@@ -52,7 +54,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
   );
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_)=>DictionaryItemInfo()),
+        ChangeNotifierProvider(create: (_)=>Logineduser())
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -181,7 +191,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   }
 
                   // 금방 로그인한 유저에 대한 정보로 객체 만듦
-                  loginedUser = new Logineduser(user_id, user_nickname, user_email, user_profileImageUrl);
+                  loginedUser = new Logineduser();
+                  loginedUser.setInfo(user_id, user_nickname, user_email, user_profileImageUrl);
 
 
                   // 데이터베이스에 유저가 저장되어있는지 확인
@@ -221,7 +232,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     user_profileImageUrl = FirebaseAuth.instance.currentUser!.photoURL ?? '';
 
                     // 금방 로그인한 유저에 대한 정보로 객체 만듦
-                    loginedUser = new Logineduser(user_id, user_nickname, user_email, user_profileImageUrl);
+                    loginedUser = new Logineduser();
+                    loginedUser.setInfo(user_id, user_nickname, user_email, user_profileImageUrl);
 
                     // 데이터베이스에 유저가 저장되어있는지 확인
                     FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
