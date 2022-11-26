@@ -1,4 +1,5 @@
 
+import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/UI/Supplementary/CommunityPostPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -124,6 +125,37 @@ class CommunityItem with ChangeNotifier{
       return item.buildMain(context);
     }).toList();
     return buildList;
+  }
+
+
+
+  void addLikeNum(){
+    this.like++;
+    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
+      'like': this.like
+    });
+  }
+  void subLikeNum(){
+    this.like--;
+    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
+      'like': this.like
+    });
+  }
+  void registerThisPost(Logineduser user){
+    FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').add({
+      'like_doc_id' : this.doc_id
+    }).then((value) => FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').doc(value.id).update(
+        {'id':value.id}));
+  }
+  void unRegisterThisPost(Logineduser user) async {
+    final instance = FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList');
+    await for (var snapshot in instance.snapshots()){
+      for (var doc in snapshot.docs){
+        if(doc['like_doc_id'] == this.doc_id){
+          instance.doc(doc['id']).delete();
+        }
+      }
+    }
   }
 }
 

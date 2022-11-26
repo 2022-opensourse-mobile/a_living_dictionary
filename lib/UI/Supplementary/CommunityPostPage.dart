@@ -26,7 +26,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   Icon likeIcon = Icon(Icons.thumb_up_off_alt);
   final CommunityItem item;
   late var width, height;
-  bool isClicked = false;
+  bool isClickedGlobal = false;
   final String tabName;
 
   late Logineduser user = Provider.of<Logineduser>(context, listen: true);
@@ -127,48 +127,52 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
       ),
     );
   }
-  Widget getLikeWidget(){
+  Widget getLikeWidget() {
     return Align(
         alignment: Alignment.bottomRight,
-        child: Row(
-            children: [
-              IconButton(
-                icon: likeIcon,
-                style: ButtonStyle(
-                  mouseCursor: MaterialStateProperty.all(MouseCursor.defer),
-                ),
-                //mouseCursor: MouseCursor,
-                onPressed: (){
-                  setState(() {
-                    likeIcon = (isClicked)?(Icon(Icons.thumb_up_off_alt)):(Icon(Icons.thumb_up_off_alt_rounded));
-                    int num = (isClicked)?(1):(-1);
-                    isClicked = !isClicked;
-                    StreamBuilder(
-                        stream: FirebaseFirestore.instance.collection("CommunityDB").doc(doc_id).snapshots(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return CircularProgressIndicator();
-                          }
-                          final item = snapshot.data!;
+        child: Row(children: [
+          StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection("LikeList").snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return CircularProgressIndicator();
+                }
+                if (snapshot.hasError) {
+                  return Text("error!");
+                }
+                final documents = snapshot.data!.docs;
 
-                          int like = item.get('like')+num;
-
-                          FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).update({
-                            'like': like
-                          });
-
-                          return Container();
-                        });
-                  });
-                },
-              ),
-            ]
-        )
-    );
+                final a = documents.where((element) => element['like_doc_id'] == item.doc_id);
+                if (a.isEmpty) {
+                  return buildLikeButton(false);
+                }
+                else {
+                  return buildLikeButton(true);
+                }
+              })
+        ]));
   }
-
-  void getClicked(){
-
+  Widget buildLikeButton(isClicked){
+    isClickedGlobal = isClicked;
+    return IconButton(
+      icon: (isClickedGlobal)?(Icon(Icons.thumb_up_off_alt_rounded)):(Icon(Icons.thumb_up_off_alt)),
+      style: ButtonStyle(
+        mouseCursor: MaterialStateProperty.all(MouseCursor.defer),
+      ),
+      onPressed: (){
+        setState(() {
+          isClickedGlobal = !isClickedGlobal;
+          if(isClickedGlobal){
+            item.addLikeNum();
+            item.registerThisPost(user);
+          }
+          else{
+            item.subLikeNum();
+            item.unRegisterThisPost(user);
+          }
+        });
+      },
+    );
   }
 
   Widget getCommentWriteWidget(){
