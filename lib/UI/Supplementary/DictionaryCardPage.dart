@@ -296,15 +296,55 @@ class DictionaryCardPage {
             ),
 
             IconButton(
-              icon: Icon(
-                // if (context.watch<DictionaryItemInfo>)
-                Icons.bookmark_outline_rounded,
-                color: Colors.amberAccent,
-                size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
+              icon: Builder(
+                builder: (context) {
+                  var tmp = FirebaseFirestore.instance.collection('userInfo').doc(dicItemInfo.doc_id).collection("ScrapList").where("docID", isEqualTo: dicItemInfo)
+                  .get().then(
+                    (snap) {
+                      if (snap.size == 0) {
+                        return Icon(
+                        // if (context.watch<DictionaryItemInfo>)
+                        Icons.bookmark_outline_rounded,
+                        color: Colors.amberAccent,
+                        size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
+                      );
+                      } else {
+                        return Icon(
+                        // if (context.watch<DictionaryItemInfo>)
+                        Icons.bookmark_outlined,
+                        color: Colors.amberAccent,
+                        size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
+                      );
+                      }
+                    }
+                  ); //여기 수정. 누르면 색 진해지게 ㄱㄱ
+
+                  return Icon(Icons.abc);
+                  // FirebaseFirestore.instance .collection('dictionaryItem').where("hashtag", isEqualTo: tabName).snapshots(),
+                  //.doc(dicItemInfo.doc_id).collection('dictionaryCard').
+
+                  // FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: loginedUser.uid).get().then( (QuerySnapshot snap) {
+                  //   String doc_id = '';
+
+                  //   if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                  //     FirebaseFirestore.instance.collection('userInfo').add({
+                  //       'uid': loginedUser.uid, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl, 'docID': ''
+                  //     }).then((value) {
+                  //       doc_id =  value.id.toString();
+
+                  //       FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                  //         'docID': doc_id
+                  //       });
+                  //     });
+                  //   }
+                  // }
+                  // );
+
+                  
+                }
               ), 
               onPressed: (){
                 Provider.of<DictionaryItemInfo>(context, listen: false).addScrapNum(dicItemInfo.doc_id);
-                // context.read<DictionaryItemInfo>().addScrapNum(dicItemInfo.doc_id);
                 FirebaseFirestore.instance.collection('dictionaryItem').doc(dicItemInfo.doc_id).update({
                   'scrapnum': dicItemInfo.scrapnum
                 }); 

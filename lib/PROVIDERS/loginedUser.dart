@@ -14,5 +14,7 @@ class Logineduser  with ChangeNotifier {
     this.nickName = nickName;
     this.email = email;
     this.profileImageUrl = profileImageUrl;
+
+    notifyListeners();
   }
 }
