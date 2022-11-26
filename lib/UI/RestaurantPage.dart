@@ -16,7 +16,8 @@ ThemeColor themeColor = ThemeColor();
 // Google Map API Key
 final _mapApiKey = 'AIzaSyDV1uWDF4S16dDx5oQAAJ399p3e9Cbot90';
 
-final GlobalKey searchKey = GlobalKey(); // 키 생성
+// 스크롤 키 생성
+final GlobalKey scrollKey = GlobalKey();
 
 
 class RestaurantPage extends StatelessWidget {
@@ -28,7 +29,7 @@ class RestaurantPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            restaurantSearch(),
+            //restaurantSearch(),
             tempMap(),
             recommendList(),
           ],
@@ -42,7 +43,7 @@ class RestaurantPage extends StatelessWidget {
 /* -------------------------------- 검색 위젯: 일단 3개 작성 (삭제 금지) */
 Widget restaurantSearch(){
   return Row(
-    key: searchKey,
+    key: scrollKey,
     children: [
       Expanded(
         child: Padding(
@@ -116,8 +117,9 @@ Widget textfieldSearch() {
 /* -------------------------------- Map 불러올 임시 공간 */
 Widget tempMap() {
   return Container(
+    key: scrollKey,
     width: double.infinity,
-    height: 450,
+    height: 530,
     color: Colors.grey,
     child: Map(),
   );
@@ -356,36 +358,45 @@ Widget editButton() {
         children: [
           Align(
             alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              tooltip: "맨 위로",
-              onPressed: () {
-                Scrollable.ensureVisible(
-                    searchKey.currentContext!,
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.easeInOut);
+            child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: Colors.black12, width: 1
+                  )
+              ),
+              child: FloatingActionButton(
+                tooltip: "맨 위로",
+                onPressed: () {
+                  Scrollable.ensureVisible(
+                      scrollKey.currentContext!,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeInOut);
                 },
-              child: Icon(Icons.arrow_upward_rounded),
-              backgroundColor: themeColor.getColor(),
-              elevation: 0,
-              hoverElevation: 0,
-              focusElevation: 0,
-              highlightElevation: 0,
+                child: Icon(Icons.arrow_upward_rounded, color: Colors.black),
+                focusColor: Colors.white54,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                hoverElevation: 0,
+                focusElevation: 0,
+                highlightElevation: 0,
+              ),
             ),
           ),
-          SizedBox(height: 5),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              tooltip: "글 쓰기",
-              onPressed: () {},
-              child: Icon(Icons.edit),
-              backgroundColor: themeColor.getColor(),
-              elevation: 0,
-              hoverElevation: 0,
-              focusElevation: 0,
-              highlightElevation: 0,
-            ),
-          ),
+          // SizedBox(height: 5),
+          // Align(
+          //   alignment: Alignment.bottomRight,
+          //   child: FloatingActionButton(
+          //     tooltip: "글 쓰기",
+          //     onPressed: () {},
+          //     child: Icon(Icons.edit),
+          //     backgroundColor: themeColor.getColor(),
+          //     elevation: 0,
+          //     hoverElevation: 0,
+          //     focusElevation: 0,
+          //     highlightElevation: 0,
+          //   ),
+          // ),
         ],
       ),
     ],
