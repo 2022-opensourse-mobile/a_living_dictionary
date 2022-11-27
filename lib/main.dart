@@ -13,8 +13,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:provider/provider.dart';
-// import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-// import 'package:flutterfire_ui/auth.dart';
 import 'firebase_options.dart';
 
 import 'UI/CommunityPage.dart';
@@ -26,7 +24,6 @@ import 'UI/Supplementary//ThemeColor.dart';
 
 import 'UI/Supplementary/CommunityWritePage.dart';
 
-// import 'UI/Supplementary/DictionaryCardPage.dart';
 import 'UI/Supplementary/WriteDictionaryPage.dart';
 
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
@@ -87,7 +84,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-late Logineduser loginedUser;
+Logineduser loginedUser  = new Logineduser();
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -162,144 +159,114 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    String user_docID = '';
+    String user_uid = '';
+    String user_nickName ='';
+    String user_email ='';
+    String user_profileImageUrl = '';
+
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges() , // 로그인 되고 안될때마다 새로운 스트림이 들어옴
       builder: (BuildContext context, snapshot) {
         
         if(!snapshot.hasData) { // 로그인이 안 된 상태 - 로그인 화면
-          return Consumer<DictionaryItemInfo>(
-            builder: (context, provider, child) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      viewModel = new MainViewModel(KakaoLogin());
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  viewModel = new MainViewModel(KakaoLogin());
+                  await viewModel.login();
+                  setState((){}); // 화면 갱신만 하는 것 
 
-                      await viewModel.login();
+                  // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
+                  if (FirebaseAuth.instance.currentUser != null) {
+                    user_uid = FirebaseAuth.instance.currentUser!.uid;
+                    user_nickName = viewModel.user?.kakaoAccount?.profile?.nickname ?? '';
+                    user_email = viewModel.user?.kakaoAccount?.email  ?? '';
+                    user_profileImageUrl = viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? '';
+                  }
 
-                      setState((){}); // 화면 갱신만 하는 것 
+                  // 금방 로그인한 유저에 대한 정보
+                  // 데이터베이스에 유저가 저장되어있는지 확인
+                  FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
+                    String doc_id = '';
 
-                       // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
-                      String user_id = '';
-                      String user_nickname = '';
-                      String user_email = '';
-                      String user_profileImageUrl = '';
+                    if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                      FirebaseFirestore.instance.collection('userInfo').add({
+                        'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': ''
+                      }).then((value) {
+                        doc_id =  value.id.toString();
 
-                      if (FirebaseAuth.instance.currentUser != null) {
-                        user_id = FirebaseAuth.instance.currentUser!.uid;
-                        user_nickname = viewModel.user?.kakaoAccount?.profile?.nickname ?? '';
-                        user_email = viewModel.user?.kakaoAccount?.email  ?? '';
-                        user_profileImageUrl = viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? '';
-                      }
+                        FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                          'docID': doc_id
+                        });
+                      });
+                    }
+                  }
+                  );
+                }, 
+                child: const Text('카카오로 로그인')
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await signInWithNaver();
 
-                      // 금방 로그인한 유저에 대한 정보로 객체 만듦
-                      loginedUser = new Logineduser();
-                      loginedUser.setInfo(user_id, user_nickname, user_email, user_profileImageUrl);
+                    // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
+                  if (FirebaseAuth.instance.currentUser != null) {
+                    user_uid = FirebaseAuth.instance.currentUser!.uid;
+                    user_nickName = FirebaseAuth.instance.currentUser!.displayName ?? '';
+                    user_email = FirebaseAuth.instance.currentUser!.email ?? '';
+                    user_profileImageUrl = FirebaseAuth.instance.currentUser!.photoURL ?? '';
 
+                    // 금방 로그인한 유저에 대한 정보
+                    // 데이터베이스에 유저가 저장되어있는지 확인
+                    FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
+                      String doc_id = '';
 
-                      // 데이터베이스에 유저가 저장되어있는지 확인
-                        FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-                          String doc_id = '';
+                      if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                        FirebaseFirestore.instance.collection('userInfo').add({
+                          'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': ''
+                        }).then((value) {
+                          doc_id =  value.id.toString();
 
-                          if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                            FirebaseFirestore.instance.collection('userInfo').add({
-                              'uid': loginedUser.uid, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl, 'docID': ''
-                            }).then((value) {
-                              doc_id =  value.id.toString();
-
-                              FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
-                                'docID': doc_id
-                              });
-                            });
-                          }
-                        }
-                        );
-                    }, 
-                    child: const Text('카카오로 로그인')
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await signInWithNaver();
-
-                       // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
-                      String user_id = '';
-                      String user_nickname = '';
-                      String user_email = '';
-                      String user_profileImageUrl = '';
-
-                      if (FirebaseAuth.instance.currentUser != null) {
-                        user_id = FirebaseAuth.instance.currentUser!.uid;
-                        user_nickname = FirebaseAuth.instance.currentUser!.displayName ?? '';
-                        user_email = FirebaseAuth.instance.currentUser!.email ?? '';
-                        user_profileImageUrl = FirebaseAuth.instance.currentUser!.photoURL ?? '';
-
-                        // 금방 로그인한 유저에 대한 정보로 객체 만듦
-                        loginedUser = new Logineduser();
-                        loginedUser.setInfo(user_id, user_nickname, user_email, user_profileImageUrl);
-
-                        // 데이터베이스에 유저가 저장되어있는지 확인
-                        FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-                          String doc_id = '';
-
-                          if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                            FirebaseFirestore.instance.collection('userInfo').add({
-                              'uid': loginedUser.uid, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl, 'docID': ''
-                            }).then((value) {
-                              doc_id =  value.id.toString();
-
-                              FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
-                                'docID': doc_id
-                              });
-                            });
-                            
-                          }
-                        }
-                        );
-                      }
-                    },
-                    child: const Text('네이버로 로그인')
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      // Consumer<DictionaryItemInfo>(
-                      //   builder: (context, provider, child) {
-                      //     return Text(
-                      //       provider.scrapnum.toString(), style: TextStyle(fontSize: 17), textAlign: TextAlign.center,);
-                      //   }
-                      // );////
-                      loginedUser = await Navigator.pushNamed(context, '/authPage') as Logineduser;
-
-                      print("@@!llobe");
-                      Provider.of<Logineduser>(context, listen: false).setInfo(loginedUser.uid, loginedUser.nickName, loginedUser.email, loginedUser.profileImageUrl);
-                    
-
-                      print("@@!" + provider.doc_id.toString());
-
-                      FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: loginedUser.uid).get().then( (QuerySnapshot snap) {
-                        String doc_id = '';
-
-                        if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                          FirebaseFirestore.instance.collection('userInfo').add({
-                            'uid': loginedUser.uid, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl, 'docID': ''
-                          }).then((value) {
-                            doc_id =  value.id.toString();
-
-                            FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
-                              'docID': doc_id
-                            });
+                          FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                            'docID': doc_id
                           });
-                        }
+                        });
                       }
-                      );
-                    }, 
-                    child: const Text('이메일로 로그인')  
-                  ),
-                ],
-              );
-            }
+                    }
+                    );
+                  }
+                },
+                child: const Text('네이버로 로그인')
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await Navigator.pushNamed(context, '/authPage') as Logineduser;
+                }, 
+                child: const Text('이메일로 로그인')  
+              )
+                
+            ],
           );
         }
+
+        // 사용자의 uid
+        user_uid = FirebaseAuth.instance.currentUser!.uid;
+        FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
+          snap.docs.forEach((doc) {
+            loginedUser.nickName = doc['nickName'];
+            loginedUser.email = doc['email'];
+            loginedUser.doc_id = doc.id;
+            loginedUser.profileImageUrl = doc['profileImageUrl'];
+            loginedUser.uid = user_uid;
+          }); 
+          }
+        );
+
+        Provider.of<Logineduser>(context, listen: false).setDocID(loginedUser.doc_id);
+        Provider.of<Logineduser>(context, listen: false).setInfo(loginedUser.uid, loginedUser.nickName, loginedUser.email, loginedUser.profileImageUrl);
 
         // 로그인이 된 상태
         return Scaffold(
@@ -310,26 +277,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ),
               elevation: 0.0,
               actions: <Widget>[
-                // TextButton(
-                //   onPressed: () async {
-                //     if (viewModel != null) {    // social login
-                //       await viewModel.logout();
-                //     } else {                    // email login
-                //       FirebaseAuth.instance.signOut();
-                //     }              
-                //     setState((){}); // 화면 갱신만 하는 것 
-                //   }, 
-                //   child:  Container(
-                //     decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
-                //     child: Text('logout', style: TextStyle(fontSize: 20, color: Colors.amber),))
-                // ),
-                // Text(loginedUser.nickName),
+                Text(loginedUser.nickName ?? 'ㄴㄴ'),
                 IconButton(
                   icon: new Icon(Icons.search),
                   onPressed: () => {
                     showSearch(context: context, delegate:Search(list))
                   },
                 )
+                
               ]
           ),
           body: TabBarView(

@@ -1,8 +1,11 @@
 
 
-import 'package:flutter/cupertino.dart';
+
+
+import 'package:flutter/material.dart';
 
 class Logineduser  with ChangeNotifier {
+  String doc_id = '';
   String uid = '';
   String nickName ='';
   String email ='';
@@ -16,5 +19,9 @@ class Logineduser  with ChangeNotifier {
     this.profileImageUrl = profileImageUrl;
 
     notifyListeners();
+  }
+
+  void setDocID(doc_id) {
+    this.doc_id = doc_id;
   }
 }

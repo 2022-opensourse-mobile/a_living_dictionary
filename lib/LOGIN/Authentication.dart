@@ -113,27 +113,31 @@ class Authentication extends StatelessWidget {
                       // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
                       String user_id = FirebaseAuth.instance.currentUser!.uid;
 
-                      // 금방 로그인한 유저에 대한 정보로 객체 만듦
-                      Logineduser loginedUser = new Logineduser();    
-                      // Provider.of<Logineduser>(context, listen: false).setInfo(user_id, '', FirebaseAuth.instance.currentUser!.email ?? '', '');
-                      loginedUser.setInfo(user_id, '', FirebaseAuth.instance.currentUser!.email ?? '', '');
-
+                      // 금방 로그인한 유저에 대한 정보
                       // 데이터베이스에 유저가 저장되어있는지 확인
-                      FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-                        
+                      await FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
+                        String doc_id = '';
+
                         if (snap.size == 0) { // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                          FirebaseFirestore.instance.collection('userInfo').add({'uid': user_id, 'nickName': loginedUser.nickName, 'email': loginedUser.email, 'profileImageUrl': loginedUser.profileImageUrl});
-                          // print("@@! i make new user!");
+                          FirebaseFirestore.instance.collection('userInfo').add({
+                            'uid': user_id, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 'profileImageUrl': ''
+                          }).then((value) {
+                            doc_id =  value.id.toString();
+                            FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                              'docID': doc_id
+                            });
+                          });
                         }
 
-                        snap.docs.forEach((doc) {
-                          loginedUser.nickName = doc['nickName'];
-                          loginedUser.email = doc['email'];
-                        });
+                        // snap.docs.forEach((doc) {
+                        //   loginedUser.nickName = doc['nickName'];
+                        //   loginedUser.email = doc['email'];
+                        //   loginedUser.doc_id = doc.id;
+                        // });
                         }
                       );
 
-                      Navigator.pop(context, loginedUser);
+                      Navigator.pop(context);
                     }, 
                     child:  Container(
                       padding: EdgeInsets.all(5),
