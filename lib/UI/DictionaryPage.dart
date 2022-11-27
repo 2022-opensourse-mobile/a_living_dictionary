@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/UI/Supplementary/DictionaryCardPage.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'Supplementary//ThemeColor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,20 +19,6 @@ class DictionaryPage extends StatefulWidget {
   @override
   State<DictionaryPage> createState() => _DictionaryPageState();
 }
-
-// class DictionaryItemInfo {
-//   var doc_id;
-//   var author;
-//   var card_num;
-//   var date;
-//   var hashtag;
-//   var scrapnum;
-//   var thumbnail;
-//   var title;
-
-//   DictionaryItemInfo(this.doc_id, this.author, this.card_num, this.date, this.hashtag, this.scrapnum, this.thumbnail, this.title);
-// }
-
 
 class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStateMixin {
   late TabController _tabController;
@@ -148,27 +135,6 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     );
   }
 
-  // // 데이터베이스 추가 위한 검색어: @@삭제
-  // TextButton makeButton(String fieldName) {
-  //   return TextButton(
-  //     onPressed: (){     
-  //       DictionaryItem item = DictionaryItem(
-  //         0,
-  //         title: '게시글',
-  //         hashtag: fieldName, 
-  //         date: Timestamp.now().toDate(),
-  //         recommend: false,
-  //         thumbnail: "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d"
-  //       );
-  //       FirebaseFirestore.instance.collection('dictionaryItem').add({'author': item.author, 'date': item.date, 'hashtag': item.hashtag, 'scrapnum': item.scrapnum, 'title': item.title, 'thumbnail': item.thumbnail,'recommend': item.recommend});
-  //       },
-  //     style: TextButton.styleFrom(
-  //       foregroundColor: Colors.pink,
-  //     ),
-  //     child: Text(fieldName),
-  //   );
-  // }
-
   // 텍스트 + 아이콘
   Widget startxtIcon(BuildContext context, String str) {
     return Row(
@@ -226,6 +192,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                     String clicked_id = snap.data!.docs[index].id;  // 지금 클릭한 dictionaryItem의 도큐먼트 아이디
                     DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
                     dicItemInfo.setInfo(clicked_id, snap.data!.docs[index]['author'], snap.data!.docs[index]['card_num'], snap.data!.docs[index]['date'], snap.data!.docs[index]['hashtag'], snap.data!.docs[index]['scrapnum'], snap.data!.docs[index]['thumbnail'], snap.data!.docs[index]['title']);
+                    Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, snap.data!.docs[index]['author'], snap.data!.docs[index]['card_num'], snap.data!.docs[index]['date'], snap.data!.docs[index]['hashtag'], snap.data!.docs[index]['scrapnum'], snap.data!.docs[index]['thumbnail'], snap.data!.docs[index]['title']);
+
                     PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
                    
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
