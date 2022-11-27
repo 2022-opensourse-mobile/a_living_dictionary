@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/UI/Supplementary/DictionaryCardPage.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +54,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           indicatorColor: themeColor.getColor(),
           unselectedLabelColor: Colors.black,
           tabs: [
-            Tab(text: "추천",),
+            // Tab(text: "추천",),
             Tab(text: "청소",),
             Tab(text: "빨래",),
             Tab(text: "요리",),
@@ -65,7 +66,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           child: TabBarView(
             controller: _tabController,
             children: [
-              recommandPage(context, card),
+              // recommandPage(context, card),
               otherPage(context, card, "청소"),
               otherPage(context, card, "빨래"),
               otherPage(context, card, "요리"),
@@ -98,30 +99,32 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
 
-  // 추천 탭 페이지
-  Widget recommandPage(BuildContext context, DictionaryCardPage card) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // //추가할 때 필요한 코드 @@삭제
-          // Row(
-          //   children: [
-          //     makeButton("청소"),
-          //     makeButton("빨래"),
-          //     makeButton("요리"),
-          //     makeButton("기타"),
-          //   ],
-          // ),
-          startxtIcon(context, '인기 TOP 4'),
-          card.recommendPostList(context),
-          Divider(thickness: 0.5,),
-          slideList(context,"청소", "오늘은 대청소하는 날!", false),
-          slideList(context,"빨래", "빨래의 모든 것", false),
-          slideList(context,"요리", "뭐 먹을지 고민된다면?", false),
-        ],
-      ),
-    );
-  }
+  // // 추천 탭 페이지
+  // Widget recommandPage(BuildContext context, DictionaryCardPage card) {
+  //   return SingleChildScrollView(
+  //     child: Column(
+  //       children: [
+  //         // //추가할 때 필요한 코드 @@삭제
+  //         // Row(
+  //         //   children: [
+  //         //     makeButton("청소"),
+  //         //     makeButton("빨래"),
+  //         //     makeButton("요리"),
+  //         //     makeButton("기타"),
+  //         //   ],
+  //         // ),
+  //         startxtIcon(context, '인기 TOP 4'),
+  //         card.recommendPostList(context),
+  //         Divider(thickness: 0.5,),
+  //         slideList(context,"청소", "오늘은 대청소하는 날!", false),
+  //         slideList(context,"빨래", "빨래의 모든 것", false),
+  //         slideList(context,"요리", "뭐 먹을지 고민된다면?", false),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+
 
   // 추천탭이 아닌 탭(청소, 빨래 등)
   Widget otherPage(BuildContext context, DictionaryCardPage card, String tabName) {
@@ -129,7 +132,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            slideList(context, tabName, '관리자가 엄선한 $tabName TIP', true),
+            // slideList(context, tabName, '관리자가 엄선한 $tabName TIP', true),
+            carouselList(context, tabName, '관리자가 엄선한 $tabName TIP', true),
             textBox(context, '최신글'),
             Padding(
                 padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
@@ -161,90 +165,166 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     );
   }
 
+
   // 텍스트 출력 + 가로 스크롤 리스트 출력
-  Widget slideList(BuildContext context, String tabName, String title, bool iconTF){
+  Widget carouselList(BuildContext context, String tabName, String title, bool iconTF){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         iconTF? startxtIcon(context, title) : textBox(context, title),
-        slide(context, tabName),
+        carouselSlide(context, tabName),
         Divider(thickness: 0.5,),
       ],
     );
   }
 
   // 가로 스크롤 리스트
-  Widget slide(BuildContext context, String tabName){
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: EdgeInsets.fromLTRB(5,0,5,5), //5055
+  Widget carouselSlide(BuildContext context, String tabName){
+    return Container(
       child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('dictionaryItem').where("hashtag", isEqualTo: tabName).where('recommend', isEqualTo: true).snapshots(),
-        builder: (context, snap) {
-
+        stream:  FirebaseFirestore.instance.collection('dictionaryItem').where("hashtag", isEqualTo: tabName).where('recommend', isEqualTo: true).snapshots(),
+        builder: (context, AsyncSnapshot snap) {
+          
           if (snap.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
           }
+          if (snap.hasError) {
+            return Text(snap.error.toString());
+          }
 
+          final double width = MediaQuery.of(context).size.width;
           final documents = snap.data!.docs;
 
-          return Row(
-            children: List.generate(snap.data!.size, (index){
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 0),
-                width: width / 2,
-                height: width*(9/20),
-      
-                child: InkWell(
-                  onTap: () {
-                    String clicked_id = documents[index].id;  // 지금 클릭한 dictionaryItem의 도큐먼트 아이디
-                    DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
-                    dicItemInfo.setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
-                    Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
+          // best가 한 장이라도 있을 때
+          if (documents.length != 0) {
+            List slideList = documents.toList();
+            if (snap.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
 
-                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
-                   
-                    Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
-                  }, 
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 0,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: Image.network(documents[index]['thumbnail']),      // 확인필요TODO
-                        ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(8,5,8,0), // 게시글 제목 여백
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(padding: EdgeInsets.fromLTRB(0, 0, 0 , 3),
-                                child: Text(
-                                  "#$tabName",
-                                  style: TextStyle(
-                                    color: themeColor.getColor(),
-                                  ),
-                                  textScaleFactor: 1,
-                                ),
-                              ),
-                              Text(documents[index]['title'], textScaleFactor: 1)
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            } ), //TODO@@@@@@@@@@@@@@@@
-          );
-        }
-      )
+            return CarouselSlider(
+              options: CarouselOptions(
+                height: width / 2 > 350 ? 350 : width / 3,
+                viewportFraction: 1.3,
+                enlargeCenterPage: false,
+                autoPlayAnimationDuration: Duration(milliseconds: 400),
+                autoPlay: true,
+              ),
+              items: slideList.map((item) {
+                // item['item_id']가 id인 dictionary item을 가져와서 img필드 -> Image에 출력
+
+                return Container(
+                  child: Center(
+                    child: GestureDetector(
+                      child: Image(image: NetworkImage(item['thumbnail']), fit: BoxFit.contain),
+
+                      onTap: (() {
+                        String clicked_id = item.id; // 지금 클릭한 dictionaryItem의 도큐먼트 id
+                        DictionaryItemInfo dicItemInfo = DictionaryItemInfo();;
+
+                        dicItemInfo.setInfo(item.id, item['author'], item['card_num'], item['date'], item['hashtag'], item['scrapnum'], item['thumbnail'], item['title']);
+                        Provider.of<DictionaryItemInfo>(context, listen:false).setInfo(item.id, item['author'], item['card_num'], item['date'], item['hashtag'], item['scrapnum'], item['thumbnail'], item['title']);
+                        
+                        PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
+                        Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
+                  })))
+                );
+              }).toList(),
+            );
+              
+          }
+
+          // best가 한 장도 없을 때
+          return Text("no card");
+        },
+      ),
     );
   }
+
+  // // 텍스트 출력 + 가로 스크롤 리스트 출력
+  // Widget slideList(BuildContext context, String tabName, String title, bool iconTF){
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       iconTF? startxtIcon(context, title) : textBox(context, title),
+  //       slide(context, tabName),
+  //       Divider(thickness: 0.5,),
+  //     ],
+  //   );
+  // }
+
+  // // 가로 스크롤 리스트
+  // Widget slide(BuildContext context, String tabName){
+  //   return SingleChildScrollView(
+  //     scrollDirection: Axis.horizontal,
+  //     padding: EdgeInsets.fromLTRB(5,0,5,5), //5055
+  //     child: StreamBuilder<QuerySnapshot>(
+  //       stream: FirebaseFirestore.instance.collection('dictionaryItem').where("hashtag", isEqualTo: tabName).where('recommend', isEqualTo: true).snapshots(),
+  //       builder: (context, snap) {
+
+  //         if (snap.connectionState == ConnectionState.waiting) {
+  //           return CircularProgressIndicator();
+  //         }
+
+  //         final documents = snap.data!.docs;
+
+  //         return Row(
+  //           children: List.generate(snap.data!.size, (index){
+  //             return Container(
+  //               margin: EdgeInsets.symmetric(horizontal: 0),
+  //               width: width / 2,
+  //               height: width*(9/20),
+      
+  //               child: InkWell(
+  //                 onTap: () {
+  //                   String clicked_id = documents[index].id;  // 지금 클릭한 dictionaryItem의 도큐먼트 아이디
+  //                   DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
+  //                   dicItemInfo.setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
+  //                   Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
+
+  //                   PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
+                   
+  //                   Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
+  //                 }, 
+  //                 child: Card(
+  //                   shape: RoundedRectangleBorder(
+  //                     borderRadius: BorderRadius.circular(10),
+  //                   ),
+  //                   elevation: 0,
+  //                   child: Column(
+  //                     crossAxisAlignment: CrossAxisAlignment.start,
+  //                     children: [
+  //                       ClipRRect(
+  //                         borderRadius: BorderRadius.circular(10.0),
+  //                         child: Image.network(documents[index]['thumbnail']),      // 확인필요TODO
+  //                       ),
+  //                       Padding(
+  //                         padding: EdgeInsets.fromLTRB(8,5,8,0), // 게시글 제목 여백
+  //                         child: Column(
+  //                           crossAxisAlignment: CrossAxisAlignment.start,
+  //                           children: [
+  //                             Padding(padding: EdgeInsets.fromLTRB(0, 0, 0 , 3),
+  //                               child: Text(
+  //                                 "#$tabName",
+  //                                 style: TextStyle(
+  //                                   color: themeColor.getColor(),
+  //                                 ),
+  //                                 textScaleFactor: 1,
+  //                               ),
+  //                             ),
+  //                             Text(documents[index]['title'], textScaleFactor: 1)
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //             );
+  //           } ), //TODO@@@@@@@@@@@@@@@@
+  //         );
+  //       }
+  //     )
+  //   );
+  // }
 }
