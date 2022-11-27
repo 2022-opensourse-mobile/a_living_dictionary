@@ -8,8 +8,6 @@ class Logineduser  with ChangeNotifier {
   String nickName ='';
   String email ='';
   String profileImageUrl = '';
-  String doc_id = '';
-
 
   void setInfo(uid, nickName, email, profileImageUrl) {
     this.uid = uid;
@@ -21,9 +19,6 @@ class Logineduser  with ChangeNotifier {
   }
 
   void setDocID(doc_id) {
-    this.doc_id = doc_id;
-  }
-  void setDocID(doc_id){
     this.doc_id = doc_id;
   }
 }

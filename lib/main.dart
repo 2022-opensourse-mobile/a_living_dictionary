@@ -280,7 +280,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ),
               elevation: 0.0,
               actions: <Widget>[
-                Text(loginedUser.nickName ?? 'ㄴㄴ'),
+                Text(loginedUser.nickName),
                 IconButton(
                   icon: new Icon(Icons.search),
                   onPressed: () => {
