@@ -73,7 +73,7 @@ class MainPage extends StatelessWidget {
       child: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('best').snapshots(),
         builder: (context, AsyncSnapshot snap) {
-          if (!snap.hasData) {
+          if (snap.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
           }
           if (snap.hasError) {
@@ -85,7 +85,7 @@ class MainPage extends StatelessWidget {
 
           // best가 한 장이라도 있을 때
           if (documents.length != 0) {
-            List slideList = snap.data?.docs.toList();
+            List slideList = documents.toList();
             if (snap.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
             }
@@ -105,24 +105,27 @@ class MainPage extends StatelessWidget {
                 return StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance.collection('dictionaryItem').where('__name__', isEqualTo: item['item_id']).snapshots(),
                   // stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(item['item_id']).snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
+                  builder: (context, snap) {
+                    if (snap.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
                     }
+
+                    final documents = snap.data!.docs;
+                    
                     DictionaryCardPage card = DictionaryCardPage(width, height, portraitH, landscapeH, isPortrait);
                     return Container(
                       child: Center(
                         child: GestureDetector(
-                          child: Image(image: NetworkImage(snapshot.data!.docs[0]['thumbnail'])),
+                          child: Image(image: NetworkImage(documents[0]['thumbnail'])),
                           onTap: (() {
-                            String clicked_id = snapshot.data!.docs[0].id; // 지금 클릭한 dictionaryItem의 도큐먼트 id
+                            String clicked_id = documents[0].id; // 지금 클릭한 dictionaryItem의 도큐먼트 id
                             DictionaryItemInfo dicItemInfo;
 
-                            var doc = FirebaseFirestore.instance.collection('dictionaryItem').doc(snapshot.data!.docs[0].id).get().then((doc) {
+                            var doc = FirebaseFirestore.instance.collection('dictionaryItem').doc(documents[0].id).get().then((doc) {
                               
                               dicItemInfo = DictionaryItemInfo();
-                              dicItemInfo.setInfo(snapshot.data!.docs[0].id, snapshot.data!.docs[0]['author'], snapshot.data!.docs[0]['card_num'], snapshot.data!.docs[0]['date'], snapshot.data!.docs[0]['hashtag'], snapshot.data!.docs[0]['scrapnum'], snapshot.data!.docs[0]['thumbnail'], snapshot.data!.docs[0]['title']);
-                              // Provider.of<DictionaryItemInfo>(context, listen:false).setInfo(snapshot.data!.docs[0].id, snapshot.data!.docs[0]['author'], snapshot.data!.docs[0]['card_num'], snapshot.data!.docs[0]['date'], snapshot.data!.docs[0]['hashtag'], snapshot.data!.docs[0]['scrapnum'], snapshot.data!.docs[0]['thumbnail'], snapshot.data!.docs[0]['title']);
+                              dicItemInfo.setInfo(documents[0].id, documents[0]['author'], documents[0]['card_num'], documents[0]['date'], documents[0]['hashtag'], documents[0]['scrapnum'], documents[0]['thumbnail'], documents[0]['title']);
+                              // Provider.of<DictionaryItemInfo>(context, listen:false).setInfo(documents[0].id, documents[0]['author'], documents[0]['card_num'], documents[0]['date'], documents[0]['hashtag'], documents[0]['scrapnum'], documents[0]['thumbnail'], documents[0]['title']);
                               
                               PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
                               Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
@@ -249,11 +252,15 @@ class MainPage extends StatelessWidget {
             ),
             StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time').snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const CircularProgressIndicator();
+                builder: (context, snap) {
+                  // if (!snap.hasData) {
+                  //   return CircularProgressIndicator();
+                  // }
+
+                  if (snap.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
                   }
-                  final documents = snapshot.data!.docs;
+                  final documents = snap.data!.docs;
                   return Expanded(
                       child: ListView(
                           shrinkWrap: true,

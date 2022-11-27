@@ -1,12 +1,9 @@
 
-//import 'dart:html';
 
-import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
-import 'package:provider/provider.dart';
 
 
 //https://firebase.google.com/codelabs/firebase-auth-in-flutter-apps#5

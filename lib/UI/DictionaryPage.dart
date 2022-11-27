@@ -82,9 +82,15 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection(s).snapshots(),
         builder: (context, snap) {
-          if(!snap.hasData){
-            sleep(Duration(seconds: 1));
+          
+          if (snap.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
           }
+
+          // if(!snap.hasData){
+          //   sleep(Duration(seconds: 1));
+          // }
+          
           doc = snap.data!.docs as List<QuerySnapshot<Object?>>;
           return Container();
     });
@@ -180,6 +186,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
             return CircularProgressIndicator();
           }
 
+          final documents = snap.data!.docs;
+
           return Row(
             children: List.generate(snap.data!.size, (index){
               return Container(
@@ -189,10 +197,10 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       
                 child: InkWell(
                   onTap: () {
-                    String clicked_id = snap.data!.docs[index].id;  // 지금 클릭한 dictionaryItem의 도큐먼트 아이디
+                    String clicked_id = documents[index].id;  // 지금 클릭한 dictionaryItem의 도큐먼트 아이디
                     DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
-                    dicItemInfo.setInfo(clicked_id, snap.data!.docs[index]['author'], snap.data!.docs[index]['card_num'], snap.data!.docs[index]['date'], snap.data!.docs[index]['hashtag'], snap.data!.docs[index]['scrapnum'], snap.data!.docs[index]['thumbnail'], snap.data!.docs[index]['title']);
-                    Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, snap.data!.docs[index]['author'], snap.data!.docs[index]['card_num'], snap.data!.docs[index]['date'], snap.data!.docs[index]['hashtag'], snap.data!.docs[index]['scrapnum'], snap.data!.docs[index]['thumbnail'], snap.data!.docs[index]['title']);
+                    dicItemInfo.setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
+                    Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
 
                     PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
                    
@@ -208,7 +216,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
-                          child: Image.network(snap.data!.docs[index]['thumbnail']),      // 확인필요TODO
+                          child: Image.network(documents[index]['thumbnail']),      // 확인필요TODO
                         ),
                         Padding(
                           padding: EdgeInsets.fromLTRB(8,5,8,0), // 게시글 제목 여백
@@ -224,7 +232,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                                   textScaleFactor: 1,
                                 ),
                               ),
-                              Text(snap.data!.docs[index]['title'], textScaleFactor: 1)
+                              Text(documents[index]['title'], textScaleFactor: 1)
                             ],
                           ),
                         ),
