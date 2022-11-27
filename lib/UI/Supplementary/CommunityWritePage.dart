@@ -1,18 +1,25 @@
 import 'package:a_living_dictionary/DB/CommunityItem.dart';
+import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../main.dart';
 import 'Search.dart';
 import 'ThemeColor.dart';
 
+
+
 ThemeColor themeColor = ThemeColor();
 
 class CommunityWritePage extends StatelessWidget {
-  CommunityWritePage({super.key});
-
+  CommunityWritePage(this.context2, {super.key});
+  final BuildContext context2;
   late var width;
   TextEditingController titleController = TextEditingController();
   TextEditingController bodyController = TextEditingController();
   TextEditingController nameController = TextEditingController();
+  late Logineduser user = Provider.of<Logineduser>(context2, listen: false);
 
 
   @override
@@ -165,19 +172,20 @@ class CommunityWritePage extends StatelessWidget {
     return ElevatedButton(
       child: Text("등록", style: TextStyle(color: Colors.black)),
       onPressed: (){
+        print("user.nickName : ${user.nickName}");
         CommunityItem item = CommunityItem(
           title: titleController.text,
           body: bodyController.text,
-          writer_id: nameController.text,
+          writer_id: user.uid,
           boardType: 0,
           time: DateTime.now(),
           hashTag: "자유",
-          like: 0
+          like: 0,
+          writer_nickname: user.nickName
         );
         item.add();
         titleController.text = "";
         bodyController.text = "";
-        nameController.text = "";
         Navigator.pop(context);
       },
 

@@ -6,14 +6,16 @@ import 'package:flutter/material.dart';
 import 'Data.dart';
 
 class CommunityItem with ChangeNotifier{
+  String doc_id = '';
   String title = '';
   String writer_id = '';
+  String writer_nickname = '';
   String body = '';
   int like = 0;
   DateTime? time;
   int boardType = 0;
   String hashTag = '';
-  String doc_id = '';
+
 
   CommunityItem({
     this.title = '',
@@ -23,11 +25,12 @@ class CommunityItem with ChangeNotifier{
     this.boardType = 0,
     this.hashTag = '',
     this.doc_id = '',
+    this.writer_nickname = '',
     this.time
   }){}
 
-  //add Post
-  @override
+
+
   void add() {
     Timestamp stamp = Timestamp.fromDate(this.time!);
     FirebaseFirestore.instance.collection('CommunityDB').add({
@@ -37,59 +40,20 @@ class CommunityItem with ChangeNotifier{
       'body':this.body,
       'time': stamp,
       'boardType':this.boardType,
-      'hashTag':this.hashTag
+      'hashTag':this.hashTag,
+      'writer_nickname':this.writer_nickname
     });
   }
-
-
-  //일반 build
-  @override
-  Widget build(BuildContext context) {
-    String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-      child: Column(
-        children: [
-          ListTile(
-            title: Text("${this.title}  ${this.writer_id}"),
-            subtitle: Text(this.body),
-            shape: const RoundedRectangleBorder(
-                side: BorderSide(style: BorderStyle.none)
-            ),
-            trailing: Text(t),
-            style: ListTileStyle.list,
-            onTap: () {
-              String tabName = getTabName(this.boardType);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
-              );
-            },
-          ),
-          const Divider(thickness: 1.0)
-        ],
-      ),
-    );
+  void delete(){
+    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).delete();
   }
-
-  String getTabName(int boardType){
-    switch(boardType){
-      case 1:
-        return "인기게시판";
-      case 2:
-        return "공지게시판";
-      default:
-        return "자유게시판";
-    }
-  }
-
-  //Firebase db의 데이터를 Post로 변환
   static CommunityItem getDataFromDoc(DocumentSnapshot doc){
     Timestamp stamp = doc['time'];
     final item = CommunityItem(
         doc_id : doc.id,
         title : doc['title'],
         writer_id : doc['writer_id'],
+        writer_nickname: doc['writer_nickname'],
         body : doc['body'],
         like : doc['like'],
         time : stamp.toDate(),
@@ -97,36 +61,6 @@ class CommunityItem with ChangeNotifier{
         hashTag : doc['hashTag']);
     return item;
   }
-  //MainPage에서 사용, 하나의 doc을 받아서 하나의 리스트 원소 출력
-  Widget buildMain(BuildContext context) {
-    String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
-    return Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
-        child: ListTile(
-          title: Text(this.title),
-          visualDensity: const VisualDensity(vertical: -4),
-          dense: true,
-          trailing: Text(t),
-          onTap: (){
-            String tabName = getTabName(this.boardType);
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
-            );
-          },
-        ));
-  }
-  //document 리스트를 일부 elements만 뽑아서 return
-  List<Widget> getWidgetList(BuildContext context, List<QueryDocumentSnapshot<Object?>> doc, int boardType){
-    final board = doc.where((item)=> item['boardType'] == boardType).toList();
-    final subList = board.sublist(0,4);
-    final buildList = subList.map((doc){
-      final item = CommunityItem.getDataFromDoc(doc);
-      return item.buildMain(context);
-    }).toList();
-    return buildList;
-  }
-
 
 
   void addLikeNum(){
@@ -156,6 +90,76 @@ class CommunityItem with ChangeNotifier{
         }
       }
     }
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text("${this.title}"),
+            subtitle: Text(this.body),
+            shape: const RoundedRectangleBorder(
+                side: BorderSide(style: BorderStyle.none)
+            ),
+            trailing: Text(t),
+            style: ListTileStyle.list,
+            onTap: () {
+              String tabName = getTabName(this.boardType);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
+              );
+            },
+          ),
+          const Divider(thickness: 1.0)
+        ],
+      ),
+    );
+  }
+  Widget buildMain(BuildContext context) {
+    String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
+        child: ListTile(
+          title: Text(this.title),
+          visualDensity: const VisualDensity(vertical: -4),
+          dense: true,
+          trailing: Text(t),
+          onTap: (){
+            String tabName = getTabName(this.boardType);
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
+            );
+          },
+        ));
+  }
+
+
+  String getTabName(int boardType){
+    switch(boardType){
+      case 1:
+        return "인기게시판";
+      case 2:
+        return "공지게시판";
+      default:
+        return "자유게시판";
+    }
+  }
+  List<Widget> getWidgetList(BuildContext context, List<QueryDocumentSnapshot<Object?>> doc, int boardType){
+    final board = doc.where((item)=> item['boardType'] == boardType).toList();
+    final subList = board.sublist(0,4);
+    final buildList = subList.map((doc){
+      final item = CommunityItem.getDataFromDoc(doc);
+      return item.buildMain(context);
+    }).toList();
+    return buildList;
   }
 }
 

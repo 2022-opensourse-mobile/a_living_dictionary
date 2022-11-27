@@ -22,8 +22,6 @@ import 'UI/RestaurantPage.dart';
 import 'UI/DictionaryPage.dart';
 import 'UI/Supplementary//ThemeColor.dart';
 
-import 'UI/Supplementary/CommunityWritePage.dart';
-
 import 'UI/Supplementary/WriteDictionaryPage.dart';
 
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
@@ -79,7 +77,6 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
-        '/communityWrite':(context)=>CommunityWritePage(),
         '/writeDictionary':(context)=>WriteDictionaryPage(),
         '/authPage': (context)=> Authentication()
       },
@@ -296,7 +293,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             children: [
               MainPage(tabController: _tabController),
               DictionaryPage(),
-              CommunityPage(),
+              CommunityPage(context),
               RestaurantPage(),
               MyPage()
             ],
