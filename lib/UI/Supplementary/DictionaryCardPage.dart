@@ -100,7 +100,7 @@ class DictionaryCardPage {
                                             style: TextStyle(
                                               color: themeColor.getColor(),
                                             ),
-                                            textScaleFactor: 1,
+                                            textScaleFactor: 1, 
                                           ),
                                         ),
                                         Text(snapshot.data!.docs[0]['title'])
@@ -289,16 +289,6 @@ class DictionaryCardPage {
       appBar: AppBar(
         title: Consumer2<DictionaryItemInfo, Logineduser>(
           builder: (context, dicProvider, userProvider, child) {
-            var temp = FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicItemInfo)
-              .snapshots();
-            
-            temp.forEach((snap) {
-              if (snap.size == 0) {
-                hasData = false;
-              } else {
-                hasData = true;
-              }
-            });
 
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -307,38 +297,49 @@ class DictionaryCardPage {
                 Expanded(child: SizedBox()),
                 
                 Text(dicProvider.scrapnum.toString(), style: TextStyle(fontSize: 17), textAlign: TextAlign.center,),
-                if (!hasData) 
-                  IconButton(icon: Icon(
-                    // if (context.watch<DictionaryItemInfo>)
-                    Icons.bookmark_outline_rounded,
-                    color: Colors.amberAccent,
-                    size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
-                  ),
-                  onPressed: (){
-                    FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").add({'docID' : dicProvider.doc_id});
-                    
+                StreamBuilder(
+                  stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id)
+                            .snapshots(),
+                  builder: (context, snapshot) {// snapshot.data!.docs[0]
+                    if (snapshot.data!.size != 0) {
+                      return IconButton(
+                        icon: const Icon(
+                          // if (context.watch<DictionaryItemInfo>)
+                          Icons.bookmark_outlined,
+                          color: Colors.amberAccent,
+                          size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
+                        ),
+                        onPressed: (){
+                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id).get().then((value) {
+                            value.docs.forEach((element) {
+                              FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList")
+                                .doc(element.id)
+                                .delete();
+                            });
+                          });
+                          dicProvider.subScrapNum(dicProvider.doc_id);
+                        }
+                      );
+                      
+                    }
 
-                    dicProvider.addScrapNum(dicProvider.doc_id);
-                    hasData = !hasData;
-                  })
-                else
-                  IconButton(icon: Icon(
-                    // if (context.watch<DictionaryItemInfo>)
-                    Icons.bookmark_outlined,
-                    color: Colors.amberAccent,
-                    size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
-                  ),
-                  onPressed: (){
-                    FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id).get().then((value) {
-                      value.docs.forEach((element) {
-                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList")
-                          .doc(element.id)
-                          .delete();
+                    return IconButton(
+                      icon: const Icon(
+                      // if (context.watch<DictionaryItemInfo>)
+                        Icons.bookmark_outline_rounded,
+                        color: Colors.amberAccent,
+                        size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
+                      ),
+                      onPressed: (){
+                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").add({'docID' : dicProvider.doc_id});
+                        
+                        dicProvider.addScrapNum(dicProvider.doc_id);
                       });
-                    });
-                    dicProvider.subScrapNum(dicProvider.doc_id);
-                    hasData = !hasData;
-                  })
+                    
+                  },
+                  )
+
+        
                   ],
                 );
           }
