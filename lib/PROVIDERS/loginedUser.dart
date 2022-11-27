@@ -8,7 +8,6 @@ class Logineduser  with ChangeNotifier {
   String nickName ='';
   String email ='';
   String profileImageUrl = '';
-  String doc_id = '';
 
 
   void setInfo(uid, nickName, email, profileImageUrl) {
