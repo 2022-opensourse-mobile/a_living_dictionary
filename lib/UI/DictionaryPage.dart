@@ -53,7 +53,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           indicatorColor: themeColor.getColor(),
           unselectedLabelColor: Colors.black,
           tabs: [
-            Tab(text: "추천",),
+            // Tab(text: "추천",),
             Tab(text: "청소",),
             Tab(text: "빨래",),
             Tab(text: "요리",),
@@ -65,7 +65,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
           child: TabBarView(
             controller: _tabController,
             children: [
-              recommandPage(context, card),
+              // recommandPage(context, card),
               otherPage(context, card, "청소"),
               otherPage(context, card, "빨래"),
               otherPage(context, card, "요리"),
@@ -98,30 +98,30 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   }
 
 
-  // 추천 탭 페이지
-  Widget recommandPage(BuildContext context, DictionaryCardPage card) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // //추가할 때 필요한 코드 @@삭제
-          // Row(
-          //   children: [
-          //     makeButton("청소"),
-          //     makeButton("빨래"),
-          //     makeButton("요리"),
-          //     makeButton("기타"),
-          //   ],
-          // ),
-          startxtIcon(context, '인기 TOP 4'),
-          card.recommendPostList(context),
-          Divider(thickness: 0.5,),
-          slideList(context,"청소", "오늘은 대청소하는 날!", false),
-          slideList(context,"빨래", "빨래의 모든 것", false),
-          slideList(context,"요리", "뭐 먹을지 고민된다면?", false),
-        ],
-      ),
-    );
-  }
+  // // 추천 탭 페이지
+  // Widget recommandPage(BuildContext context, DictionaryCardPage card) {
+  //   return SingleChildScrollView(
+  //     child: Column(
+  //       children: [
+  //         // //추가할 때 필요한 코드 @@삭제
+  //         // Row(
+  //         //   children: [
+  //         //     makeButton("청소"),
+  //         //     makeButton("빨래"),
+  //         //     makeButton("요리"),
+  //         //     makeButton("기타"),
+  //         //   ],
+  //         // ),
+  //         startxtIcon(context, '인기 TOP 4'),
+  //         card.recommendPostList(context),
+  //         Divider(thickness: 0.5,),
+  //         slideList(context,"청소", "오늘은 대청소하는 날!", false),
+  //         slideList(context,"빨래", "빨래의 모든 것", false),
+  //         slideList(context,"요리", "뭐 먹을지 고민된다면?", false),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // 추천탭이 아닌 탭(청소, 빨래 등)
   Widget otherPage(BuildContext context, DictionaryCardPage card, String tabName) {
@@ -129,7 +129,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            slideList(context, tabName, '관리자가 엄선한 $tabName TIP', true),
+            // slideList(context, tabName, '관리자가 엄선한 $tabName TIP', true),
+            carouselList(context, tabName, '관리자가 엄선한 $tabName TIP', true),
             textBox(context, '최신글'),
             Padding(
                 padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
@@ -161,8 +162,9 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
     );
   }
 
+
   // 텍스트 출력 + 가로 스크롤 리스트 출력
-  Widget slideList(BuildContext context, String tabName, String title, bool iconTF){
+  Widget carouselList(BuildContext context, String tabName, String title, bool iconTF){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -172,6 +174,18 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
       ],
     );
   }
+
+  // // 텍스트 출력 + 가로 스크롤 리스트 출력
+  // Widget slideList(BuildContext context, String tabName, String title, bool iconTF){
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       iconTF? startxtIcon(context, title) : textBox(context, title),
+  //       slide(context, tabName),
+  //       Divider(thickness: 0.5,),
+  //     ],
+  //   );
+  // }
 
   // 가로 스크롤 리스트
   Widget slide(BuildContext context, String tabName){

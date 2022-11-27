@@ -213,8 +213,10 @@ class _SettingsState extends State<Settings> {
       appBar: AppBar(title: Text('비밀번호 변경'), elevation: 0.0),
       body: Column(
         children: [
-          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          
           Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          TextButton(onPressed: (){}, child: Text("변경"))
         ],
       ),
     );

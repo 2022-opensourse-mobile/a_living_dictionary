@@ -142,7 +142,7 @@ class Authentication extends StatelessWidget {
                     child:  Container(
                       padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-                      child: Text('로그인 완료시 클릭',  style: TextStyle(fontSize: 20, color: Colors.black),))
+                      child: Text('skip',  style: TextStyle(fontSize: 20, color: Colors.black),))
                     ),
                 ],
               ),
