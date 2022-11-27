@@ -16,6 +16,7 @@ class DictionaryCardPage {
   var width, height, portraitH, landscapeH;
   var isPortrait;
 
+  //메인화면 post
   Widget mainPostList(BuildContext context, int postNum) {
     return Container(
       child: GridView.builder(
@@ -30,12 +31,13 @@ class DictionaryCardPage {
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 5/4, // 가로 세로 비율
+          childAspectRatio: 10/9, // 가로 세로 비율
           //childAspectRatio: (width / 2) / (isPortrait?(height < 750 ? 250 : portraitH):landscapeH), // 가로 세로 비율
         ),
       ),
     );
   }
+
   Widget recommendPostList(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('best').snapshots(),
@@ -56,7 +58,7 @@ class DictionaryCardPage {
                 return Container(
                   margin: EdgeInsets.symmetric(horizontal: 0),
                   width: width / 2,
-                  height: (isPortrait?(height < 750 ? 250:portraitH):landscapeH),
+                  height: width*(9/20),
                   child: InkWell(
                     onTap: () {
                       String clicked_id = documents[index]['item_id'];
@@ -79,7 +81,6 @@ class DictionaryCardPage {
                               if (!snap.hasData) {
                                 return CircularProgressIndicator();
                               }
-
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -118,7 +119,7 @@ class DictionaryCardPage {
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 5/4
+                childAspectRatio: 10/9
               ),
             ),
           );
@@ -147,9 +148,7 @@ class DictionaryCardPage {
                 return Container(
                   margin: EdgeInsets.symmetric(horizontal: 0),
                   width: width / 2,
-                  height: (isPortrait
-                      ? (height < 750 ? 250 : portraitH)
-                      : landscapeH),
+                  height: width*(101515),
                   child: InkWell(
                     onTap: () {
                       // @@@@@@@@@@@@@@@@@@
@@ -205,7 +204,7 @@ class DictionaryCardPage {
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 5/4 // 가로 세로 비율
+                childAspectRatio: 10/9 // 가로 세로 비율
               ),
             ),
           );
@@ -226,9 +225,6 @@ class DictionaryCardPage {
           
           return Container(
             margin: EdgeInsets.symmetric(horizontal: 0),
-            width: width / 2,
-            height:
-                (isPortrait ? (height < 750 ? 250 : portraitH) : landscapeH),
             child: InkWell(
               onTap: () {
                 DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
@@ -292,13 +288,11 @@ class DictionaryCardPage {
                 StreamBuilder(
                   stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id)
                             .snapshots(),
-
                   builder: (context, snap) {
                     if (!snap.hasData) {
                       return CircularProgressIndicator();
                     }
                     
-
                     if (snap.data!.size != 0) {   // user가 해당 게시글을 스크랩한 기록이 없는 경우
                       return IconButton(
                         icon: const Icon(

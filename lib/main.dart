@@ -312,8 +312,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             tabs: <Widget>[
               Tab(icon: _curIndex == 0? Icon(Icons.home) : Icon(Icons.home_outlined), child: Text('홈', textScaleFactor: 1,), ),
               Tab(icon: _curIndex == 1? Icon(Icons.book) : Icon(Icons.book_outlined,), child: Text('사전', textScaleFactor: 1,),),
-              Tab(icon: _curIndex == 2? Icon(Icons.people_alt) : Icon(Icons.people_alt_outlined), child: Text('커뮤니티', textScaleFactor: 1,),),
-              Tab(icon: _curIndex == 3? Icon(Icons.map) : Icon(Icons.map_outlined,), child: Text('맛집지도', textScaleFactor: 1,),),
+              Tab(icon: _curIndex == 2? Icon(Icons.people_alt) : Icon(Icons.people_alt_outlined), child: Text('커뮤\n니티', textScaleFactor: 1,),),
+              Tab(icon: _curIndex == 3? Icon(Icons.map) : Icon(Icons.map_outlined,), child: Text('맛집\n지도', textScaleFactor: 1,),),
               Tab(icon: _curIndex == 4? Icon(Icons.settings) : Icon(Icons.settings_outlined,), child: Text('설정', textScaleFactor: 1,),),
             ],
             onTap: (index) {
