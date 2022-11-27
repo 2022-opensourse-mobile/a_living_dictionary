@@ -7,24 +7,29 @@ import 'Supplementary/CommunityWritePage.dart';
 ThemeColor themeColor = ThemeColor();
 
 class CommunityPage extends StatelessWidget {
-  const CommunityPage({Key? key}) : super(key: key);
+  const CommunityPage(this.context2, {Key? key}) : super(key: key);
+
+  final BuildContext context2;
 
   @override
   Widget build(BuildContext context) {
-    return MyCommunity();
+    return MyCommunity(context2);
   }
 }
 
 class MyCommunity extends StatefulWidget {
-  const MyCommunity({Key? key}) : super(key: key);
+  const MyCommunity(this.context, {Key? key}) : super(key: key);
+  final BuildContext context;
 
   @override
-  State<MyCommunity> createState() => _MyComminityState();
+  State<MyCommunity> createState() => _MyComminityState(context);
 }
 
 class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin{
+  _MyComminityState(this.context2);
   CommunityItem p = CommunityItem();
   late TabController _tabController;
+  final BuildContext context2;
 
   static const FREEBOARD = 0;
   static const HOTBOARD = 1;
@@ -88,7 +93,10 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
         highlightElevation: 0.0,
         hoverElevation: 0.0,
         onPressed: () {
-          Navigator.pushNamed(context, '/communityWrite');
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CommunityWritePage(context))
+          );
         },
         child: const Icon(
           Icons.add,
