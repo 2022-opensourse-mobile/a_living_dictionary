@@ -79,6 +79,9 @@ class DictionaryCardPage {
                             stream: FirebaseFirestore.instance.collection('dictionaryItem')
                                 .where('__name__', isEqualTo: documents[index]['item_id']).snapshots(),
                             builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const CircularProgressIndicator();
+                              }
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -292,6 +295,9 @@ class DictionaryCardPage {
                   stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id)
                             .snapshots(),
                   builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const CircularProgressIndicator();
+                    }
                     if (snapshot.data!.size != 0) {
                       return IconButton(
                         icon: const Icon(
