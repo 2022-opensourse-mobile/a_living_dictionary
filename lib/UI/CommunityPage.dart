@@ -107,18 +107,31 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
   }
   Widget getCommunityList(int boardType) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('CommunityDB').where('boardType', isEqualTo: boardType).snapshots(),
+        stream: FirebaseFirestore.instance.collection('CommunityDB').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return CircularProgressIndicator();
           }
           final documents = snapshot.data!.docs;
-          return ListView(
-              shrinkWrap: true,
-              children: documents.map((doc){
-                CommunityItem item = CommunityItem.getDataFromDoc(doc);
-                return item.build(context);
-              }).toList());
+
+
+          if(boardType == FREEBOARD) {
+            return ListView(
+                shrinkWrap: true,
+                children: documents.map((doc) {
+                  CommunityItem item = CommunityItem.getDataFromDoc(doc);
+                  return item.build(context);
+                }).toList());
+          }
+          else{
+            return ListView(
+                shrinkWrap: true,
+                children: documents.where((element) => element['boardType']==HOTBOARD).map((doc){
+                  CommunityItem item = CommunityItem.getDataFromDoc(doc);
+                  return item.build(context);
+                }).toList()
+            );
+          }
         });
   }
 }

@@ -68,11 +68,26 @@ class CommunityItem with ChangeNotifier{
     FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
       'like': this.like
     });
+    if(isHotPost()){
+      updateBoardType(1);
+    }
   }
   void subLikeNum(){
     this.like--;
     FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
       'like': this.like
+    });
+    if(!isHotPost()){
+      updateBoardType(0);
+    }
+  }
+  bool isHotPost(){
+    return (this.like >= 10);
+  }
+  void updateBoardType(i){
+    boardType = i;
+    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
+      'boardType': this.boardType
     });
   }
   void registerThisPost(Logineduser user){
@@ -94,7 +109,6 @@ class CommunityItem with ChangeNotifier{
 
 
 
-  @override
   Widget build(BuildContext context) {
     String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
     return Padding(
