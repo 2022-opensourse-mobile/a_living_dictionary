@@ -294,7 +294,7 @@ class DictionaryCardPage {
                 StreamBuilder(
                   stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id)
                             .snapshots(),
-                  builder: (context, snapshot) {// snapshot.data!.docs[0]
+                  builder: (context, snapshot) {
                     if (snapshot.data!.size != 0) {
                       return IconButton(
                         icon: const Icon(
