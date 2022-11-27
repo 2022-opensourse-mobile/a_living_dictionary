@@ -99,8 +99,7 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
   }
   Widget getCommunityList(int boardType) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('CommunityDB')
-            .where('boardType', isEqualTo: boardType).snapshots(),
+        stream: FirebaseFirestore.instance.collection('CommunityDB').where('boardType', isEqualTo: boardType).snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return CircularProgressIndicator();
@@ -108,7 +107,10 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
           final documents = snapshot.data!.docs;
           return ListView(
               shrinkWrap: true,
-              children: documents.map((doc) => p.build(doc, context)).toList());
+              children: documents.map((doc){
+                CommunityItem item = CommunityItem.getDataFromDoc(doc);
+                return item.build(context);
+              }).toList());
         });
   }
 }

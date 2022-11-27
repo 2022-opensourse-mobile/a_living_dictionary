@@ -67,12 +67,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       builder: (context,child) {
         return MediaQuery(data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);},
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: themeColor.getWhiteMaterialColor(),
         scaffoldBackgroundColor: Colors.white,
+        // splashColor: Colors.transparent, //물결효과 적용
+        // highlightColor: Colors.transparent,
       ),
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
@@ -273,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           appBar: AppBar(
               title: Text(
                 widget.title,
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                style: TextStyle(color: themeColor.getColor(), fontWeight: FontWeight.bold),
               ),
               elevation: 0.0,
               actions: <Widget>[
@@ -303,9 +306,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             tabs: <Widget>[
               Tab(icon: _curIndex == 0? Icon(Icons.home) : Icon(Icons.home_outlined), child: Text('홈', textScaleFactor: 1,), ),
               Tab(icon: _curIndex == 1? Icon(Icons.book) : Icon(Icons.book_outlined,), child: Text('사전', textScaleFactor: 1,),),
-              Tab(icon: _curIndex == 2? Icon(Icons.people_alt) : Icon(Icons.people_alt_outlined), child: Text('게시판', textScaleFactor: 1,),),
-              Tab(icon: _curIndex == 3? Icon(Icons.map) : Icon(Icons.map_outlined,), child: Text('혼밥 맵', textScaleFactor: 1,),),
-              Tab(icon: _curIndex == 4? Icon(Icons.info) : Icon(Icons.info_outline,), child: Text('내 정보', textScaleFactor: 1,),),
+              Tab(icon: _curIndex == 2? Icon(Icons.people_alt) : Icon(Icons.people_alt_outlined), child: Text('커뮤니티', textScaleFactor: 1,),),
+              Tab(icon: _curIndex == 3? Icon(Icons.map) : Icon(Icons.map_outlined,), child: Text('맛집지도', textScaleFactor: 1,),),
+              Tab(icon: _curIndex == 4? Icon(Icons.settings) : Icon(Icons.settings_outlined,), child: Text('설정', textScaleFactor: 1,),),
             ],
             onTap: (index) {
               setState(() {_curIndex = index;});
