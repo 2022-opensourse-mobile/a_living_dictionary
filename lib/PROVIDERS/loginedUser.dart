@@ -22,7 +22,5 @@ class Logineduser  with ChangeNotifier {
   void setDocID(doc_id) {
     this.doc_id = doc_id;
   }
-  void setDocID(doc_id){
-    this.doc_id = doc_id;
-  }
+
 }
