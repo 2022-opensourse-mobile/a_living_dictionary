@@ -177,6 +177,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
+                child: Image.asset('assets/kakao_login.png', fit: BoxFit.fill, width: 150, height: 40,),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(0)
+                ),
                 onPressed: () async {
                   viewModel = new MainViewModel(KakaoLogin());
                   await viewModel.login();
@@ -209,9 +213,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   }
                   );
                 }, 
-                child: const Text('카카오로 로그인')
               ),
               ElevatedButton(
+                child: Image.asset('assets/naver_login.png', fit: BoxFit.fill, width: 150, height: 40,),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(0)
+                ),
                 onPressed: () async {
                   await signInWithNaver();
 
@@ -242,13 +249,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     );
                   }
                 },
-                child: const Text('네이버로 로그인')
               ),
               ElevatedButton(
+                child: const Text('이메일로 로그인') ,
                 onPressed: () async {
                   await Navigator.pushNamed(context, '/authPage') as Logineduser;
                 }, 
-                child: const Text('이메일로 로그인')  
+                 
               )
                 
             ],
