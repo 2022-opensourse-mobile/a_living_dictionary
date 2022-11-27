@@ -5,7 +5,6 @@ import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 
 import '../DictionaryPage.dart';
@@ -63,6 +62,8 @@ class DictionaryCardPage {
                       String clicked_id = documents[index]['item_id'];
                       DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
                       dicItemInfo.setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
+                      Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
+                    
 
                       PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, dicItemInfo));
                       Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
@@ -155,6 +156,7 @@ class DictionaryCardPage {
                       String clicked_id = documents[index].id; // 지금 클릭한 dictionaryItem의 item_id
                       DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
                       dicItemInfo.setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
+                      Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
 
                       PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, dicItemInfo));
                       Navigator.push(
@@ -231,7 +233,8 @@ class DictionaryCardPage {
               onTap: () {
                 DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
                 dicItemInfo.setInfo(it.id, it['author'], it['card_num'], it['date'], it['hashtag'], it['scrapnum'], it['thumbnail'], it['title']);
-
+                Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(it.id, it['author'], it['card_num'], it['date'], it['hashtag'], it['scrapnum'], it['thumbnail'], it['title']);
+                    
                 PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, dicItemInfo));
                 Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
               },
@@ -274,46 +277,72 @@ class DictionaryCardPage {
         });
   }
   Widget pageView(BuildContext context, DictionaryItemInfo? dicItemInfo) {
+    var hasData = false;
     return Scaffold(
       
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(dicItemInfo!.title, style: TextStyle(fontSize: 17)),
-            Expanded(child: SizedBox()),
-            Consumer<DictionaryItemInfo>(
-              builder: (context, provider, child) {
-                return Text(
-                  provider.scrapnum.toString(), style: TextStyle(fontSize: 17), textAlign: TextAlign.center,);
-              }
-            ),
-
-            IconButton(
-              icon: Icon(
-                // if (context.watch<DictionaryItemInfo>)
-                Icons.bookmark_outline_rounded,
-                color: Colors.amberAccent,
-                size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
-              ), 
-              onPressed: (){
-                Provider.of<DictionaryItemInfo>(context, listen: false).addScrapNum(dicItemInfo.doc_id);
-                // context.read<DictionaryItemInfo>().addScrapNum(dicItemInfo.doc_id);
-                FirebaseFirestore.instance.collection('dictionaryItem').doc(dicItemInfo.doc_id).update({
-                  'scrapnum': dicItemInfo.scrapnum
-                }); 
-                
-
-              },
-            )
+        title: Consumer2<DictionaryItemInfo, Logineduser>(
+          builder: (context, dicProvider, userProvider, child) {
+            var temp = FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicItemInfo)
+              .snapshots();
             
-          ],
+            temp.forEach((snap) {
+              if (snap.size == 0) {
+                hasData = false;
+              } else {
+                hasData = true;
+              }
+            });
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(dicItemInfo!.title, style: TextStyle(fontSize: 17)),
+                Expanded(child: SizedBox()),
+                
+                Text(dicProvider.scrapnum.toString(), style: TextStyle(fontSize: 17), textAlign: TextAlign.center,),
+                if (!hasData) 
+                  IconButton(icon: Icon(
+                    // if (context.watch<DictionaryItemInfo>)
+                    Icons.bookmark_outline_rounded,
+                    color: Colors.amberAccent,
+                    size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
+                  ),
+                  onPressed: (){
+                    FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").add({'docID' : dicProvider.doc_id});
+                    
+
+                    dicProvider.addScrapNum(dicProvider.doc_id);
+                    hasData = !hasData;
+                  })
+                else
+                  IconButton(icon: Icon(
+                    // if (context.watch<DictionaryItemInfo>)
+                    Icons.bookmark_outlined,
+                    color: Colors.amberAccent,
+                    size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
+                  ),
+                  onPressed: (){
+                    FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id).get().then((value) {
+                      value.docs.forEach((element) {
+                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList")
+                          .doc(element.id)
+                          .delete();
+                      });
+                    });
+                    dicProvider.subScrapNum(dicProvider.doc_id);
+                    hasData = !hasData;
+                  })
+                  ],
+                );
+          }
         ),
+         
         titleSpacing: 0,
         elevation: 0,
       ),
       body: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dicItemInfo.doc_id).collection('dictionaryCard').orderBy("card_id", descending: false).snapshots(),
+          stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dicItemInfo!.doc_id).collection('dictionaryCard').orderBy("card_id", descending: false).snapshots(),
           builder: (context, AsyncSnapshot snap) {
             List cardDocList;
             if (snap.hasError) {

@@ -31,8 +31,11 @@ class DictionaryItemInfo with ChangeNotifier{
     notifyListeners();
   }
 
-  void subScrapNum() {  // 스크랩 수를 하나 줄임
+  void subScrapNum(dic_id) {  // 스크랩 수를 하나 줄임
     scrapnum--;
+    FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({
+      'scrapnum': scrapnum
+    });
     notifyListeners();
   }
 }

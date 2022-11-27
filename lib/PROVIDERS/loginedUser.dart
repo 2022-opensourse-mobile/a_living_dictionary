@@ -1,9 +1,9 @@
 
+import 'package:flutter/material.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 
 class Logineduser  with ChangeNotifier {
+  String doc_id = '';
   String uid = '';
   String nickName ='';
   String email ='';
@@ -16,6 +16,12 @@ class Logineduser  with ChangeNotifier {
     this.nickName = nickName;
     this.email = email;
     this.profileImageUrl = profileImageUrl;
+
+    notifyListeners();
+  }
+
+  void setDocID(doc_id) {
+    this.doc_id = doc_id;
   }
   void setDocID(doc_id){
     this.doc_id = doc_id;
