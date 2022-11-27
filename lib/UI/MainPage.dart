@@ -251,7 +251,7 @@ class MainPage extends StatelessWidget {
                 stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time').snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   }
                   final documents = snapshot.data!.docs;
                   return Expanded(
