@@ -18,147 +18,22 @@ ThemeColor themeColor = ThemeColor();
 final _mapApiKey = 'AIzaSyDV1uWDF4S16dDx5oQAAJ399p3e9Cbot90';
 
 final GlobalKey searchKey = GlobalKey(); // 키 생성
-NearbyPlacesResponse nearbyPlacesResponse = NearbyPlacesResponse();
 
-class RestaurantPage extends StatefulWidget {
+class RestaurantPage extends StatelessWidget {
   const RestaurantPage({Key? key}) : super(key: key);
 
-  @override
-  State<RestaurantPage> createState() => _RestaurantPageState();
-}
-
-class _RestaurantPageState extends State<RestaurantPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // restaurantSearch(),
-            tempMap(),
-            // recommendList(),
-
-          ],
-        ),
+        child: Map(),
       ),
       floatingActionButton: editButton(),
     );
   }
 }
 
-
-// class RestaurantPage extends StatelessWidget {
-//   const RestaurantPage({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SingleChildScrollView(
-//         child: Column(
-//           children: [
-//             // restaurantSearch(),
-//             tempMap(),
-//             // recommendList(),
-//             if(nearbyPlacesResponse.results != null)
-//               for(int i = 0 ; i < nearbyPlacesResponse.results!.length; i++)
-//                 nearbyPlacesWidget(nearbyPlacesResponse.results![i])
-//           ],
-//         ),
-//       ),
-//       floatingActionButton: editButton(),
-//     );
-//   }
-// }
-
-/* -------------------------------- 검색 위젯: 일단 3개 작성 (삭제 금지) */
-Widget restaurantSearch(){
-  return Row(
-    key: searchKey,
-    children: [
-      Expanded(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(10,0,10,5),
-          child: TextButton(
-            onPressed: () {}, //버튼 눌렀을 때 주소 검색지로 이동해야 함
-            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color(0xfff2f3f6))),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('위치 검색', style: TextStyle(color: Color(0xff81858d), leadingDistribution: TextLeadingDistribution.even,), textScaleFactor: 1.1),
-                Icon(Icons.search_rounded, color: Color(0xff81858d)),
-              ],
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-Widget searchDesign() {
-  return Row(
-    children: [
-      Expanded(
-        child: Container(
-          margin: EdgeInsets.fromLTRB(10, 10, 10, 4),
-          padding: EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25.0),
-            color: Color(0xfff2f3f6),
-          ),
-          child: Row(
-            children: [
-              IconButton(
-                onPressed: () => {},
-                icon: Icon(Icons.search_rounded, color: Color(0xff81858d)),
-              ),
-              Text("검색", style: TextStyle(color: Color(0xff81858d)),),
-            ],
-          ),
-        ),
-      )
-    ],
-  );
-}
-Widget textfieldSearch() {
-  return Padding(
-    padding: EdgeInsets.fromLTRB(10, 10, 10, 4),
-    child: TextFormField(
-      onTap: () {},
-      decoration: InputDecoration(
-        suffixIcon: IconButton(onPressed: () {  }, icon: Icon(Icons.search), color: Color(0xff81858d),),
-        hintText: '위치 검색',
-        hintStyle: TextStyle(
-          fontSize: (16/360),
-          color: Color(0xff81858d),
-        ),
-        border: InputBorder.none,
-        // enabledBorder: OutlineInputBorder(
-        //   borderRadius: BorderRadius.all(Radius.circular(20)),
-        // ),
-        filled: true,
-        fillColor: Color(0xfff2f3f6),
-      ),
-    ),
-  );
-}
-
-/* -------------------------------- Map 불러올 임시 공간 */
-Widget tempMap() {
-  return Column(
-    children: [
-      Container(
-        width: double.infinity,
-        height: 450,
-        color: Colors.grey,
-        child: Map(),
-      ),
-      if(nearbyPlacesResponse.results != null)
-        for(int i = 0 ; i < nearbyPlacesResponse.results!.length; i++)
-          nearbyPlacesWidget(nearbyPlacesResponse.results![i])
-    ],
-  );
-}
-
+/* -------------------------------- Map 공간 */
 class Map extends StatefulWidget {
   const Map({Key? key}) : super(key: key);
 
@@ -169,10 +44,11 @@ class Map extends StatefulWidget {
 class _MapState extends State<Map> {
   late GoogleMapController _controller;
   TextEditingController _textEditingController = TextEditingController();
+  NearbyPlacesResponse nearbyPlacesResponse = NearbyPlacesResponse();
 
   static int id = 1; // 마커 id
   final List<Marker> markers = []; // 마커를 등록할 목록
-  String m_id = "", store = ""; // Map Id & 선택한 장소
+  String m_id = ""; // Map Id & 선택한 장소
 
   // DB에 저장된 마커 지도에 추가하기
   Widget getMarker(BuildContext context) {
@@ -337,23 +213,6 @@ class _MapState extends State<Map> {
     zoom: 16.0,
   );
 
-  // DB에 마커 위치 저장
-  Future<void> saveLocation(BuildContext context, double lat, double lng, int id) async {
-    var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat}, ${lng}&key=${_mapApiKey}&language=ko';
-
-    var response = await http.get(Uri.parse(url));
-    var responseBody = convert.utf8.decode(response.bodyBytes);
-
-    var address = convert.jsonDecode(responseBody)['results'][0]['formatted_address'];
-
-    FirebaseFirestore.instance.collection('MapDB').add({
-      'latitude': lat, 'longitude': lng, 'like': 0,
-      'address': address,
-      'store': store,
-      'markId': id,
-    });
-  }
-
   // 현재 위치 구하기
   void _currentLocation() async {
     locator.Location location = new locator.Location();
@@ -396,6 +255,24 @@ class _MapState extends State<Map> {
     getNearbyPlaces(curLat, curLng);
   }
 
+  // DB에 마커 위치 저장
+  Future<void> saveLocation(BuildContext context, double lat, double lng, int id) async {
+    var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat}, ${lng}&key=${_mapApiKey}&language=ko';
+
+    var response = await http.get(Uri.parse(url));
+    var responseBody = convert.utf8.decode(response.bodyBytes);
+
+    var address = convert.jsonDecode(responseBody)['results'][0]['formatted_address'];
+
+    FirebaseFirestore.instance.collection('MapDB').add({
+      'latitude': lat, 'longitude': lng, 'like': 0,
+      'address': address,
+      'store': '음식점 이름',
+      'markId': id,
+    });
+  }
+
+ // 현재 위치 기준, 근처 음식점 정보 구하기
   void getNearbyPlaces(double lat, double lng) async {
 
     var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=400&key=${_mapApiKey}&types=restaurant&language=ko';
@@ -407,39 +284,88 @@ class _MapState extends State<Map> {
     setState(() {});
   }
 
+  // 근처 음식점 정보 위젯으로 출력
+  // Widget nearbyPlacesWidget(Results results) {
+  //   return Container(
+  //     width: 400,
+  //     margin: const EdgeInsets.only(top: 10,left: 10,right: 10),
+  //     padding: const EdgeInsets.all(5),
+  //     decoration: BoxDecoration(border: Border.all(color: Colors.black),borderRadius: BorderRadius.circular(10)),
+  //     child: Column(
+  //       children: [
+  //         Text("음식점: " + results.name!),
+  //         Text("주소: " + results.vicinity!),
+  //         // if(results.rating != null)
+  //         //   Text("평점: " + results.rating!.toString()),
+  //         Text("오픈 여부: " + (results.openingHours != null ? "Open" : "Closed")),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget nearbyPlacesWidget(Results results) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: InkWell(
+        child: Card(
+          margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("음식점: " + results.name!),
+                Text("주소: " + results.vicinity!),
+                // if(results.rating != null)
+                //   Text("평점: " + results.rating!.toString()),
+                // Text("Location: " + results.geometry!.location!.lat.toString() + " , " + results.geometry!.location!.lng.toString()),
+                Text("오픈 여부: " + (results.openingHours != null ? "Open" : "Closed")),
+              ],
+            ),
+          ),
+        ),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) => reviewPage(),
+          ));
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          getMarker(context),
-          FloatingActionButton(
-            onPressed: () {
-              _currentLocation();
-            },
-            child: Icon(Icons.location_searching),
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          height: 450,
+          color: Colors.grey,
+          child: Stack(
+            children: [
+              getMarker(context),
+              FloatingActionButton(
+                onPressed: () {
+                  _currentLocation();
+                },
+                child: Icon(Icons.location_searching),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        Divider(thickness: 0.5,),
+        if(nearbyPlacesResponse.results != null)
+          for(int i = 0 ; i < nearbyPlacesResponse.results!.length; i++)
+            nearbyPlacesWidget(nearbyPlacesResponse.results![i])
+      ],
     );
   }
 }
 
-Widget nearbyPlacesWidget(Results results) {
-  return Container(
-    width: 400,
-    margin: const EdgeInsets.only(top: 10,left: 10,right: 10),
-    padding: const EdgeInsets.all(5),
-    decoration: BoxDecoration(border: Border.all(color: Colors.black),borderRadius: BorderRadius.circular(10)),
-    child: Column(
-      children: [
-        Text("Name: " + results.name!),
-        Text("Location: " + results.geometry!.location!.lat.toString() + " , " + results.geometry!.location!.lng.toString()),
-        Text(results.openingHours != null ? "Open" : "Closed"),
-      ],
-    ),
-  );
-}
+
+
+
+
 
 /* -------------------------------- 추천 리스트 (수정 중) */
 Widget recommendList(){
@@ -547,5 +473,77 @@ Widget editButton() {
         ],
       ),
     ],
+  );
+}
+
+/* -------------------------------- 검색 위젯: 일단 3개 작성 (삭제 금지) */
+Widget restaurantSearch(){
+  return Row(
+    key: searchKey,
+    children: [
+      Expanded(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(10,0,10,5),
+          child: TextButton(
+            onPressed: () {}, //버튼 눌렀을 때 주소 검색지로 이동해야 함
+            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color(0xfff2f3f6))),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('위치 검색', style: TextStyle(color: Color(0xff81858d), leadingDistribution: TextLeadingDistribution.even,), textScaleFactor: 1.1),
+                Icon(Icons.search_rounded, color: Color(0xff81858d)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+Widget searchDesign() {
+  return Row(
+    children: [
+      Expanded(
+        child: Container(
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 4),
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            color: Color(0xfff2f3f6),
+          ),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () => {},
+                icon: Icon(Icons.search_rounded, color: Color(0xff81858d)),
+              ),
+              Text("검색", style: TextStyle(color: Color(0xff81858d)),),
+            ],
+          ),
+        ),
+      )
+    ],
+  );
+}
+Widget textfieldSearch() {
+  return Padding(
+    padding: EdgeInsets.fromLTRB(10, 10, 10, 4),
+    child: TextFormField(
+      onTap: () {},
+      decoration: InputDecoration(
+        suffixIcon: IconButton(onPressed: () {  }, icon: Icon(Icons.search), color: Color(0xff81858d),),
+        hintText: '위치 검색',
+        hintStyle: TextStyle(
+          fontSize: (16/360),
+          color: Color(0xff81858d),
+        ),
+        border: InputBorder.none,
+        // enabledBorder: OutlineInputBorder(
+        //   borderRadius: BorderRadius.all(Radius.circular(20)),
+        // ),
+        filled: true,
+        fillColor: Color(0xfff2f3f6),
+      ),
+    ),
   );
 }
