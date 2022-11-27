@@ -1,28 +1,30 @@
 
+import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/UI/Supplementary/CommunityPostPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'Data.dart';
 
-class CommunityItem{
-  String title;
-  String writer_id;
-  String body;
-  int like;
+class CommunityItem with ChangeNotifier{
+  String title = '';
+  String writer_id = '';
+  String body = '';
+  int like = 0;
   DateTime? time;
-  int boardType;
-  String hashTag;
+  int boardType = 0;
+  String hashTag = '';
+  String doc_id = '';
 
   CommunityItem({
     this.title = '',
     this.writer_id = '',
     this.body = '',
     this.like = 0,
-    this.time,
-    this.boardType = 1,
-    this.hashTag = ''}) {
-    this.time = DateTime.now();
-  }
+    this.boardType = 0,
+    this.hashTag = '',
+    this.doc_id = '',
+    this.time
+  }){}
 
   //add Post
   @override
@@ -39,28 +41,28 @@ class CommunityItem{
     });
   }
 
+
   //일반 build
   @override
-  Widget build(DocumentSnapshot<Object?> doc, BuildContext context) {
-    final item = getDataFromDoc(doc);
-    String t = '${item.time!.hour.toString()}:${item.time!.minute.toString()}';
+  Widget build(BuildContext context) {
+    String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
     return Padding(
       padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
       child: Column(
         children: [
           ListTile(
-            title: Text("${item.title}  ${item.writer_id}"),
-            subtitle: Text(item.body),
+            title: Text("${this.title}  ${this.writer_id}"),
+            subtitle: Text(this.body),
             shape: const RoundedRectangleBorder(
                 side: BorderSide(style: BorderStyle.none)
             ),
             trailing: Text(t),
             style: ListTileStyle.list,
             onTap: () {
-              String tabName = getTabName(item.boardType);
+              String tabName = getTabName(this.boardType);
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, doc.id))
+                  MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
               );
             },
           ),
@@ -82,34 +84,34 @@ class CommunityItem{
   }
 
   //Firebase db의 데이터를 Post로 변환
-  CommunityItem getDataFromDoc(DocumentSnapshot doc){
+  static CommunityItem getDataFromDoc(DocumentSnapshot doc){
     Timestamp stamp = doc['time'];
     final item = CommunityItem(
-        title: doc['title'],
-        writer_id: doc['writer_id'],
-        body: doc['body'],
-        like: doc['like'],
-        time: stamp.toDate(),
-        boardType: doc['boardType'],
-        hashTag: doc['hashTag']);
+        doc_id : doc.id,
+        title : doc['title'],
+        writer_id : doc['writer_id'],
+        body : doc['body'],
+        like : doc['like'],
+        time : stamp.toDate(),
+        boardType : doc['boardType'],
+        hashTag : doc['hashTag']);
     return item;
   }
   //MainPage에서 사용, 하나의 doc을 받아서 하나의 리스트 원소 출력
-  Widget buildMain(DocumentSnapshot<Object?> doc, BuildContext context) {
-    final item = getDataFromDoc(doc);
-    String t = '${item.time!.hour.toString()}:${item.time!.minute.toString()}';
+  Widget buildMain(BuildContext context) {
+    String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
     return Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
         child: ListTile(
-          title: Text(item.title),
+          title: Text(this.title),
           visualDensity: const VisualDensity(vertical: -4),
           dense: true,
           trailing: Text(t),
           onTap: (){
-            String tabName = getTabName(item.boardType);
+            String tabName = getTabName(this.boardType);
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, doc.id))
+                MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
             );
           },
         ));
@@ -118,8 +120,42 @@ class CommunityItem{
   List<Widget> getWidgetList(BuildContext context, List<QueryDocumentSnapshot<Object?>> doc, int boardType){
     final board = doc.where((item)=> item['boardType'] == boardType).toList();
     final subList = board.sublist(0,4);
-    final buildList = subList.map((item) => buildMain(item, context)).toList();
+    final buildList = subList.map((doc){
+      final item = CommunityItem.getDataFromDoc(doc);
+      return item.buildMain(context);
+    }).toList();
     return buildList;
+  }
+
+
+
+  void addLikeNum(){
+    this.like++;
+    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
+      'like': this.like
+    });
+  }
+  void subLikeNum(){
+    this.like--;
+    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
+      'like': this.like
+    });
+  }
+  void registerThisPost(Logineduser user){
+    FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').add({
+      'like_doc_id' : this.doc_id
+    }).then((value) => FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').doc(value.id).update(
+        {'id':value.id}));
+  }
+  void unRegisterThisPost(Logineduser user) async {
+    final instance = FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList');
+    await for (var snapshot in instance.snapshots()){
+      for (var doc in snapshot.docs){
+        if(doc['like_doc_id'] == this.doc_id){
+          instance.doc(doc['id']).delete();
+        }
+      }
+    }
   }
 }
 
@@ -129,7 +165,7 @@ class CommentItem{
   String body;
   DateTime? time;
   CommentItem({this.writer_id = '', this.body = '', this.time});
-  
+
   void add(String doc_id){
     if(time == null){
       print("comment add error : there's no time");
@@ -145,11 +181,11 @@ class CommentItem{
     Timestamp stamp = doc['time'];
     final item = CommentItem(
       writer_id : doc['writer_id'],
-      body : doc['body'], 
+      body : doc['body'],
       time : stamp.toDate()
     );
     return item;
   }
 
-  
+
 }

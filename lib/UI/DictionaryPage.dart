@@ -185,7 +185,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
               return Container(
                 margin: EdgeInsets.symmetric(horizontal: 0),
                 width: width / 2,
-                height: (isPortrait? (height < 750? 250 : portraitH) : landscapeH),
+                height: width*(2/5),
       
                 child: InkWell(
                   onTap: () {

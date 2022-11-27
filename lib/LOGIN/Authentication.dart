@@ -1,4 +1,6 @@
 
+import 'dart:html';
+
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -128,7 +130,7 @@ class Authentication extends StatelessWidget {
                             });
                           });
                         }
-
+//  여기 나중에 수정해봐 효림@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                         // snap.docs.forEach((doc) {
                         //   loginedUser.nickName = doc['nickName'];
                         //   loginedUser.email = doc['email'];
@@ -138,6 +140,7 @@ class Authentication extends StatelessWidget {
                       );
 
                       Navigator.pop(context);
+
                     }, 
                     child:  Container(
                       padding: EdgeInsets.all(5),

@@ -30,8 +30,8 @@ class DictionaryCardPage {
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: (width / 2) / (isPortrait?(height < 750 ? 250 : portraitH):landscapeH), // 가로 세로 비율
-          //childAspectRatio: 15/12, // 가로 세로 비율
+          childAspectRatio: 5/4, // 가로 세로 비율
+          //childAspectRatio: (width / 2) / (isPortrait?(height < 750 ? 250 : portraitH):landscapeH), // 가로 세로 비율
         ),
       ),
     );
@@ -115,10 +115,7 @@ class DictionaryCardPage {
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: (width / 2) /
-                    (isPortrait
-                        ? (height < 750 ? 250 : portraitH)
-                        : landscapeH), // 가로 세로 비율
+                childAspectRatio: 5/4
               ),
             ),
           );
@@ -208,10 +205,7 @@ class DictionaryCardPage {
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: (width / 2) /
-                    (isPortrait
-                        ? (height < 750 ? 250 : portraitH)
-                        : landscapeH), // 가로 세로 비율
+                childAspectRatio: 5/4 // 가로 세로 비율
               ),
             ),
           );

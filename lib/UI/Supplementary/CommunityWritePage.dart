@@ -166,11 +166,13 @@ class CommunityWritePage extends StatelessWidget {
       child: Text("등록", style: TextStyle(color: Colors.black)),
       onPressed: (){
         CommunityItem item = CommunityItem(
-            title: titleController.text,
-            body: bodyController.text,
-            writer_id: nameController.text,
-            boardType: 0,
-            hashTag: "자유"
+          title: titleController.text,
+          body: bodyController.text,
+          writer_id: nameController.text,
+          boardType: 0,
+          time: DateTime.now(),
+          hashTag: "자유",
+          like: 0
         );
         item.add();
         titleController.text = "";

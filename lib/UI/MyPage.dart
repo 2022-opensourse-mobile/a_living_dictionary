@@ -1,6 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'Supplementary//ThemeColor.dart';
+import 'Supplementary/PageRouteWithAnimation.dart';
+
+// 화면전환 페이지 위젯은 전부 'my___'로 시작함
+
 
 ThemeColor themeColor = ThemeColor();
 
@@ -9,271 +13,314 @@ class MyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: (context,child) {
-        return MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);
-      },
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: themeColor.getMaterialColor(),
-      ),
-      home: Settings(),
-    );
+    return Settings();
+    //   MaterialApp(
+    //   builder: (context,child) {
+    //     return MediaQuery(
+    //         data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);
+    //   },
+    //   theme: ThemeData(
+    //     primarySwatch: themeColor.getMaterialColor(),
+    //   ),
+    //   home: Settings(),
+    // );
   }
 }
 
-class Settings extends StatelessWidget {
+
+class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
   @override
+  State<Settings> createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            // 아이디 정보
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0)),
-              elevation: 1.0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(Icons.person_outline),
-                      title: Text('아이디'),
-                    ),
-                    ListTile(
-                      title: Text('로그아웃'),
-                      onTap: (){
-                        FirebaseAuth.instance.signOut();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
+      body: ListView(
+        children: [
 
-            // 계정 설정
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0)),
-              elevation: 1.0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: <Widget>[
-                    ListTile(
-                      title: Text(
-                        '계정', style: TextStyle(fontWeight: FontWeight.bold),),
-                    ),
-                    ListTile(
-                      title: Text('비밀번호 변경'),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (
-                            context) => changePassword(context)));
-                      },
-                    ),
-                    // ),
-                    ListTile(
-                      title: Text('스크랩 목록'),
-                      onTap: () {
-                        // Navigator.of(context).pushNamed('/scrapList');
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrapList(context)));
-                      },
-                    ),
-                    
-                    // Divider(thickness: 0.5),
-                  ],
-                ),
-              ),
-            ),
+          appID(),
+          appCommunity(),
+          appAccount(context),
+          appPush(),
+          appGuide(),
+          appEtc(),
 
-            // 커뮤니티 설정
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0)),
-              elevation: 1.0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: <Widget>[
-                    ListTile(
-                      title: Text('커뮤니티 설정',
-                        style: TextStyle(fontWeight: FontWeight.bold),),
-                    ),
-                    ListTile(
-                      title: Text('닉네임 설정'),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (
-                            context) => nickSetting(context)));
-                      },
-                    ),
-                    ListTile(
-                      title: Text('프로필 이미지 변경'),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (
-                            context) => changeImage(context)));
-                      },
-                    ),
-                    ListTile(
-                      title: Text('커뮤니티 이용규칙'),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (
-                            context) => communityRule(context)));
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
+        ],
+      ),
+    );
+  }
 
-            // 앱 설정
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0)),
-              elevation: 1.0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: <Widget>[
-                    ListTile(
-                      title: Text(
-                        '앱 설정', style: TextStyle(fontWeight: FontWeight.bold),),
-                    ),
-                    ListTile(
-                      title: Text('알림 설정'),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (
-                            context) => alarmSetting(context)));
-                      },
-                    ),
-                  ],
-                ),
-              ),
+
+  Widget appID() { //프로필 사진 + 닉네임
+    return Column(
+      children: [
+        ListTile(
+          leading: CircleAvatar(
+            backgroundImage: NetworkImage('https://picsum.photos/250?image=9'), //프로필 사진
+          ),
+          title: Text('나는야곰돌이', style: TextStyle(fontWeight: FontWeight.bold),), //닉네임 출력
+        ),
+        Divider(thickness: 0.5,),
+      ],
+    );
+  }
+
+  Widget appCommunity() { //커뮤니티 설정
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(title: Text('커뮤니티',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: themeColor.getColor(),
+              leadingDistribution: TextLeadingDistribution.even,
             ),
-          ],
+            textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
+        ListTile(title: Text('작성한 게시물'), onTap: (){}),
+        ListTile(title: Text('작성한 댓글'), onTap: (){}),
+        ListTile(title: Text('스크랩 목록'), onTap: (){}),
+        Divider(thickness: 0.5,),
+      ],
+    );
+  }
+
+  Widget appAccount(BuildContext context) { //계정 설정
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(title: Text('계정 설정',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: themeColor.getColor(),
+              leadingDistribution: TextLeadingDistribution.even,
+            ),
+            textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
+        ListTile(title: Text('비밀번호 변경'), onTap: (){
+          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myPassword());
+          Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
+        }),
+        ListTile(title: Text('닉네임 변경'), onTap: (){}),
+        ListTile(title: Text('프로필 이미지 변경'), onTap: (){}),
+        Divider(thickness: 0.5,),
+      ],
+    );
+  }
+
+  Widget appPush() { //알림 설정
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(title: Text('앱 푸시 알림',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: themeColor.getColor(),
+              leadingDistribution: TextLeadingDistribution.even,
+            ),
+            textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
+        ListTile(title: Text('알림 설정'), onTap: (){}),
+        Divider(thickness: 0.5,),
+      ],
+    );
+  }
+
+  Widget appGuide() { //이용 안내
+    return Column(
+      children: [
+        ListTile(title: Text('이용 안내',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: themeColor.getColor(),
+              leadingDistribution: TextLeadingDistribution.even,
+            ),
+            textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
+        ListTile(title: Text('공지 사항'), onTap: (){}),
+        ListTile(title: Text('앱 이용규칙'), onTap: (){}),
+        ListTile(title: Text('문의하기'), onTap: (){}),
+        ListTile(title: Text('버전 정보'), onTap: (){}),
+        Divider(thickness: 0.5,)
+      ],
+    );
+  }
+
+  Widget appEtc() { //로그아웃
+    return Column(
+      children: [
+        ListTile(
+          title: Text('로그아웃',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: themeColor.getColor(),
+            ),),
+          onTap: () {
+            FirebaseAuth.instance.signOut();
+          },
+        ),
+      ],
+    );
+  }
+
+  /* -------------------------------------------------------------------------------- 화면전환 페이지 */
+
+  Widget myPosting() {
+    return Scaffold(
+      appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+  Widget myComment() {
+    return Scaffold(
+      appBar: AppBar(title: Text('작성한 댓글'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+  Widget myScrap () {
+    return Scaffold(
+      appBar: AppBar(title: Text('스크랩 목록'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+  Widget myPassword() {
+    return Scaffold(
+      appBar: AppBar(title: Text('비밀번호 변경'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+  Widget myNicknamed() {
+    return Scaffold(
+      appBar: AppBar(title: Text('닉네임 변경'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+  Widget myProfileImg() {
+    return Scaffold(
+      appBar: AppBar(title: Text('프로필 이미지 변경'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+  Widget myAppPush() {
+    return Scaffold(
+      appBar: AppBar(title: Text('알림 설정'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+  Widget myNotice() {
+    return Scaffold(
+      appBar: AppBar(title: Text('공지 사항'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+  Widget myAppRule() {
+    return Scaffold(
+      appBar: AppBar(title: Text('앱 이용규칙'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+  Widget myAsk() {
+    return Scaffold(
+      appBar: AppBar(title: Text('문의하기'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+  Widget myAppVersion() {
+    return Scaffold(
+      appBar: AppBar(title: Text('버전 정보'), elevation: 0.0),
+      body: Column(
+        children: [
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+        ],
+      ),
+    );
+  }
+
+
+
+  /* -------------------------------------------------------------------------------- 다른 위젯들 */
+
+  Widget dd(String text) { //비번 변경 TextFormField
+    return Padding(
+      padding: EdgeInsets.fromLTRB(10, 10, 10, 4),
+      child: TextFormField(
+        onTap: () {},
+        decoration: InputDecoration(
+          suffixIcon: IconButton(onPressed: () {  }, icon: Icon(Icons.search), color: Color(0xff81858d),),
+          hintText: '$text',
+          hintStyle: TextStyle(
+            fontSize: (16/360),
+            color: Color(0xff81858d),
+          ),
+          border: InputBorder.none,
+          // enabledBorder: OutlineInputBorder(
+          //   borderRadius: BorderRadius.all(Radius.circular(20)),
+          // ),
+          filled: true,
+          fillColor: Color(0xfff2f3f6),
         ),
       ),
-    );
-  }
-
-  // 비밀번호 변경 페이지
-  Widget changePassword(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          closeIcon(context),
-          Text("비밀번호 변경 페이지")
-        ],
-      ),
-    );
-  }
-
-  // 스크랩 목록 페이지
-  Widget scrapList(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          closeIcon(context),
-          Text("스크랩 목록 페이지"),
-        ],
-      ),
-    );
-  }
-
-  // 커뮤니티 설정 페이지
-  Widget communitySetting(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          closeIcon(context),
-          Text("커뮤니티 설정 페이지"),
-        ],
-      ),
-    );
-  }
-
-  // 닉네임 설정 페이지
-  Widget nickSetting(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          closeIcon(context),
-          Text("닉네임 설정 페이지"),
-        ],
-      ),
-    );
-  }
-
-  // 이미지 변경 페이지
-  Widget changeImage(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          closeIcon(context),
-          Text("프로필 이미지 변경 페이지"),
-        ],
-      ),
-    );
-  }
-
-  // 커뮤니티 규칙 페이지
-  Widget communityRule(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          closeIcon(context),
-          Text("커뮤니티 규칙 페이지"),
-        ],
-      ),
-    );
-  }
-
-  // 앱 설정 페이지
-  Widget appSetting(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          closeIcon(context),
-          Text("앱 설정 페이지"),
-        ],
-      ),
-    );
-  }
-
-  // 알림 설정 페이지
-  Widget alarmSetting(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          closeIcon(context),
-          Text("알림 설정 페이지"),
-        ],
-      ),
-    );
-  }
-
-  // 창 닫기 아이콘
-  IconButton closeIcon(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        Navigator.pop(context);
-      },
-      icon: Icon(Icons.close),
-      color: themeColor.getColor(),
-      alignment: Alignment.topRight,
-      iconSize: 30,
     );
   }
 }
