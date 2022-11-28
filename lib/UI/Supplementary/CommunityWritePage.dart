@@ -1,5 +1,6 @@
 import 'package:a_living_dictionary/DB/CommunityItem.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'ThemeColor.dart';
@@ -9,12 +10,26 @@ import 'ThemeColor.dart';
 ThemeColor themeColor = ThemeColor();
 
 class CommunityWritePage extends StatelessWidget {
-  CommunityWritePage(this.context2, {super.key});
   final BuildContext context2;
+  CommunityItem? item;
   late var width;
+  late final isNull;
   TextEditingController titleController = TextEditingController();
   TextEditingController bodyController = TextEditingController();
   late Logineduser user = Provider.of<Logineduser>(context2, listen: false);
+
+  CommunityWritePage(this.context2, this.item, {super.key}){
+    if(item == null){
+      item = CommunityItem();
+      isNull = true;
+    }
+    else {
+      isNull = false;
+      titleController.text = item!.title;
+      bodyController.text = item!.body;
+    }
+  }
+
 
 
   @override
@@ -72,17 +87,25 @@ class CommunityWritePage extends StatelessWidget {
           ),
           child: Text('완료', style: TextStyle(color: Colors.white)),
           onPressed: () {
-            /*  글 쓰기 완료버튼 누르면 실행되어야 할 부분 */
-            var item = CommunityItem(
-              title: titleController.text,
-              body: bodyController.text,
-              writer_id: user.uid,
-              writer_nickname: user.nickName,
-              boardType: 0,
-              time: DateTime.now(),
-              like: 0
+            final addedItem = CommunityItem(
+                title: titleController.text,
+                body: bodyController.text,
+                writer_id: user.uid,
+                writer_nickname: user.nickName,
+                boardType: 0,
+                time: DateTime.now(),
+                like: 0
             );
-            item.add();
+            if(isNull) {
+              addedItem.add();
+            }
+            else{
+              FirebaseFirestore.instance.collection('CommunityDB').doc(item!.doc_id).update({
+                'title': addedItem.title,
+                'body' : addedItem.body,
+                'time' : DateTime.now()
+              });
+            }
             Navigator.pop(context2);
           },
         ),

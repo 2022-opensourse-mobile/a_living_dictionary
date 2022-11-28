@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../../main.dart';
-import 'Search.dart';
+import 'CommunityWritePage.dart';
+//import 'Search.dart';
 import 'ThemeColor.dart';
 
 ThemeColor themeColor = ThemeColor();
@@ -127,7 +127,12 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
             children: [
               TextButton(
                   child: Text("수정", style: TextStyle(color: Colors.black)),
-                  onPressed: (){}
+                  onPressed: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CommunityWritePage(context, item))
+                    );
+                  }
               ),
               TextButton(
                   child: Text("삭제", style: TextStyle(color: Colors.black)),
@@ -262,11 +267,11 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
           final doc = snapshot.data!.docs;
 
           return Column(
-            children: doc.map((e) => (buildComWidget(e))).toList(),
+            children: doc.map((e) => (buildCommentWidget(e))).toList(),
           );
         });
   }
-  Widget buildComWidget(QueryDocumentSnapshot doc) {
+  Widget buildCommentWidget(QueryDocumentSnapshot doc) {
     final it = CommentItem.getDatafromDoc(doc);
     return Column(
       children: [
