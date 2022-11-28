@@ -42,7 +42,6 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
     _tabController = new TabController(length: 3, vsync: this);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,7 +94,7 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
         onPressed: () {
           Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CommunityWritePage(context))
+              MaterialPageRoute(builder: (context) => CommunityWritePage(context, null))
           );
         },
         child: const Icon(
