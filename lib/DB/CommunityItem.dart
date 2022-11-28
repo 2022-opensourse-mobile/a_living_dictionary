@@ -3,7 +3,6 @@ import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/UI/Supplementary/CommunityPostPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'Data.dart';
 
 class CommunityItem with ChangeNotifier{
   String doc_id = '';
@@ -111,13 +110,20 @@ class CommunityItem with ChangeNotifier{
 
   Widget build(BuildContext context) {
     String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
+
+    int n = this.body.indexOf('\n');
+    if(n == -1) {
+      n = (this.body.length > 10) ?(10):(this.body.length);
+    }
+    String omittedBody = this.body.substring(0, n-1);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
       child: Column(
         children: [
           ListTile(
             title: Text("${this.title}"),
-            subtitle: Text(this.body),
+            subtitle: Text(omittedBody),
             shape: const RoundedRectangleBorder(
                 side: BorderSide(style: BorderStyle.none)
             ),
@@ -154,8 +160,6 @@ class CommunityItem with ChangeNotifier{
           },
         ));
   }
-
-
   String getTabName(int boardType){
     switch(boardType){
       case 1:
@@ -166,6 +170,7 @@ class CommunityItem with ChangeNotifier{
         return "자유게시판";
     }
   }
+
   List<Widget> getWidgetList(BuildContext context, List<QueryDocumentSnapshot<Object?>> doc, int boardType){
     final board = doc.where((item)=> item['boardType'] == boardType).toList();
     final subList = board.sublist(0,4);
@@ -180,9 +185,13 @@ class CommunityItem with ChangeNotifier{
 
 class CommentItem{
   String writer_id;
+  String writer_nickname;
   String body;
   DateTime? time;
-  CommentItem({this.writer_id = '', this.body = '', this.time});
+  String doc_id;
+
+  bool change;
+  CommentItem({this.writer_id = '', this.body = '', this.time, this.writer_nickname = '', this.doc_id = '', this.change=false});
 
   void add(String doc_id){
     if(time == null){
@@ -192,18 +201,24 @@ class CommentItem{
     FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB').add({
       'body': this.body,
       'writer_id':this.writer_id,
-      'time':this.time
+      'time':this.time,
+      'writer_nickname' : this.writer_nickname,
+      'change' : this.change
     });
   }
   static CommentItem getDatafromDoc(DocumentSnapshot doc){
     Timestamp stamp = doc['time'];
     final item = CommentItem(
       writer_id : doc['writer_id'],
+      writer_nickname: doc['writer_nickname'],
       body : doc['body'],
-      time : stamp.toDate()
+      time : stamp.toDate(),
+      doc_id: doc.id,
+      change: doc['change']
     );
     return item;
   }
-
-
+  void setChange(){
+    this.change = !this.change;
+  }
 }
