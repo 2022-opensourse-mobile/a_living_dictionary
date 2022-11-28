@@ -50,7 +50,7 @@ class _MapState extends State<Map> {
   final List<Marker> markers = []; // 마커를 등록할 목록
   String m_id = ""; // Map Id & 선택한 장소
 
-  // DB에 저장된 마커 지도에 추가하기
+  // DB에 저장된 마커 지도에 추가하기(좋아요 100개 이상인 마커만)
   Widget getMarker(BuildContext context) {
     double lat, lng;
     return StreamBuilder<QuerySnapshot>(
@@ -87,7 +87,7 @@ class _MapState extends State<Map> {
     );
   }
 
-  // 마커 클릭 시 나오는 페이지
+  // 마커 클릭 시 나오는 페이지 TODO: 수정하기
   Widget detailPage(BuildContext context, String id, String store, String address, int like) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
@@ -197,7 +197,6 @@ class _MapState extends State<Map> {
       myLocationButtonEnabled: false, // 현재 위치 버튼
       onTap: (coordinate) { // 클릭한 위치 중앙에 표시
         _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
-        // saveLocation(context, coordinate.latitude, coordinate.longitude, id); // 마커 위치 DB에 저장
       },
       gestureRecognizers: {
         Factory<OneSequenceGestureRecognizer>(
@@ -255,55 +254,49 @@ class _MapState extends State<Map> {
     getNearbyPlaces(curLat, curLng);
   }
 
-  // DB에 마커 위치 저장
-  Future<void> saveLocation(BuildContext context, double lat, double lng, int id) async {
-    var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat}, ${lng}&key=${_mapApiKey}&language=ko';
-
-    var response = await http.get(Uri.parse(url));
-    var responseBody = convert.utf8.decode(response.bodyBytes);
-
-    var address = convert.jsonDecode(responseBody)['results'][0]['formatted_address'];
-
-    FirebaseFirestore.instance.collection('MapDB').add({
-      'latitude': lat, 'longitude': lng, 'like': 0,
-      'address': address,
-      'store': '음식점 이름',
-      'markId': id,
-    });
-  }
-
  // 현재 위치 기준, 근처 음식점 정보 구하기
   void getNearbyPlaces(double lat, double lng) async {
 
-    var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=400&key=${_mapApiKey}&types=restaurant&language=ko';
+    var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=1000&key=${_mapApiKey}&types=restaurant&language=ko';
 
     var response = await http.post(Uri.parse(url));
 
     nearbyPlacesResponse = NearbyPlacesResponse.fromJson(convert.jsonDecode(response.body));
 
+    if(nearbyPlacesResponse.results != null)
+      for(int i = 0 ; i < nearbyPlacesResponse.results!.length; i++) {
+        Results results = nearbyPlacesResponse.results![i];
+        double latitude = double.parse(results.geometry!.location!.lat.toString());
+        double longitude = double.parse(results.geometry!.location!.lng.toString());
+        String store = results.name!;
+        String address = results.vicinity!;
+        saveLocation(store, address, latitude, longitude);
+      }
+
     setState(() {});
   }
+  
+  Future<void> saveLocation(String store, String addres, double lat, double lng) async {
+    var snapshots = FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).snapshots();
 
+    await FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).get().then((QuerySnapshot snap) => {
+      if (snap.size == 0) {
+        FirebaseFirestore.instance.collection('MapDB').add({
+          'latitude': lat, 'longitude': lng,
+          'like': 0,
+          'address': addres,
+          'store': store,
+          'markId': id,
+        })
+      }
+    });
+  }
+ // TODO: 쓸데없는 코드 정리
   // 근처 음식점 정보 위젯으로 출력
-  // Widget nearbyPlacesWidget(Results results) {
-  //   return Container(
-  //     width: 400,
-  //     margin: const EdgeInsets.only(top: 10,left: 10,right: 10),
-  //     padding: const EdgeInsets.all(5),
-  //     decoration: BoxDecoration(border: Border.all(color: Colors.black),borderRadius: BorderRadius.circular(10)),
-  //     child: Column(
-  //       children: [
-  //         Text("음식점: " + results.name!),
-  //         Text("주소: " + results.vicinity!),
-  //         // if(results.rating != null)
-  //         //   Text("평점: " + results.rating!.toString()),
-  //         Text("오픈 여부: " + (results.openingHours != null ? "Open" : "Closed")),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget nearbyPlacesWidget(Results results) {
+    String store = results.name!;
+    String address = results.vicinity!;
+
     return Container(
       width: MediaQuery.of(context).size.width,
       child: InkWell(
@@ -314,8 +307,8 @@ class _MapState extends State<Map> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("음식점: " + results.name!),
-                Text("주소: " + results.vicinity!),
+                Text("음식점: $store"),
+                Text("주소: $address"),
                 // if(results.rating != null)
                 //   Text("평점: " + results.rating!.toString()),
                 // Text("Location: " + results.geometry!.location!.lat.toString() + " , " + results.geometry!.location!.lng.toString()),
@@ -325,9 +318,11 @@ class _MapState extends State<Map> {
           ),
         ),
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (context) => reviewPage(),
-          ));
+          // TODO: 음식점 정보 클릭하면 DB에 넣기 - 2번
+          // saveLocation(store, address, lat, lng);
+          // Navigator.push(context, MaterialPageRoute(
+          //   builder: (context) => reviewPage(),
+          // ));
         },
       ),
     );
@@ -361,11 +356,6 @@ class _MapState extends State<Map> {
     );
   }
 }
-
-
-
-
-
 
 /* -------------------------------- 추천 리스트 (수정 중) */
 Widget recommendList(){
