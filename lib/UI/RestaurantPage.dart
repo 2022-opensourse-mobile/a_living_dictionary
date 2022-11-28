@@ -87,46 +87,58 @@ class _MapState extends State<Map> {
     );
   }
 
-  // 마커 클릭 시 나오는 페이지 TODO: 수정하기
+  // 마커 클릭 시 나오는 페이지
   Widget detailPage(BuildContext context, String id, String store, String address, int like) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
-      child: SingleChildScrollView(
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').snapshots(),
-          builder: (context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData)
-              return CircularProgressIndicator();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("${store} 상세 정보"),
+      ),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
+          child: StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').orderBy('time', descending: true).snapshots(),
+            builder: (context, AsyncSnapshot snapshot) {
+              if (!snapshot.hasData)
+                return CircularProgressIndicator();
 
-            final documents = snapshot.data!.docs;
+              final documents = snapshot.data!.docs;
 
-            return Column(
-              children: [
-                ListTile(title: Text(store),), Divider(),
-                ListTile(title: Text("좋아요 수: ${like}"),), Divider(),
-                ListTile(title: Text("주소: ${address}"),), Divider(),
-                ListTile(title: Text("$store 후기"),), Divider(),
-                ElevatedButton(
-                  onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => reviewPage(),
-                    ));
-                  },
-                  child: Text("후기 작성"),
-                ),
-                Divider(),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: documents.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text("후기${index}: ${documents[index]['content'].toString()}"),
-                    );
-                  },
-                ),
-              ],
-            );
-          },
+              return Column(
+                children: [
+                  ListTile(title: Text(store),), Divider(),
+                  ListTile(title: Text("좋아요 수: ${like}"),), Divider(),
+                  ListTile(title: Text("주소: ${address}"),), Divider(),
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Text("$store 후기"),
+                        Spacer(),
+                        ElevatedButton(
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => reviewPage(),
+                            ));
+                          },
+                          child: Text("후기 작성"),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(documents[index]['content'].toString()),
+                      );
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -162,13 +174,12 @@ class _MapState extends State<Map> {
           ),
           ElevatedButton(
             onPressed: (){
+              Timestamp timestamp = Timestamp.now();
               if (_textEditingController.text != "") {
-                FirebaseFirestore.instance.collection('MapDB')
-                    .doc(m_id)
-                    .collection('reviewDB')
-                    .add({
+                FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').add({
                   'content': _textEditingController.text.toString(),
                   'writer': '작성자',
+                  'time': timestamp,
                 });
                 _textEditingController.text = "";
                 Navigator.pop(context);
@@ -256,7 +267,6 @@ class _MapState extends State<Map> {
 
  // 현재 위치 기준, 근처 음식점 정보 구하기
   void getNearbyPlaces(double lat, double lng) async {
-
     var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=1000&key=${_mapApiKey}&types=restaurant&language=ko';
 
     var response = await http.post(Uri.parse(url));
@@ -266,21 +276,16 @@ class _MapState extends State<Map> {
     if(nearbyPlacesResponse.results != null)
       for(int i = 0 ; i < nearbyPlacesResponse.results!.length; i++) {
         Results results = nearbyPlacesResponse.results![i];
-        double latitude = double.parse(results.geometry!.location!.lat.toString());
-        double longitude = double.parse(results.geometry!.location!.lng.toString());
-        String store = results.name!;
-        String address = results.vicinity!;
-        saveLocation(store, address, latitude, longitude);
+        saveLocation(results.name!, results.vicinity!, double.parse(results.geometry!.location!.lat.toString()),
+            double.parse(results.geometry!.location!.lng.toString()));
       }
-
     setState(() {});
   }
-  
-  Future<void> saveLocation(String store, String addres, double lat, double lng) async {
-    var snapshots = FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).snapshots();
 
-    await FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).get().then((QuerySnapshot snap) => {
-      if (snap.size == 0) {
+  // 음식점 정보 DB에 저장
+  Future<void> saveLocation(String store, String addres, double lat, double lng) async {
+    await FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).get().then((QuerySnapshot snapshot) => {
+      if (snapshot.size == 0) {
         FirebaseFirestore.instance.collection('MapDB').add({
           'latitude': lat, 'longitude': lng,
           'like': 0,
@@ -291,40 +296,47 @@ class _MapState extends State<Map> {
       }
     });
   }
- // TODO: 쓸데없는 코드 정리
+
   // 근처 음식점 정보 위젯으로 출력
   Widget nearbyPlacesWidget(Results results) {
     String store = results.name!;
     String address = results.vicinity!;
 
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: InkWell(
-        child: Card(
-          margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("음식점: $store"),
-                Text("주소: $address"),
-                // if(results.rating != null)
-                //   Text("평점: " + results.rating!.toString()),
-                // Text("Location: " + results.geometry!.location!.lat.toString() + " , " + results.geometry!.location!.lng.toString()),
-                Text("오픈 여부: " + (results.openingHours != null ? "Open" : "Closed")),
-              ],
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).snapshots(),
+      builder: (context, AsyncSnapshot snapshot) {
+        if (!snapshot.hasData)
+          return CircularProgressIndicator();
+        
+        final documents = snapshot.data!.docs;
+
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          child: InkWell(
+            child: Card(
+              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("음식점: $store"),
+                    Text("주소: $address"),
+                    // if(results.rating != null) Text("평점: " + results.rating!.toString()),
+                    Text("오픈 여부: " + (results.openingHours != null ? "Open" : "Closed")),
+                  ],
+                ),
+              ),
             ),
+            onTap: () {
+              m_id = documents[0].id;
+              Navigator.push(context, MaterialPageRoute(
+                builder: (context) => detailPage(context, m_id, store, address, documents[0]['like']),
+              ));
+            },
           ),
-        ),
-        onTap: () {
-          // TODO: 음식점 정보 클릭하면 DB에 넣기 - 2번
-          // saveLocation(store, address, lat, lng);
-          // Navigator.push(context, MaterialPageRoute(
-          //   builder: (context) => reviewPage(),
-          // ));
-        },
-      ),
+        );
+      },
     );
   }
 
@@ -429,7 +441,7 @@ Widget editButton() {
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
-              // heroTag: 'up', // 에러나서 floatingActionButton 구분할 Tag 추가
+              heroTag: 'up', // 에러나서 floatingActionButton 구분할 Tag 추가
               tooltip: "맨 위로",
               onPressed: () {
                 Scrollable.ensureVisible(
@@ -449,7 +461,7 @@ Widget editButton() {
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
-              // heroTag: 'write', // 에러나서 floatingActionButton 구분할 Tag 추가
+              heroTag: 'write', // 에러나서 floatingActionButton 구분할 Tag 추가
               tooltip: "글 쓰기",
               onPressed: () {},
               child: Icon(Icons.edit),
