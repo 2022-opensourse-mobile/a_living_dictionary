@@ -6,14 +6,16 @@ import 'package:flutter/material.dart';
 import 'Data.dart';
 
 class CommunityItem with ChangeNotifier{
+  String doc_id = '';
   String title = '';
   String writer_id = '';
+  String writer_nickname = '';
   String body = '';
   int like = 0;
   DateTime? time;
   int boardType = 0;
   String hashTag = '';
-  String doc_id = '';
+
 
   CommunityItem({
     this.title = '',
@@ -23,11 +25,12 @@ class CommunityItem with ChangeNotifier{
     this.boardType = 0,
     this.hashTag = '',
     this.doc_id = '',
+    this.writer_nickname = '',
     this.time
   }){}
 
-  //add Post
-  @override
+
+
   void add() {
     Timestamp stamp = Timestamp.fromDate(this.time!);
     FirebaseFirestore.instance.collection('CommunityDB').add({
@@ -37,13 +40,75 @@ class CommunityItem with ChangeNotifier{
       'body':this.body,
       'time': stamp,
       'boardType':this.boardType,
-      'hashTag':this.hashTag
+      'hashTag':this.hashTag,
+      'writer_nickname':this.writer_nickname
     });
+  }
+  void delete(){
+    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).delete();
+  }
+  static CommunityItem getDataFromDoc(DocumentSnapshot doc){
+    Timestamp stamp = doc['time'];
+    final item = CommunityItem(
+        doc_id : doc.id,
+        title : doc['title'],
+        writer_id : doc['writer_id'],
+        writer_nickname: doc['writer_nickname'],
+        body : doc['body'],
+        like : doc['like'],
+        time : stamp.toDate(),
+        boardType : doc['boardType'],
+        hashTag : doc['hashTag']);
+    return item;
   }
 
 
-  //일반 build
-  @override
+  void addLikeNum(){
+    this.like++;
+    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
+      'like': this.like
+    });
+    if(isHotPost()){
+      updateBoardType(1);
+    }
+  }
+  void subLikeNum(){
+    this.like--;
+    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
+      'like': this.like
+    });
+    if(!isHotPost()){
+      updateBoardType(0);
+    }
+  }
+  bool isHotPost(){
+    return (this.like >= 10);
+  }
+  void updateBoardType(i){
+    boardType = i;
+    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
+      'boardType': this.boardType
+    });
+  }
+  void registerThisPost(Logineduser user){
+    FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').add({
+      'like_doc_id' : this.doc_id
+    }).then((value) => FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').doc(value.id).update(
+        {'id':value.id}));
+  }
+  void unRegisterThisPost(Logineduser user) async {
+    final instance = FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList');
+    await for (var snapshot in instance.snapshots()){
+      for (var doc in snapshot.docs){
+        if(doc['like_doc_id'] == this.doc_id){
+          instance.doc(doc['id']).delete();
+        }
+      }
+    }
+  }
+
+
+
   Widget build(BuildContext context) {
     String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
     return Padding(
@@ -51,7 +116,7 @@ class CommunityItem with ChangeNotifier{
       child: Column(
         children: [
           ListTile(
-            title: Text("${this.title}  ${this.writer_id}"),
+            title: Text("${this.title}"),
             subtitle: Text(this.body),
             shape: const RoundedRectangleBorder(
                 side: BorderSide(style: BorderStyle.none)
@@ -71,33 +136,6 @@ class CommunityItem with ChangeNotifier{
       ),
     );
   }
-
-  String getTabName(int boardType){
-    switch(boardType){
-      case 1:
-        return "인기게시판";
-      case 2:
-        return "공지게시판";
-      default:
-        return "자유게시판";
-    }
-  }
-
-  //Firebase db의 데이터를 Post로 변환
-  static CommunityItem getDataFromDoc(DocumentSnapshot doc){
-    Timestamp stamp = doc['time'];
-    final item = CommunityItem(
-        doc_id : doc.id,
-        title : doc['title'],
-        writer_id : doc['writer_id'],
-        body : doc['body'],
-        like : doc['like'],
-        time : stamp.toDate(),
-        boardType : doc['boardType'],
-        hashTag : doc['hashTag']);
-    return item;
-  }
-  //MainPage에서 사용, 하나의 doc을 받아서 하나의 리스트 원소 출력
   Widget buildMain(BuildContext context) {
     String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
     return Padding(
@@ -116,7 +154,18 @@ class CommunityItem with ChangeNotifier{
           },
         ));
   }
-  //document 리스트를 일부 elements만 뽑아서 return
+
+
+  String getTabName(int boardType){
+    switch(boardType){
+      case 1:
+        return "인기게시판";
+      case 2:
+        return "공지게시판";
+      default:
+        return "자유게시판";
+    }
+  }
   List<Widget> getWidgetList(BuildContext context, List<QueryDocumentSnapshot<Object?>> doc, int boardType){
     final board = doc.where((item)=> item['boardType'] == boardType).toList();
     final subList = board.sublist(0,4);
@@ -125,37 +174,6 @@ class CommunityItem with ChangeNotifier{
       return item.buildMain(context);
     }).toList();
     return buildList;
-  }
-
-
-
-  void addLikeNum(){
-    this.like++;
-    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
-      'like': this.like
-    });
-  }
-  void subLikeNum(){
-    this.like--;
-    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
-      'like': this.like
-    });
-  }
-  void registerThisPost(Logineduser user){
-    FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').add({
-      'like_doc_id' : this.doc_id
-    }).then((value) => FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').doc(value.id).update(
-        {'id':value.id}));
-  }
-  void unRegisterThisPost(Logineduser user) async {
-    final instance = FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList');
-    await for (var snapshot in instance.snapshots()){
-      for (var doc in snapshot.docs){
-        if(doc['like_doc_id'] == this.doc_id){
-          instance.doc(doc['id']).delete();
-        }
-      }
-    }
   }
 }
 

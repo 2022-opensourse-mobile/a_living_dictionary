@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'Supplementary//ThemeColor.dart';
 import 'Supplementary/PageRouteWithAnimation.dart';
 
+import 'package:provider/provider.dart';
+import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+
 // 화면전환 페이지 위젯은 전부 'my___'로 시작함
 
 
@@ -56,16 +59,20 @@ class _SettingsState extends State<Settings> {
 
 
   Widget appID() { //프로필 사진 + 닉네임
-    return Column(
-      children: [
-        ListTile(
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage('https://picsum.photos/250?image=9'), //프로필 사진
-          ),
-          title: Text('나는야곰돌이', style: TextStyle(fontWeight: FontWeight.bold),), //닉네임 출력
-        ),
-        Divider(thickness: 0.5,),
-      ],
+    return Consumer<Logineduser>(
+      builder: (context, userProvider, child) {
+        return Column(
+          children: [
+            ListTile(
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(userProvider.profileImageUrl), //프로필 사진
+              ),
+              title: Text(userProvider.nickName, style: TextStyle(fontWeight: FontWeight.bold),), //닉네임 출력
+            ),
+            Divider(thickness: 0.5,),
+          ],
+        );
+      }
     );
   }
 
@@ -206,8 +213,10 @@ class _SettingsState extends State<Settings> {
       appBar: AppBar(title: Text('비밀번호 변경'), elevation: 0.0),
       body: Column(
         children: [
-          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          
           Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          TextButton(onPressed: (){}, child: Text("변경"))
         ],
       ),
     );

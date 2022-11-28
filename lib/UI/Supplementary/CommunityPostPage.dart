@@ -69,7 +69,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               color: Colors.white,
               child: ListView(
                 children: [
-                  getTitleWidget(item.title, item.writer_id),
+                  getTitleWidget(item.title, item.writer_nickname),
                   getBodyWidget(item.body),
                   getLikeWidget(),
                   const Divider(thickness: 1.0, color: Color(0xaadddddd)),
@@ -94,9 +94,15 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               bottom: BorderSide(color: Color(0xAAdadada), width: 1.3),
             ),
             color: Color(0xAAefefef)),
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(15.0, 0, 0, 0),
-          child: Text(title, style: TextStyle(fontSize: 25)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(15.0, 0, 0, 0),
+              child: Text(title, style: TextStyle(fontSize: 25)),
+            ),
+            getModifyBtn(),
+          ],
         ),
       ),
       Container(
@@ -113,6 +119,33 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
       ),
     ]);
   }
+  Widget getModifyBtn(){
+    if(user.uid == item.writer_id){
+      return Row(
+        children: [
+          Row(
+            children: [
+              TextButton(
+                  child: Text("수정", style: TextStyle(color: Colors.black)),
+                  onPressed: (){}
+              ),
+              TextButton(
+                  child: Text("삭제", style: TextStyle(color: Colors.black)),
+                  onPressed: (){
+                    item.delete();
+                    Navigator.pop(context);
+                  }
+              ),
+            ],
+          )
+        ],
+      );
+    }
+    else{
+      return Container();
+    }
+  }
+
   Widget getBodyWidget(String body) {
     return Container(
       width: (width > 750) ? (750) : (width),

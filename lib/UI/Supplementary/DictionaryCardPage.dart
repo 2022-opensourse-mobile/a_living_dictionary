@@ -41,11 +41,11 @@ class DictionaryCardPage {
   Widget recommendPostList(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('best').snapshots(),
-        builder: (context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData) {
+        builder: (context, AsyncSnapshot snap) {
+          if (!snap.hasData) {
             return CircularProgressIndicator();
           }
-          final documents = snapshot.data!.docs;
+          final documents = snap.data!.docs;
 
           return Container(
             child: GridView.builder(
@@ -76,16 +76,18 @@ class DictionaryCardPage {
                         ),
                         elevation: 0,
                         child: StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance.collection('dictionaryItem')
-                                .where('__name__', isEqualTo: documents[index]['item_id']).snapshots(),
-                            builder: (context, snapshot) {
+                            stream: FirebaseFirestore.instance.collection('dictionaryItem').where('__name__', isEqualTo: documents[index]['item_id']).snapshots(),
+                            builder: (context, snap) {
+                              if (!snap.hasData) {
+                                return CircularProgressIndicator();
+                              }
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(10.0),
-                                    child: Image.network(snapshot.data!.docs[0]
-                                        ['thumbnail']),
+                                    child: Image.network(documents[0]
+                                        ['thumbnail']), // TODO 임시 사진, 썸네일로 바꿔야함
                                   ),
                                   Padding(
                                     padding: EdgeInsets.fromLTRB(
@@ -104,8 +106,8 @@ class DictionaryCardPage {
                                             ),
                                             textScaleFactor: 1, 
                                           ),
-                                        ),
-                                        Text(snapshot.data!.docs[0]['title'])
+                                        ), 
+                                        Text(documents[0]['title'])
                                       ],
                                     ),
                                   ),
@@ -128,15 +130,12 @@ class DictionaryCardPage {
 
   Widget otherPostList(BuildContext context, String tabName) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('dictionaryItem')
-            .where("hashtag", isEqualTo: tabName)
-            .snapshots(),
-        builder: (context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData) {
+        stream: FirebaseFirestore.instance.collection('dictionaryItem').where("hashtag", isEqualTo: tabName).snapshots(),
+        builder: (context, AsyncSnapshot snap) {
+          if (!snap.hasData) {
             return CircularProgressIndicator();
           }
-          final documents = snapshot.data!.docs;
+          final documents = snap.data!.docs;
 
           return Container(
             child: GridView.builder(
@@ -171,8 +170,8 @@ class DictionaryCardPage {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: Image.network(snapshot.data!.docs[index]
+                            borderRadius: BorderRadius.circular(10.0), 
+                            child: Image.network(documents[index]
                                 ['thumbnail']), // TODO 임시 사진, 썸네일로 바꿔야함
                           ),
                           Padding(
@@ -215,11 +214,11 @@ class DictionaryCardPage {
   Widget post(BuildContext context, int index) {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('dictionaryItem').orderBy('date', descending: false).snapshots(),
-        builder: (contextR, snapshot) {
-          if (!snapshot.hasData) {
+        builder: (contextR, snap) {
+          if (!snap.hasData) {
             return const CircularProgressIndicator();
           }
-          final documents = snapshot.data!.docs;
+          final documents = snap.data!.docs;
 
           int i = (documents.length - index - 1 > 0)?(documents.length - index - 1):(0);
           final it = documents.elementAt(i);
@@ -274,9 +273,8 @@ class DictionaryCardPage {
         });
   }
   Widget pageView(BuildContext context, DictionaryItemInfo? dicItemInfo) {
-    var hasData = false;
+
     return Scaffold(
-      
       appBar: AppBar(
         title: Consumer2<DictionaryItemInfo, Logineduser>(
           builder: (context, dicProvider, userProvider, child) {
@@ -284,21 +282,24 @@ class DictionaryCardPage {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(dicItemInfo!.title, style: TextStyle(fontSize: 17)),
+                Text(dicProvider.title, style: TextStyle(fontSize: 17)),
                 Expanded(child: SizedBox()),
-                
                 Text(dicProvider.scrapnum.toString(), style: TextStyle(fontSize: 17), textAlign: TextAlign.center,),
                 StreamBuilder(
                   stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id)
                             .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.data!.size != 0) {
+                  builder: (context, snap) {
+                    if (!snap.hasData) {
+                      return CircularProgressIndicator();
+                    }
+                    
+                    if (snap.data!.size != 0) {   // user가 해당 게시글을 스크랩한 기록이 없는 경우
                       return IconButton(
                         icon: const Icon(
                           // if (context.watch<DictionaryItemInfo>)
                           Icons.bookmark_outlined,
                           color: Colors.amberAccent,
-                          size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
+                          size: 30,   
                         ),
                         onPressed: (){
                           FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id).get().then((value) {
@@ -311,26 +312,22 @@ class DictionaryCardPage {
                           dicProvider.subScrapNum(dicProvider.doc_id);
                         }
                       );
-                      
-                    }
-
-                    return IconButton(
-                      icon: const Icon(
-                      // if (context.watch<DictionaryItemInfo>)
-                        Icons.bookmark_outline_rounded,
-                        color: Colors.amberAccent,
-                        size: 30,   //스크랩 provider 어캐 사용자 정보 얻어와서 비교하고  ad
-                      ),
-                      onPressed: (){
-                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").add({'docID' : dicProvider.doc_id});
-                        
-                        dicProvider.addScrapNum(dicProvider.doc_id);
-                      });
-                    
+                    } else {                          // user가 해당 게시글을 스크랩한 기록이 있는 경우
+                      return IconButton(
+                        icon: const Icon(
+                        // if (context.watch<DictionaryItemInfo>)
+                          Icons.bookmark_outline_rounded,
+                          color: Colors.amberAccent,
+                          size: 30,   
+                        ),
+                        onPressed: (){
+                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").add({'docID' : dicProvider.doc_id});
+                          
+                          dicProvider.addScrapNum(dicProvider.doc_id);
+                        });
+                    }   
                   },
                   )
-
-        
                   ],
                 );
           }
@@ -346,12 +343,14 @@ class DictionaryCardPage {
             if (snap.hasError) {
               return Text(snap.error.toString()); 
             }
+            
+            final documents = snap.data!.docs;
 
             if (!snap.hasData || snap.data.size == 0) {
               return nonExistentCard();
             }
             else{
-              cardDocList = snap.data?.docs.toList();
+              cardDocList = documents.toList();
               if (snap.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator();
               }

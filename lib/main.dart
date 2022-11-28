@@ -22,8 +22,6 @@ import 'UI/RestaurantPage.dart';
 import 'UI/DictionaryPage.dart';
 import 'UI/Supplementary//ThemeColor.dart';
 
-import 'UI/Supplementary/CommunityWritePage.dart';
-
 import 'UI/Supplementary/WriteDictionaryPage.dart';
 
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
@@ -79,7 +77,6 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
-        '/communityWrite':(context)=>CommunityWritePage(),
         '/writeDictionary':(context)=>WriteDictionaryPage(),
         '/authPage': (context)=> Authentication()
       },
@@ -177,6 +174,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
+                child: Image.asset('assets/kakao_login.png', fit: BoxFit.fill, width: 150, height: 40,),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(0)
+                ),
                 onPressed: () async {
                   viewModel = new MainViewModel(KakaoLogin());
                   await viewModel.login();
@@ -209,9 +210,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   }
                   );
                 }, 
-                child: const Text('카카오로 로그인')
               ),
               ElevatedButton(
+                child: Image.asset('assets/naver_login.png', fit: BoxFit.fill, width: 150, height: 40,),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(0)
+                ),
                 onPressed: () async {
                   await signInWithNaver();
 
@@ -242,13 +246,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     );
                   }
                 },
-                child: const Text('네이버로 로그인')
               ),
               ElevatedButton(
+                child: const Text('이메일로 로그인') ,
                 onPressed: () async {
                   await Navigator.pushNamed(context, '/authPage') as Logineduser;
                 }, 
-                child: const Text('이메일로 로그인')  
+                 
               )
                 
             ],
@@ -280,7 +284,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ),
               elevation: 0.0,
               actions: <Widget>[
-                Text(loginedUser.nickName ?? 'ㄴㄴ'),
                 IconButton(
                   icon: new Icon(Icons.search),
                   onPressed: () => {
@@ -296,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             children: [
               MainPage(tabController: _tabController),
               DictionaryPage(),
-              CommunityPage(),
+              CommunityPage(context),
               RestaurantPage(),
               MyPage()
             ],
@@ -306,8 +309,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             tabs: <Widget>[
               Tab(icon: _curIndex == 0? Icon(Icons.home) : Icon(Icons.home_outlined), child: Text('홈', textScaleFactor: 1,), ),
               Tab(icon: _curIndex == 1? Icon(Icons.book) : Icon(Icons.book_outlined,), child: Text('사전', textScaleFactor: 1,),),
-              Tab(icon: _curIndex == 2? Icon(Icons.people_alt) : Icon(Icons.people_alt_outlined), child: Text('커뮤니티', textScaleFactor: 1,),),
-              Tab(icon: _curIndex == 3? Icon(Icons.map) : Icon(Icons.map_outlined,), child: Text('맛집지도', textScaleFactor: 1,),),
+              Tab(icon: _curIndex == 2? Icon(Icons.people_alt) : Icon(Icons.people_alt_outlined), child: Text('커뮤\n니티', textScaleFactor: 1,),),
+              Tab(icon: _curIndex == 3? Icon(Icons.map) : Icon(Icons.map_outlined,), child: Text('맛집\n지도', textScaleFactor: 1,),),
               Tab(icon: _curIndex == 4? Icon(Icons.settings) : Icon(Icons.settings_outlined,), child: Text('설정', textScaleFactor: 1,),),
             ],
             onTap: (index) {
