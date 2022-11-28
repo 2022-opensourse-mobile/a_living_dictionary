@@ -107,7 +107,22 @@ class _MapState extends State<Map> {
               return Column(
                 children: [
                   ListTile(title: Text(store),), Divider(),
-                  ListTile(title: Text("좋아요 수: ${like}"),), Divider(),
+                  // ListTile(title: Text("좋아요 수: ${like}"),), Divider(),
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Text("좋아요 수: ${like}"),
+                        Spacer(),
+                        IconButton(
+                            onPressed: () {
+
+                            },
+                            icon: Icon(Icons.favorite_border),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(),
                   ListTile(title: Text("주소: ${address}"),), Divider(),
                   ListTile(
                     title: Row(
