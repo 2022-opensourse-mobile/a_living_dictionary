@@ -40,16 +40,20 @@ class _MyPageState extends State<MyPage> {
 
 
   Widget appID() { //프로필 사진 + 닉네임
-    return Column(
-      children: [
-        ListTile(
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage('https://picsum.photos/250?image=9'), //프로필 사진
-          ),
-          title: Text('나는야곰돌이', style: TextStyle(fontWeight: FontWeight.bold),), //닉네임 출력
-        ),
-        Divider(thickness: 0.5,),
-      ],
+    return Consumer<Logineduser>(
+        builder: (context, userProvider, child) {
+          return Column(
+            children: [
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(userProvider.profileImageUrl), //프로필 사진
+                ),
+                title: Text(userProvider.nickName, style: TextStyle(fontWeight: FontWeight.bold),), //닉네임 출력
+              ),
+              Divider(thickness: 0.5,),
+            ],
+          );
+        }
     );
   }
 
