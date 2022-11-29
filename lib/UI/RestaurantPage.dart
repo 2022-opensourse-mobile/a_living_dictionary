@@ -1,9 +1,14 @@
+import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
+import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
+import 'package:a_living_dictionary/main.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart' as locator;
+import 'package:provider/provider.dart';
 import 'Supplementary//ThemeColor.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -30,6 +35,27 @@ class RestaurantPage extends StatelessWidget {
       ),
       floatingActionButton: editButton(),
     );
+    // return MultiProvider(
+    //     providers: [
+    //       ChangeNotifierProvider(create: (context) => MapInfo()),
+    //       ChangeNotifierProvider(create: (context) => Logineduser()),
+    //     ],
+    //   child: Scaffold(
+    //     body: SingleChildScrollView(
+    //       child: Map(),
+    //     ),
+    //   ),
+    // );
+    // return ChangeNotifierProvider(
+    //   create: (context) => ,
+    //   child: MaterialApp(
+    //     home: Scaffold(
+    //       body: SingleChildScrollView(
+    //         child: Map(),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 }
 
@@ -45,6 +71,7 @@ class _MapState extends State<Map> {
   late GoogleMapController _controller;
   TextEditingController _textEditingController = TextEditingController();
   NearbyPlacesResponse nearbyPlacesResponse = NearbyPlacesResponse();
+  MapInfo mapInfo = MapInfo();
 
   static int id = 1; // 마커 id
   final List<Marker> markers = []; // 마커를 등록할 목록
@@ -62,7 +89,7 @@ class _MapState extends State<Map> {
 
         final documents = snapshot.data!.docs;
 
-        for (int i=0; i<documents.length; i++) {
+        for (int i = 0; i < documents.length; i++) {
           lat = double.parse(documents[i]['latitude'].toString());
           lng = double.parse(documents[i]['longitude'].toString());
           if (int.parse(documents[i]['like'].toString()) >= 100) {
@@ -76,7 +103,9 @@ class _MapState extends State<Map> {
                       isScrollControlled: true,
                       context: context,
                       builder: (context) {
-                        return detailPage(context, m_id, documents[i]['store'], documents[i]['address'], documents[i]['like']);
+                        // return detailPage(context, m_id, documents[i]['store'],
+                        //     documents[i]['address'], documents[i]['like']);
+                        return detailPage(context, m_id);
                       }
                   );
                 }
@@ -111,7 +140,8 @@ class _MapState extends State<Map> {
                       final documents = snapshot.data!.docs;
                       m_id = documents[0].id;
 
-                      return detailPage(context, m_id, documents[0]['store'], documents[0]['address'], documents[0]['like']);
+                      // return detailPage(context, m_id, documents[0]['store'], documents[0]['address'], documents[0]['like']);
+                      return detailPage(context, m_id);
                     },
                   );
                 }
@@ -124,111 +154,273 @@ class _MapState extends State<Map> {
   // 마커 클릭 시 나오는 페이지
   // TODO: 좋아요 DB 연결 후 두 버전 중 선택하기(DB 접근 1번, but 입력받는 인자 많음 VS DB 접근 2번, but 입력받는 인자 적음)
   // doc id, store, address, like 수 입력받는 버전 - DB 접근 1번
-  Widget detailPage(BuildContext context, String id, String store, String address, int like) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("${store} 상세 정보"),
-      ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: SingleChildScrollView(
-          child: StreamBuilder(
-            stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').orderBy('time', descending: true).snapshots(),
-            builder: (context, AsyncSnapshot snapshot) {
-              if (!snapshot.hasData)
-                return CircularProgressIndicator();
-
-              final documents = snapshot.data!.docs;
-
-              return Column(
-                children: [
-                  ListTile(title: Text(store),), Divider(),
-                  // ListTile(title: Text("좋아요 수: ${like}"),), Divider(),
-                  ListTile(
-                    title: Row(
-                      children: [
-                        Text("좋아요 수: ${like}"),
-                        Spacer(),
-                        IconButton(
-                            onPressed: () {
-
-                            },
-                            icon: Icon(Icons.favorite_border),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(),
-                  ListTile(title: Text("주소: ${address}"),), Divider(),
-                  ListTile(
-                    title: Row(
-                      children: [
-                        Text("$store 후기"),
-                        Spacer(),
-                        ElevatedButton(
-                          onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => reviewPage(),
-                            ));
-                          },
-                          child: Text("후기 작성"),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: documents.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(documents[index]['content'].toString()),
-                      );
-                    },
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-  // doc id만 입력받는 버전 - DB 2번 접근
-  // Widget detailPage(BuildContext context, String id) {
+  // Widget detailPage(BuildContext context, String id, String store, String address, int like) {
   //   return Scaffold(
   //     appBar: AppBar(
-  //       title: Text("상세 페이지"),
+  //       title: Text("${store} 상세 정보"),
   //     ),
   //     body: Container(
   //       height: MediaQuery.of(context).size.height,
   //       child: SingleChildScrollView(
   //         child: StreamBuilder(
-  //           stream: FirebaseFirestore.instance.collection('MapDB').doc(id).snapshots(),
-  //           builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+  //           stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').orderBy('time', descending: true).snapshots(),
+  //           builder: (context, AsyncSnapshot snapshot) {
   //             if (!snapshot.hasData)
   //               return CircularProgressIndicator();
   //
-  //             final mapDocument = snapshot.data!;
+  //             final documents = snapshot.data!.docs;
   //
   //             return Column(
   //               children: [
-  //                 ListTile(title: Text(mapDocument['store'])), Divider(),
+  //                 ListTile(title: Text(store),), Divider(),
+  //                 // ListTile(title: Text("좋아요 수: ${like}"),), Divider(),
   //                 ListTile(
   //                   title: Row(
   //                     children: [
-  //                       Text("좋아요 수: ${mapDocument['like']}"),
-  //                         Spacer(),
-  //                         IconButton(
+  //                       Text("좋아요 수: ${like}"),
+  //                       Spacer(),
+  //                       IconButton(
   //                           onPressed: () {
   //
   //                           },
   //                           icon: Icon(Icons.favorite_border),
-  //                         ),
-  //                       ],
-  //                     ),
+  //                       ),
+  //                     ],
   //                   ),
-  //                   Divider(),
+  //                 ),
+  //                 Divider(),
+  //                 ListTile(title: Text("주소: ${address}"),), Divider(),
+  //                 ListTile(
+  //                   title: Row(
+  //                     children: [
+  //                       Text("$store 후기"),
+  //                       Spacer(),
+  //                       ElevatedButton(
+  //                         onPressed: (){
+  //                           Navigator.push(context, MaterialPageRoute(
+  //                             builder: (context) => reviewPage(),
+  //                           ));
+  //                         },
+  //                         child: Text("후기 작성"),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //                 Divider(),
+  //                 ListView.builder(
+  //                   shrinkWrap: true,
+  //                   itemCount: documents.length,
+  //                   itemBuilder: (context, index) {
+  //                     return ListTile(
+  //                       title: Text(documents[index]['content'].toString()),
+  //                     );
+  //                   },
+  //                 ),
+  //               ],
+  //             );
+  //           },
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+  Widget detailPage(BuildContext context, String id) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("상세 페이지"),
+      ),
+      body: Consumer2<MapInfo, Logineduser>(
+          builder: (context, mapProvider, userProvider, child) {
+            return Container(
+              height: MediaQuery.of(context).size.height,
+              child: SingleChildScrollView(
+                child: StreamBuilder(
+                    stream: FirebaseFirestore.instance.collection('MapDB').doc(id).snapshots(),
+                    builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (!snapshot.hasData)
+                        return CircularProgressIndicator();
+
+                      final mapDocument = snapshot.data!;
+
+                      return Column(
+                        children: [
+                          ListTile(title: Text(mapDocument['store'])), Divider(),
+                          ListTile(
+                            title: Row(
+                              children: [
+                                Text("좋아요 수: ${mapProvider.like}"),
+                                Spacer(),
+                                StreamBuilder(
+                                  stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
+                                      .where('docID', isEqualTo: mapProvider.doc_id).snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData)
+                                      return CircularProgressIndicator();
+
+                                    // 이미 좋아요 누른 경우
+                                    if (snapshot.data!.size != 0) {
+                                      return IconButton(
+                                        icon: Icon(
+                                          Icons.favorite,
+                                          color: Colors.pink,
+                                          size: 30,
+                                        ),
+                                        onPressed: () {
+                                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
+                                              .where('docID', isEqualTo: mapProvider.doc_id).get().then((value) {
+                                            value.docs.forEach((element) {
+                                              FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
+                                                  .doc(element.id).delete();
+                                            });
+                                          });
+                                          mapProvider.subLikeNum(mapProvider.doc_id);
+                                        },
+                                      );
+                                    }
+                                    // 좋아요 안 누른 경우
+                                    else {
+                                      return IconButton(
+                                        icon: Icon(
+                                          Icons.favorite_border,
+                                          color: Colors.pink,
+                                          size: 30,
+                                        ),
+                                        onPressed: () {
+                                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList').add({
+                                            'docID': mapProvider.doc_id
+                                          });
+                                          mapProvider.addLikeNum(mapProvider.doc_id);
+                                        },
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          Divider(),
+                          ListTile(title: Text("주소: ${mapDocument['address']}")), Divider(),
+                          ListTile(
+                            title: Row(
+                              children: [
+                                Text("${mapDocument['store']} 후기"),
+                                Spacer(),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) => reviewPage(),
+                                    ));
+                                  },
+                                  child: Text("후기 작성"),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Divider(),
+                          StreamBuilder(
+                              stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').orderBy('time', descending: true).snapshots(),
+                              builder: (context, AsyncSnapshot snapshot) {
+                                if (!snapshot.hasData)
+                                  return CircularProgressIndicator();
+
+                                final reviewDocuments = snapshot.data!.docs;
+
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: reviewDocuments.length,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                      title: Text(reviewDocuments[index]['content'].toString()),
+                                    );
+                                  },
+                                );
+                              }
+                          ),
+                        ],
+                      );
+                    }
+                ),
+              ),
+            );
+          }
+      ),
+    );
+  }
+
+  // 앱바에 좋아요 버튼 있는 버전 & DB 2번 접근
+  // Widget detailPage(BuildContext context, String id) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: Consumer2<MapInfo, Logineduser>(
+  //         builder: (context, mapProvider, userProvider, child) {
+  //           return Row(
+  //             children: [
+  //               Text(mapProvider.store, style: TextStyle(fontSize: 17),),
+  //               // Spacer(),
+  //               Text(mapProvider.like.toString(), style: TextStyle(fontSize: 17),),
+  //               StreamBuilder(
+  //                 stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList').where('docID', isEqualTo: mapProvider.doc_id).snapshots(),
+  //                 builder: (context, snapshot) {
+  //                   if (!snapshot.hasData)
+  //                     return CircularProgressIndicator();
+  //
+  //                   // 이미 좋아요 누른 경우
+  //                   if (snapshot.data!.size != 0) {
+  //                     return IconButton(
+  //                       icon: const Icon(
+  //                         Icons.favorite_outlined,
+  //                         color: Colors.pink,
+  //                         size: 30,
+  //                       ),
+  //                       onPressed: () {
+  //                         FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
+  //                             .where('docID', isEqualTo: mapProvider.doc_id).get().then((value) {
+  //                           value.docs.forEach((element) {
+  //                             FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
+  //                                 .doc(element.id).delete();
+  //                           });
+  //                         });
+  //                         mapProvider.subLikeNum(mapProvider.doc_id);
+  //                       },
+  //                     );
+  //                   }
+  //                   // 좋아요 안 누른 경우
+  //                   else {
+  //                     return IconButton(
+  //                       icon: const Icon(
+  //                         Icons.favorite_outline_outlined,
+  //                         color: Colors.pink,
+  //                         size: 30,
+  //                       ),
+  //                       onPressed: () {
+  //                         FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList').add({
+  //                           'docID': mapProvider.doc_id
+  //                         });
+  //                         mapProvider.addLikeNum(mapProvider.doc_id);
+  //                       },
+  //                     );
+  //                   }
+  //                 },
+  //               ),
+  //             ],
+  //           );
+  //         }
+  //       ),
+  //     ),
+  //     body: Container(
+  //       height: MediaQuery.of(context).size.height,
+  //       child: SingleChildScrollView(
+  //           child: StreamBuilder(
+  //             stream: FirebaseFirestore.instance.collection('MapDB').doc(id).snapshots(),
+  //             builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+  //               if (!snapshot.hasData)
+  //                 return CircularProgressIndicator();
+  //
+  //               final mapDocument = snapshot.data!;
+  //
+  //               return Column(
+  //                 children: [
+  //                   ListTile(title: Text(mapDocument['store'])), Divider(),
   //                   ListTile(title: Text("주소: ${mapDocument['address']}")), Divider(),
   //                   ListTile(
   //                     title: Row(
@@ -248,36 +440,35 @@ class _MapState extends State<Map> {
   //                   ),
   //                   Divider(),
   //                   StreamBuilder(
-  //                     stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').orderBy('time', descending: true).snapshots(),
-  //                     builder: (context, AsyncSnapshot snapshot) {
-  //                       if (!snapshot.hasData)
-  //                         return CircularProgressIndicator();
+  //                       stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').orderBy('time', descending: true).snapshots(),
+  //                       builder: (context, AsyncSnapshot snapshot) {
+  //                         if (!snapshot.hasData)
+  //                           return CircularProgressIndicator();
   //
-  //                       final reviewDocuments = snapshot.data!.docs;
+  //                         final reviewDocuments = snapshot.data!.docs;
   //
-  //                       return ListView.builder(
-  //                         shrinkWrap: true,
-  //                         itemCount: reviewDocuments.length,
-  //                         itemBuilder: (context, index) {
-  //                           return ListTile(
-  //                             title: Text(reviewDocuments[index]['content'].toString()),
-  //                           );
-  //                         },
-  //                       );
-  //                     }
+  //                         return ListView.builder(
+  //                           shrinkWrap: true,
+  //                           itemCount: reviewDocuments.length,
+  //                           itemBuilder: (context, index) {
+  //                             return ListTile(
+  //                               title: Text(reviewDocuments[index]['content'].toString()),
+  //                             );
+  //                           },
+  //                         );
+  //                       }
   //                   ),
   //
-  //               ],
-  //             );
-  //           },
-  //         )
+  //                 ],
+  //               );
+  //             },
+  //           )
   //       ),
   //     ),
   //   );
   // }
 
   // review 작성 페이지
-
   Widget reviewPage() {
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -398,7 +589,7 @@ class _MapState extends State<Map> {
     getNearbyPlaces(curLat, curLng);
   }
 
- // 현재 위치 기준, 근처 음식점 정보 구하기
+  // 현재 위치 기준, 근처 음식점 정보 구하기
   void getNearbyPlaces(double lat, double lng) async {
     var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=1000&key=${_mapApiKey}&types=restaurant&language=ko';
 
@@ -409,20 +600,23 @@ class _MapState extends State<Map> {
     if(nearbyPlacesResponse.results != null)
       for(int i = 0 ; i < nearbyPlacesResponse.results!.length; i++) {
         Results results = nearbyPlacesResponse.results![i];
-        saveLocation(results.name!, results.vicinity!, double.parse(results.geometry!.location!.lat.toString()),
-            double.parse(results.geometry!.location!.lng.toString()));
+        String store = results.name!;
+        String address = results.vicinity!;
+        double lat = double.parse(results.geometry!.location!.lat.toString());
+        double lng = double.parse(results.geometry!.location!.lng.toString());
+        saveLocation(store, address, lat, lng);
       }
     setState(() {});
   }
 
   // 음식점 정보 DB에 저장
-  Future<void> saveLocation(String store, String addres, double lat, double lng) async {
+  Future<void> saveLocation(String store, String address, double lat, double lng) async {
     await FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).get().then((QuerySnapshot snapshot) => {
       if (snapshot.size == 0) {
         FirebaseFirestore.instance.collection('MapDB').add({
           'latitude': lat, 'longitude': lng,
           'like': 0,
-          'address': addres,
+          'address': address,
           'store': store,
           'markId': id,
         })
@@ -433,14 +627,16 @@ class _MapState extends State<Map> {
   // 근처 음식점 정보 위젯으로 출력
   Widget nearbyPlacesWidget(Results results) {
     String store = results.name!;
-    String address = results.vicinity!;
+    // String address = results.vicinity!;
+    // double lat = double.parse(results.geometry!.location!.lat.toString());
+    // double lng = double.parse(results.geometry!.location!.lng.toString());
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
         if (!snapshot.hasData)
           return CircularProgressIndicator();
-        
+
         final documents = snapshot.data!.docs;
 
         return Container(
@@ -454,7 +650,7 @@ class _MapState extends State<Map> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("음식점: $store"),
-                    Text("주소: $address"),
+                    Text("주소: ${documents[0]['address']}"),
                     // if(results.rating != null) Text("평점: " + results.rating!.toString()),
                     Text("오픈 여부: " + (results.openingHours != null ? "Open" : "Closed")),
                   ],
@@ -463,9 +659,18 @@ class _MapState extends State<Map> {
             ),
             onTap: () {
               m_id = documents[0].id;
-              Navigator.push(context, MaterialPageRoute(
-                builder: (context) => detailPage(context, m_id, store, address, documents[0]['like']),
-              ));
+              mapInfo.setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'],
+                  documents[0]['like'], documents[0]['markId']);
+              Provider.of<MapInfo>(context, listen: false).setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'],
+                  documents[0]['like'], documents[0]['markId']);
+              // Navigator.push(context, MaterialPageRoute(
+              //   // builder: (context) => detailPage(context, m_id, store, address, documents[0]['like']),
+              //   builder: (context) => detailPage(context, m_id),
+              // ));
+
+              PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(detailPage(context, m_id));
+              Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
+              // Navigator.push(context, )
             },
           ),
         );
