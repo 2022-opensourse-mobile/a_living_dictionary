@@ -70,8 +70,13 @@ class MyApp extends StatelessWidget {
         return MediaQuery(data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);},
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: themeColor.getWhiteMaterialColor(),
-        scaffoldBackgroundColor: Colors.white,
+          primarySwatch: themeColor.getWhiteMaterialColor(),
+          scaffoldBackgroundColor: Colors.white,
+          textSelectionTheme: TextSelectionThemeData(
+              cursorColor: themeColor.getMaterialColor(), //커서 색상
+              selectionColor: Color(0xffEAEAEA), //드래그 색상
+              selectionHandleColor: themeColor.getMaterialColor() //water drop 색상
+          ), //water drop
         // splashColor: Colors.transparent, //물결효과 적용
         // highlightColor: Colors.transparent,
       ),
