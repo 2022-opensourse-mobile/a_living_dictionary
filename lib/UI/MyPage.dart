@@ -19,6 +19,8 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
 
+  final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
 
@@ -28,7 +30,7 @@ class _MyPageState extends State<MyPage> {
 
           appID(),
           appCommunity(),
-          appAccount(context),
+          appAccount(),
           appPush(),
           appGuide(),
           appEtc(),
@@ -85,7 +87,7 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  Widget appAccount(BuildContext context) { //계정 설정
+  Widget appAccount() { //계정 설정
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -156,7 +158,7 @@ class _MyPageState extends State<MyPage> {
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
         ListTile(title: Text('버전 정보'), trailing: Text('1.0.0', style: TextStyle(color: Colors.grey)), //버전 설정
-            onTap: (){}),
+            onTap: (){ snackBar('현재 버전은 1.0.0 입니다'); }), //클릭 시 스낵바 출력
         Divider(thickness: 0.5,)
       ],
     );
@@ -263,9 +265,12 @@ class _MyPageState extends State<MyPage> {
               ),
               child: Text('완료', style: TextStyle(color: Colors.white)),
               onPressed: () {
-                Navigator.pop(context);
+                if(this.formKey.currentState!.validate()) {
+                  Navigator.pop(context);
+                  snackBar('닉네임 변경이 완료되었습니다');
+                }
 
-                /*  ↓ 완료버튼 누르면 실행되어야 할 부분 ↓ */
+                /*  TODO: ↓ 완료버튼 누르면 실행되어야 할 부분 ↓ */
                 // TODO: 여기에 작성
 
               },
@@ -283,8 +288,14 @@ class _MyPageState extends State<MyPage> {
 
             Padding(
               padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-              child: TextFormField(
+              child: Form(
+                key: this.formKey,
+                autovalidateMode: AutovalidateMode.always,
+                child: TextFormField(
                 initialValue: "나는야곰돌이", //TODO: 현재 내 닉네임이 출력되어야 함!!!!!!!!!!!!!!!!!!
+                validator: (value) {
+                  if(value!.isEmpty) return '닉네임을 입력하세요';
+                },
                 cursorColor: themeColor.getMaterialColor(),
                 decoration: InputDecoration(
                   hintText: '닉네임',
@@ -294,10 +305,12 @@ class _MyPageState extends State<MyPage> {
                   //border: InputBorder.none,
                   //focusedBorder: InputBorder.none,
                 ),
+                  border: const OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: themeColor.getMaterialColor()),
                   ),),
               ),
+            ),
             ),
 
             Text('※ 욕설, 비하, 성적 수치심을 유발하는 닉네임은 관리자가 임의로 변경하오니 주의 바랍니다.',
@@ -370,54 +383,67 @@ class _MyPageState extends State<MyPage> {
               ),
               child: Text('완료', style: TextStyle(color: Colors.white)),
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('개인정보 수집 및 이용 동의 안내',
-                        style: TextStyle(color: themeColor.getMaterialColor(),
-                        fontWeight: FontWeight.bold)),
-                    content: Text('문의 처리를 위해 문의 내용에 포함된 이메일, 회원정보 등 '
-                                  '개인정보가 포함된 문의 내용을 수집하며 개인정보처리방침에 따라 3년 후 파기됩니다.\n\n'
-                                  '동의하시겠습니까?\n비동의 시 문의 접수가 제한됩니다.'),
-                    actions: [
-                      TextButton(child: Text('비동의',
-                        style: TextStyle(color: themeColor.getMaterialColor(),
-                          fontWeight: FontWeight.bold,),),
-                          onPressed: () { Navigator.pop(context); }),
-                      TextButton(
-                          child: Text('동의',
-                            style: TextStyle(color: themeColor.getMaterialColor(), fontWeight: FontWeight.bold,),),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                content: Text('문의하기가 완료되었습니다.\n'
-                                              '영업일 기준 2~7일 이내 작성하신 이메일로 답변드리겠습니다.'),
-                                actions: [
-                                  TextButton(
-                                      child: Text('예',
-                                        style: TextStyle(color: themeColor.getMaterialColor(), fontWeight: FontWeight.bold,),),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        Navigator.pop(context);
+                if(this.formKey.currentState!.validate()) {
+                  showDialog(
+                    context: context,
+                    builder: (context) =>
+                        AlertDialog(
+                          title: Text('개인정보 수집 및 이용 동의 안내',
+                              style: TextStyle(
+                                  color: themeColor.getMaterialColor(),
+                                  fontWeight: FontWeight.bold)),
+                          content: Text('문의 처리를 위해 문의 내용에 포함된 이메일, 회원정보 등 '
+                                        '개인정보가 포함된 문의 내용을 수집하며 개인정보처리방침에 따라 3년 후 파기됩니다.\n\n'
+                                        '동의하시겠습니까?\n비동의 시 문의 접수가 제한됩니다.'),
+                          actions: [
+                            TextButton(child: Text('비동의',
+                              style: TextStyle(
+                                color: themeColor.getMaterialColor(),
+                                fontWeight: FontWeight.bold,),),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                }),
+                            TextButton(
+                                child: Text('동의',
+                                  style: TextStyle(
+                                    color: themeColor.getMaterialColor(),
+                                    fontWeight: FontWeight.bold,),),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        AlertDialog(
+                                          content: Text('문의하기가 완료되었습니다.\n'
+                                                        '영업일 기준 2~7일 이내 작성하신 이메일로 답변드리겠습니다.'),
+                                          actions: [
+                                            TextButton(
+                                                child: Text('예',
+                                                  style: TextStyle(
+                                                    color: themeColor
+                                                        .getMaterialColor(),
+                                                    fontWeight: FontWeight
+                                                        .bold,),),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  Navigator.pop(context);
 
 
-                                        /* 문의하기 완료 버튼 누르면 수행되어야 할 부분 ↓ 밑에 작성하기 */
+                                                  /* TODO: 문의하기 완료 버튼 누르면 수행되어야 할 부분 ↓ 밑에 작성하기 */
 
 
-                                        /* 문의하기 완료 버튼 누르면 수행되어야 할 부분 ↑ 위에 작성하기 */
+                                                  /* 문의하기 완료 버튼 누르면 수행되어야 할 부분 ↑ 위에 작성하기 */
 
 
-                                      })
-                                ],
-                              ),
-                            );
-                          })
-                    ],
-                  ),
-                );
-              },
+                                                })
+                                          ],
+                                        ),
+                                  );
+                                })
+                          ],
+                        ),
+                  );
+                }},
             ),
           ),
         ),
@@ -431,47 +457,59 @@ class _MyPageState extends State<MyPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Form(
+                    key: this.formKey,
                     autovalidateMode: AutovalidateMode.always,
-                    child: TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) => validateEmail(value),
-                      cursorColor: themeColor.getMaterialColor(),
-                      decoration: InputDecoration(
-                        hintText: '연락받을 이메일 (abcd@naver.com)',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                      ),
-                    ),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) => validateEmail(value),
+                          cursorColor: themeColor.getMaterialColor(),
+                          decoration: InputDecoration(
+                            hintText: '연락받을 이메일 (abcd@naver.com)',
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
+                        ),
+                        Divider(thickness: 0.5),
+                        TextFormField(
+                          cursorColor: themeColor.getMaterialColor(),
+                          validator: (value) {
+                            if(value!.isEmpty) return '내용을 입력하세요';
+                          },
+                          decoration: InputDecoration(
+                            hintText: '제목',
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
+                        ),
+                        Divider(thickness: 0.5),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 430,
+                          child: TextFormField(
+                            validator: (value) {
+                              if(value!.isEmpty) return '내용을 입력하세요';
+                            },
+                            cursorColor: themeColor.getMaterialColor(),
+                            maxLines: 100,
+                            decoration: InputDecoration(
+                              hintText: '문의할 내용을 입력하세요',
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
                   ),
-                  Divider(thickness: 0.5),
-                  TextFormField(
-                    cursorColor: themeColor.getMaterialColor(),
-                    decoration: InputDecoration(
-                      hintText: '제목',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                    ),
-                  ),
-                  Divider(thickness: 0.5),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 430,
-                    child: TextFormField(
-                      cursorColor: themeColor.getMaterialColor(),
-                      maxLines: 100,
-                      decoration: InputDecoration(
-                        hintText: '문의할 내용을 입력하세요',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                      ),
-                    ),
-                  ),
+
                   Padding(
                     padding: EdgeInsets.fromLTRB(10,10,10,20),
                     child: Container(
@@ -483,8 +521,8 @@ class _MyPageState extends State<MyPage> {
                               textScaleFactor: 0.9,
                             ),
                             Text('월, 화, 수, 목, 금 09:00 ~ 18:00\n'
-                                 '토, 일, 공휴일 휴무\n\n'
-                                 '(금요일 18:00 이후부터 일요일까지 접수된 문의는 월요일부터 순차적으로 답변드립니다.)',
+                                '토, 일, 공휴일 휴무\n\n'
+                                '(금요일 18:00 이후부터 일요일까지 접수된 문의는 월요일부터 순차적으로 답변드립니다.)',
                               style: TextStyle(color: Colors.grey),
                               textScaleFactor: 0.9,
                             ),
@@ -497,6 +535,7 @@ class _MyPageState extends State<MyPage> {
           ]),
     );
   }
+  
 
 
 
@@ -510,6 +549,15 @@ class _MyPageState extends State<MyPage> {
       return '잘못된 이메일 형식입니다';
     else
       return null;
+  }
+
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar(String text) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$text'), //snack bar의 내용. icon, button같은것도 가능하다.
+          duration: Duration(seconds: 2), //올라와있는 시간
+        )
+    );
   }
 
   Widget dd() { //비번 변경 TextFormField
