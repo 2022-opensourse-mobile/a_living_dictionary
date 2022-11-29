@@ -1,18 +1,35 @@
 import 'package:a_living_dictionary/DB/CommunityItem.dart';
+import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../main.dart';
-import 'Search.dart';
+import 'package:provider/provider.dart';
 import 'ThemeColor.dart';
+
+
 
 ThemeColor themeColor = ThemeColor();
 
 class CommunityWritePage extends StatelessWidget {
-  CommunityWritePage({super.key});
-
+  final BuildContext context2;
+  CommunityItem? item;
   late var width;
+  late final isNull;
   TextEditingController titleController = TextEditingController();
   TextEditingController bodyController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
+  late Logineduser user = Provider.of<Logineduser>(context2, listen: false);
+
+  CommunityWritePage(this.context2, this.item, {super.key}){
+    if(item == null){
+      item = CommunityItem();
+      isNull = true;
+    }
+    else {
+      isNull = false;
+      titleController.text = item!.title;
+      bodyController.text = item!.body;
+    }
+  }
+
 
 
   @override
@@ -30,165 +47,120 @@ class CommunityWritePage extends StatelessWidget {
           primarySwatch: themeColor.getWhiteMaterialColor(),
           scaffoldBackgroundColor: Colors.white,
         ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text("글 쓰기", style: TextStyle(color: Colors.black)),
-            elevation: 0.0,
-            actions: <Widget>[
-              IconButton(
-                icon: new Icon(Icons.search),
-                onPressed: () => {
-                  //showSearch(context: context, delegate:Search(null))
-                },
-              )
-            ],
-          ),
-          //Body : 싱글 스크롤
-          body: Align(
-            alignment: Alignment.topCenter,
-            child: SingleChildScrollView(
-              child: Container(
-                width: (width > 750) ? (750) : (width),
-                color: Colors.white,
-                child: Column(
-                  //전체 Column
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    getTitleWidget(), //제목 위젯
-                    Container(
-                      decoration: const BoxDecoration(
-                          border: Border(
-                            left: BorderSide(color: Color(0xAAaaaaaa)),
-                            right: BorderSide(color: Color(0xAAaaaaaa)),
-                          )
-                      ),
-                      child: const Divider(
-                        color: Color(0xAAaaaaaa),
-                        thickness: 0.3,
-                      ),
-                    ),
-                    getBodyWidget(), // 본문 위젯
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        getRegWidget(context),
-                        getCancelWidget(context)
-                      ],
-                    ) // 등록 버튼
-                  ],
-                ),
-              ), //expanded
-            ),
-          ),
-        ));
+        home: writePost()
+    );
   }
 
-  Widget getTitleWidget() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      //const Text("제목"),
-      Container(
-        padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-        width: (width > 750) ? (750) : (width),
-        height: 40,
-        alignment: Alignment.centerLeft,
-        decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(color: Color(0xAAaaaaaa)),
-              left: BorderSide(color: Color(0xAAaaaaaa)),
-              right: BorderSide(color: Color(0xAAaaaaaa)),
-            )
-        ),
-        child: Row(
+  Widget writePost() {
+    return Scaffold(
+      appBar: AppBar(title: Text('글 쓰기'), elevation: 0.0, actions: [
+        getFinishButton()
+      ]),
+      body: ListView(
           children: [
-            SizedBox(
-              width: (width > 750) ? (500) : (width/2-1),
-              child: TextField(
-                controller: titleController,
-                showCursor: true,
-                cursorColor: Colors.black,
-                decoration: const InputDecoration(
-                  hintText: "제목",
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
-                ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: Column(
+                children: [
+                  getTitleWidget(),
+                  Divider(thickness: 0.5),
+                  getBodyWidget(),
+                  getCautionWidget()
+                ],
               ),
             ),
-            SizedBox(
-              width: (width > 750) ? (240) : (width/2-1),
-              /*child: TextField(
-                controller: nameController,
-                showCursor: true,
-                cursorColor: Colors.black,
-                decoration: const InputDecoration(
-                    hintText: "닉네임",
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
-                  ),
-                ),*/
-              //child: Text("닉네임"),
+          ]),
+    );
+  }
+  Widget getFinishButton(){
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: SizedBox(
+        width: 50,
+        height: 10,
+        child: TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: themeColor.getMaterialColor(),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(1000),
             ),
-          ],
-        )
-      ),
-    ]);
-  }
-  Widget getBodyWidget() {
-    return Container(
-        width: (width > 750) ? (750) : (width),
-        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-        height: 300,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Color(0xAAaaaaaa)),
-              left: BorderSide(color: Color(0xAAaaaaaa)),
-              right: BorderSide(color: Color(0xAAaaaaaa)),
-            )
-        ),
-        child: TextField(
-          showCursor: true,
-          maxLines: null,
-          cursorColor: Colors.black,
-          controller: bodyController,
-          decoration: const InputDecoration(
-              enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
-              focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
-              hintText: "본문"
           ),
-        )
+          child: Text('완료', style: TextStyle(color: Colors.white)),
+          onPressed: () {
+            final addedItem = CommunityItem(
+                title: titleController.text,
+                body: bodyController.text,
+                writer_id: user.uid,
+                writer_nickname: user.nickName,
+                boardType: 0,
+                time: DateTime.now(),
+                like: 0
+            );
+            if(isNull) {
+              addedItem.add();
+            }
+            else{
+              FirebaseFirestore.instance.collection('CommunityDB').doc(item!.doc_id).update({
+                'title': addedItem.title,
+                'body' : addedItem.body,
+                'time' : DateTime.now()
+              });
+            }
+            Navigator.pop(context2);
+          },
+        ),
+      ),
     );
   }
-  Widget getRegWidget(BuildContext context){
-    return ElevatedButton(
-      child: Text("등록", style: TextStyle(color: Colors.black)),
-      onPressed: (){
-        CommunityItem item = CommunityItem(
-          title: titleController.text,
-          body: bodyController.text,
-          writer_id: nameController.text,
-          boardType: 0,
-          time: DateTime.now(),
-          hashTag: "자유",
-          like: 0
-        );
-        item.add();
-        titleController.text = "";
-        bodyController.text = "";
-        nameController.text = "";
-        Navigator.pop(context);
-      },
-
+  Widget getTitleWidget(){
+    return TextFormField(
+      controller: titleController,
+      cursorColor: themeColor.getMaterialColor(),
+      decoration: InputDecoration(
+        hintText: '제목',
+        filled: true,
+        fillColor: Colors.white,
+        border: InputBorder.none,
+        focusedBorder: InputBorder.none,
+      ),
     );
   }
-  Widget getCancelWidget(BuildContext context){
-    return ElevatedButton(
-      child: Text("취소"),
-      onPressed: (){
-        Navigator.pop(context);
-      },
+  Widget getBodyWidget(){
+    return SizedBox(
+      width: double.infinity,
+      height: 430,
+      child: TextFormField(
+        cursorColor: themeColor.getMaterialColor(),
+        maxLines: 100,
+        controller: bodyController,
+        decoration: InputDecoration(
+          hintText: '내용을 입력하세요',
+          filled: true,
+          fillColor: Colors.white,
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+        ),
+      ),
     );
+  }
+  Widget getCautionWidget(){
+    return Padding(
+      padding: EdgeInsets.fromLTRB(10,10,10,0),
+      child: Container(
+        height: 220, //210 이상으로만 설정하기 (글자 출력되는 부분 크기)
+        child: Text(
+          '자취 백과사전은 깨끗한 커뮤니티를 만들기 위해 커뮤니티 이용규칙을 제정하여 운영하고 있습니다. '
+              '위반 시 게시물이 삭제되고 서비스 이용이 제한되오니 반드시 숙지하시길 바랍니다.\n\n'
+              '※ 욕설, 비하, 차별, 혐오, 폭력이 관련된 글 금지\n'
+              '※ 음란물, 성적 수치심을 유발하는 글 금지\n'
+              '※ 공포 사진, 고어 사진, 더러운 사진 등 눈살 찌푸려지는 글 금지\n'
+              '※ 영화, 드라마, 도서 등 일부러 내용을 스포일러 하는 글 금지\n'
+              '※ 정치, 사회 관련 글 금지\n'
+              '※ 홍보, 판매 관련 글 금지\n'
+              '※ 불법 촬영물 유통 금지\n',
+          style: TextStyle(color: Colors.grey),
+          textScaleFactor: 0.9,
+        ),
+      ));
   }
 }

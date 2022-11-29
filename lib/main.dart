@@ -6,6 +6,7 @@ import 'package:a_living_dictionary/LOGIN/kakao_login.dart';
 import 'package:a_living_dictionary/LOGIN/main_view_model.dart';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
 import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,6 @@ import 'UI/MyPage.dart';
 import 'UI/RestaurantPage.dart';
 import 'UI/DictionaryPage.dart';
 import 'UI/Supplementary//ThemeColor.dart';
-
-import 'UI/Supplementary/CommunityWritePage.dart';
 
 import 'UI/Supplementary/WriteDictionaryPage.dart';
 
@@ -54,8 +53,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_)=>DictionaryItemInfo()),
-        ChangeNotifierProvider(create: (_)=>Logineduser())
+        ChangeNotifierProvider(create: (_) => DictionaryItemInfo()),
+        ChangeNotifierProvider(create: (_) => Logineduser()),
+        ChangeNotifierProvider(create: (_) => MapInfo())
       ],
       child: MyApp(),
     ),
@@ -72,14 +72,18 @@ class MyApp extends StatelessWidget {
         return MediaQuery(data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);},
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: themeColor.getWhiteMaterialColor(),
-        scaffoldBackgroundColor: Colors.white,
+          primarySwatch: themeColor.getWhiteMaterialColor(),
+          scaffoldBackgroundColor: Colors.white,
+          textSelectionTheme: TextSelectionThemeData(
+              cursorColor: themeColor.getMaterialColor(), //커서 색상
+              selectionColor: Color(0xffEAEAEA), //드래그 색상
+              selectionHandleColor: themeColor.getMaterialColor() //water drop 색상
+          ), //water drop
         // splashColor: Colors.transparent, //물결효과 적용
         // highlightColor: Colors.transparent,
       ),
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
-        '/communityWrite':(context)=>CommunityWritePage(),
         '/writeDictionary':(context)=>WriteDictionaryPage(),
         '/authPage': (context)=> Authentication()
       },
@@ -302,7 +306,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             children: [
               MainPage(tabController: _tabController),
               DictionaryPage(),
-              CommunityPage(),
+              CommunityPage(context),
               RestaurantPage(),
               MyPage()
             ],
