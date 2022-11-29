@@ -5,10 +5,10 @@ class Map extends Data<Map> {
   Map({
     this.address = "",
     this.store = "",
-    this.longitude=36.1461382,
-    this.latitude=128.3934882,
-    this.like=0,
-    this.markId=0,
+    this.latitude = 36.1461382,
+    this.longitude = 128.3934882,
+    this.like = 0,
+    this.markId = 0,
   });
 
   String address; // 주소

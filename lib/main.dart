@@ -6,6 +6,7 @@ import 'package:a_living_dictionary/LOGIN/kakao_login.dart';
 import 'package:a_living_dictionary/LOGIN/main_view_model.dart';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
 import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -52,8 +53,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_)=>DictionaryItemInfo()),
-        ChangeNotifierProvider(create: (_)=>Logineduser())
+        ChangeNotifierProvider(create: (_) => DictionaryItemInfo()),
+        ChangeNotifierProvider(create: (_) => Logineduser()),
+        ChangeNotifierProvider(create: (_) => MapInfo())
       ],
       child: MyApp(),
     ),
