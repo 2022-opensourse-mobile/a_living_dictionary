@@ -268,11 +268,10 @@ class _MyPageState extends State<MyPage> {
                 if(this.formKey.currentState!.validate()) {
                   Navigator.pop(context);
                   snackBar('닉네임 변경이 완료되었습니다');
+
+                  /*  TODO: ↓ 완료버튼 누르면 실행되어야 할 부분 ↓ */
+                  // TODO: 여기에 작성
                 }
-
-                /*  TODO: ↓ 완료버튼 누르면 실행되어야 할 부분 ↓ */
-                // TODO: 여기에 작성
-
               },
             ),
           ),
@@ -324,10 +323,70 @@ class _MyPageState extends State<MyPage> {
 
   Widget myProfileImg() {
     return Scaffold(
-      appBar: AppBar(title: Text('프로필 이미지 변경'), elevation: 0.0),
+      appBar: AppBar(title: Text('프로필 이미지 변경'), elevation: 0.0, actions: [
+        Padding(
+          padding: EdgeInsets.all(10),
+          child: SizedBox(
+            width: 50,
+            height: 10,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: themeColor.getMaterialColor(),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(1000),
+                ),
+              ),
+              child: Text('완료', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                Navigator.pop(context);
+                snackBar('프로필 이미지 변경이 완료되었습니다');
+              },
+            ),
+          ),
+        ),
+      ],),
       body: Column(
         children: [
-          Text('프로필 이미지 변경 페이지', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Center(
+              child: CircleAvatar(
+                backgroundImage: NetworkImage('https://picsum.photos/250?image=9'), //TODO: 프로필 이미지
+                minRadius: 80,
+                maxRadius: 120,
+              ),
+            ),),
+          TextButton(
+              child: Text('프로필 이미지 변경하기',
+                  style: TextStyle(fontWeight: FontWeight.bold, color: themeColor.getMaterialColor()),
+                  textScaleFactor: 1.2),
+              onPressed: () {
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return Wrap(
+                        children: [
+                          ListTile(leading: Icon(Icons.photo_library), title: Text('갤러리'),
+                            onTap: () {
+                              //TODO: 갤러리 누르면 실행되어야 할 부분
+                            },
+                          ),
+                          ListTile(leading: Icon(Icons.camera_alt), title: Text('카메라'),
+                            onTap: () {
+                              //TODO: 카메라 누르면 실행되어야 할 부분
+                            },
+                          ),
+                          ListTile(leading: Icon(Icons.image_not_supported), title: Text('프로필 이미지 삭제하기'),
+                            onTap: () {
+                              //TODO: 삭제하기 누르면 실행되어야 할 부분
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                );
+              }
+          ),
         ],
       ),
     );
@@ -554,8 +613,8 @@ class _MyPageState extends State<MyPage> {
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar(String text) {
     return ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$text'), //snack bar의 내용. icon, button같은것도 가능하다.
-          duration: Duration(seconds: 2), //올라와있는 시간
+          content: Text('$text'), //내용
+          duration: Duration(seconds: 2), //올라와 있는 시간
         )
     );
   }
