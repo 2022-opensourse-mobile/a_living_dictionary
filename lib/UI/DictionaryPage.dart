@@ -204,7 +204,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
 
             return CarouselSlider(
               options: CarouselOptions(
-                height: width / 2 > 350 ? 350 : width / 3,
+                height: width / 2 > 350 ? 350 : width / 2,
                 viewportFraction: 1.3,
                 enlargeCenterPage: false,
                 autoPlayAnimationDuration: Duration(milliseconds: 400),
