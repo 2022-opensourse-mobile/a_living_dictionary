@@ -161,7 +161,7 @@ class _MyPageState extends State<MyPage> {
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
         ListTile(title: Text('버전 정보'), trailing: Text('1.0.0', style: TextStyle(color: Colors.grey)), //버전 설정
-            onTap: (){ snackBar('현재 버전은 1.0.0 입니다'); }), //클릭 시 스낵바 출력
+            onTap: (){ snackBar('현재 버전은 1.0.0 입니다'); }), //TODO:클릭 시 스낵바에 현재 버전 출력
         Divider(thickness: 0.5,)
       ],
     );
@@ -280,7 +280,7 @@ class _MyPageState extends State<MyPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+                Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Form(
@@ -309,7 +309,7 @@ class _MyPageState extends State<MyPage> {
                               ),),
                           ),
                           Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
-                              child: Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0)),
+                              child: Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1)),
 
                           TextFormField(
                             controller: newPassword,
@@ -399,7 +399,7 @@ class _MyPageState extends State<MyPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('닉네임을 수정해 주세요.', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+                Text('닉네임', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Form(
@@ -742,38 +742,6 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  Widget dd() { //비번 변경 TextFormField
-    return Padding(
-      padding: EdgeInsets.fromLTRB(10, 10, 10, 4),
-      child: TextFormField(
-        decoration: InputDecoration(
-          hintText: '현재 비밀번호',
-          filled: true,
-          fillColor: Color(0xfff2f3f6),
-          hoverColor: Colors.white54,
-        ),
-      ),
-    );
-  }
-
-
-  Widget tempSearch(){
-    return Padding(
-      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-      child: TextField(
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical: 0),
-          filled: true,
-          fillColor: Color(0xfff2f3f6),
-          hintText: '현재 비밀번호',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            borderSide: BorderSide.none,
-          ),
-        ),
-      ),
-    );
-  }
 
 }
 

@@ -22,7 +22,7 @@ ThemeColor themeColor = ThemeColor();
 // Google Map API Key
 final _mapApiKey = 'AIzaSyDV1uWDF4S16dDx5oQAAJ399p3e9Cbot90';
 
-final GlobalKey searchKey = GlobalKey(); // 키 생성
+final GlobalKey scrollKey = GlobalKey(); // 키 생성
 
 class RestaurantPage extends StatelessWidget {
   const RestaurantPage({Key? key}) : super(key: key);
@@ -683,8 +683,9 @@ class _MapState extends State<Map> {
     return Column(
       children: [
         Container(
+          key: scrollKey,
           width: double.infinity,
-          height: 450,
+          height: 500,
           color: Colors.grey,
           child: Stack(
             children: [
@@ -778,37 +779,46 @@ Widget editButton() {
         children: [
           Align(
             alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
+            child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: Colors.black12, width: 1
+                  )
+              ),
+              child: FloatingActionButton(
               heroTag: 'up', // 에러나서 floatingActionButton 구분할 Tag 추가
               tooltip: "맨 위로",
               onPressed: () {
                 Scrollable.ensureVisible(
-                    searchKey.currentContext!,
+                    scrollKey.currentContext!,
                     duration: Duration(milliseconds: 500),
                     curve: Curves.easeInOut);
               },
               child: Icon(Icons.arrow_upward_rounded),
-              backgroundColor: themeColor.getColor(),
+              focusColor: Colors.white54,
+              backgroundColor: Colors.white,
               elevation: 0,
               hoverElevation: 0,
               focusElevation: 0,
               highlightElevation: 0,
             ),
           ),
-          SizedBox(height: 5),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              heroTag: 'write', // 에러나서 floatingActionButton 구분할 Tag 추가
-              tooltip: "글 쓰기",
-              onPressed: () {},
-              child: Icon(Icons.edit),
-              backgroundColor: themeColor.getColor(),
-              elevation: 0,
-              hoverElevation: 0,
-              focusElevation: 0,
-              highlightElevation: 0,
-            ),
+          // SizedBox(height: 5),
+          // Align(
+          //   alignment: Alignment.bottomRight,
+          //   child: FloatingActionButton(
+          //     heroTag: 'write', // 에러나서 floatingActionButton 구분할 Tag 추가
+          //     tooltip: "글 쓰기",
+          //     onPressed: () {},
+          //     child: Icon(Icons.edit),
+          //     backgroundColor: themeColor.getColor(),
+          //     elevation: 0,
+          //     hoverElevation: 0,
+          //     focusElevation: 0,
+          //     highlightElevation: 0,
+          //   ),
+          // ),
           ),
         ],
       ),
@@ -819,7 +829,7 @@ Widget editButton() {
 /* -------------------------------- 검색 위젯: 일단 3개 작성 (삭제 금지) */
 Widget restaurantSearch(){
   return Row(
-    key: searchKey,
+    key: scrollKey,
     children: [
       Expanded(
         child: Padding(
