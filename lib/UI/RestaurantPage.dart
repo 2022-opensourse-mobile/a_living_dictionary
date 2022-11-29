@@ -51,6 +51,7 @@ class _MapState extends State<Map> {
   String m_id = ""; // Map Id & 선택한 장소
 
   // DB에 저장된 마커 지도에 추가하기(좋아요 100개 이상인 마커만)
+  // TODO: 좋아요 100개 넘는 DB 따로 나눌 것
   Widget getMarker(BuildContext context) {
     double lat, lng;
     return StreamBuilder<QuerySnapshot>(
@@ -87,7 +88,42 @@ class _MapState extends State<Map> {
     );
   }
 
+  // 음식점 좋아요 누른 경우, 개별 지도에 마커 추가
+  // TODO: 좋아요 DB 연결 후 수정할 것
+  void addMarker(BuildContext context, double lat, double lng) {
+    setState(() {
+      markers.add(Marker(
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // 마커 파란색
+          position: LatLng(lat, lng),
+          markerId: MarkerId((++id).toString()),
+          onTap: () {
+            showModalBottomSheet(
+                isScrollControlled: true,
+                context: context,
+                builder: (BuildContext context) {
+                  return StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection('MapDB')
+                        .where('latitude', isEqualTo: lat)
+                        .where('longitude', isEqualTo: lng).snapshots(),
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (!snapshot.hasData)
+                        return CircularProgressIndicator();
+                      final documents = snapshot.data!.docs;
+                      m_id = documents[0].id;
+
+                      return detailPage(context, m_id, documents[0]['store'], documents[0]['address'], documents[0]['like']);
+                    },
+                  );
+                }
+            );
+          }
+      ));
+    });
+  }
+
   // 마커 클릭 시 나오는 페이지
+  // TODO: 좋아요 DB 연결 후 두 버전 중 선택하기(DB 접근 1번, but 입력받는 인자 많음 VS DB 접근 2번, but 입력받는 인자 적음)
+  // doc id, store, address, like 수 입력받는 버전 - DB 접근 1번
   Widget detailPage(BuildContext context, String id, String store, String address, int like) {
     return Scaffold(
       appBar: AppBar(
@@ -158,8 +194,90 @@ class _MapState extends State<Map> {
       ),
     );
   }
+  // doc id만 입력받는 버전 - DB 2번 접근
+  // Widget detailPage(BuildContext context, String id) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: Text("상세 페이지"),
+  //     ),
+  //     body: Container(
+  //       height: MediaQuery.of(context).size.height,
+  //       child: SingleChildScrollView(
+  //         child: StreamBuilder(
+  //           stream: FirebaseFirestore.instance.collection('MapDB').doc(id).snapshots(),
+  //           builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+  //             if (!snapshot.hasData)
+  //               return CircularProgressIndicator();
+  //
+  //             final mapDocument = snapshot.data!;
+  //
+  //             return Column(
+  //               children: [
+  //                 ListTile(title: Text(mapDocument['store'])), Divider(),
+  //                 ListTile(
+  //                   title: Row(
+  //                     children: [
+  //                       Text("좋아요 수: ${mapDocument['like']}"),
+  //                         Spacer(),
+  //                         IconButton(
+  //                           onPressed: () {
+  //
+  //                           },
+  //                           icon: Icon(Icons.favorite_border),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                   Divider(),
+  //                   ListTile(title: Text("주소: ${mapDocument['address']}")), Divider(),
+  //                   ListTile(
+  //                     title: Row(
+  //                       children: [
+  //                         Text("${mapDocument['store']} 후기"),
+  //                         Spacer(),
+  //                         ElevatedButton(
+  //                           onPressed: (){
+  //                             Navigator.push(context, MaterialPageRoute(
+  //                               builder: (context) => reviewPage(),
+  //                             ));
+  //                           },
+  //                           child: Text("후기 작성"),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                   Divider(),
+  //                   StreamBuilder(
+  //                     stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').orderBy('time', descending: true).snapshots(),
+  //                     builder: (context, AsyncSnapshot snapshot) {
+  //                       if (!snapshot.hasData)
+  //                         return CircularProgressIndicator();
+  //
+  //                       final reviewDocuments = snapshot.data!.docs;
+  //
+  //                       return ListView.builder(
+  //                         shrinkWrap: true,
+  //                         itemCount: reviewDocuments.length,
+  //                         itemBuilder: (context, index) {
+  //                           return ListTile(
+  //                             title: Text(reviewDocuments[index]['content'].toString()),
+  //                           );
+  //                         },
+  //                       );
+  //                     }
+  //                   ),
+  //
+  //               ],
+  //             );
+  //           },
+  //         )
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // review 작성 페이지
+
   Widget reviewPage() {
     return Scaffold(
       resizeToAvoidBottomInset: false,
