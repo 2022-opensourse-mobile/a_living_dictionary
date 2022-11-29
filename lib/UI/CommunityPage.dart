@@ -106,7 +106,7 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
   }
   Widget getCommunityList(int boardType) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('CommunityDB').snapshots(),
+        stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return CircularProgressIndicator();
