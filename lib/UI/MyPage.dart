@@ -4,6 +4,7 @@ import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'CommunityPage.dart';
 import 'Supplementary//ThemeColor.dart';
 import 'Supplementary/PageRouteWithAnimation.dart';
 
@@ -239,13 +240,10 @@ class _MyPageState extends State<MyPage> {
 
 
   Widget myPosting() {
+    CommunityPage c = CommunityPage(context);
     return Scaffold(
       appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
-      body: Column(
-        children: [
-          Text('작성한 게시물 페이지', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
-        ],
-      ),
+      body: c.build(context)
     );
   }
 

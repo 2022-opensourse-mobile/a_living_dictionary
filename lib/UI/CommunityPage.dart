@@ -13,20 +13,22 @@ class CommunityPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MyCommunity(context2);
+    return Community(context2);
+  }
+  Widget build2(BuildContext context) {
+    return Community(context2);
   }
 }
 
-class MyCommunity extends StatefulWidget {
-  const MyCommunity(this.context, {Key? key}) : super(key: key);
+class Community extends StatefulWidget {
+  const Community(this.context, {Key? key}) : super(key: key);
   final BuildContext context;
 
   @override
-  State<MyCommunity> createState() => _MyComminityState(context);
+  State<Community> createState() => _ComminityState(context);
 }
-
-class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin{
-  _MyComminityState(this.context2);
+class _ComminityState extends State<Community> with TickerProviderStateMixin{
+  _ComminityState(this.context2);
   CommunityItem p = CommunityItem();
   late TabController _tabController;
   final BuildContext context2;
@@ -134,3 +136,39 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
         });
   }
 }
+
+
+/*class MyCommunity extends StatelessWidget with TickerProviderStateMixin {
+  const MyCommunity({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+            child: child
+        )
+      ],
+    );
+  }
+  Widget getCommunityList() {
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true)
+            .where('writer_id', isEqualTo: ).snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
+          final documents = snapshot.data!.docs;
+
+          return ListView(
+              shrinkWrap: true,
+              children: documents.map((doc) {
+                CommunityItem item = CommunityItem.getDataFromDoc(doc);
+                return item.build(context);
+              }).toList());
+        });
+  }
+}
+*/
