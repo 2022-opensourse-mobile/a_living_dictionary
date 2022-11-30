@@ -151,9 +151,9 @@ class CommunityItem with ChangeNotifier{
   Widget buildMain(BuildContext context) {
     String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
     return Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
+        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: ListTile(
-          title: Text(this.title),
+          title: Text(this.title, style: TextStyle(fontSize: 16.5)),
           visualDensity: const VisualDensity(vertical: -4),
           dense: true,
           trailing: Text(t),
