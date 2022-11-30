@@ -94,7 +94,8 @@ class CommunityWritePage extends StatelessWidget {
                 writer_nickname: user.nickName,
                 boardType: 0,
                 time: DateTime.now(),
-                like: 0
+                like: 0,
+                commentNum: 0
             );
             if(isNull) {
               addedItem.add();
