@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'CommunityWritePage.dart';
+import 'PageRouteWithAnimation.dart';
 //import 'Search.dart';
 import 'ThemeColor.dart';
 
@@ -32,9 +33,10 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   final String tabName;
 
 
+
   bool myChange = false;
   String changedDocID = '';
-  String modiBtnName = "수정";
+  bool isOnGoing = false;
 
 
   late Logineduser user = Provider.of<Logineduser>(context, listen: true);
@@ -91,6 +93,11 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   }
 
   // 아래는 본문에 필요한 위젯들
+  //getTitleWidget : 제목 및 작성자 위젯
+  //getBodyWidget : 본문 위젯
+  //getModifyBtn : 본인 게시글일시 수정 삭제 버튼
+  //getLikeInfo : 좋아요 버튼 출력하기 위한 정보 획득 함수
+  //getLikeWidget : 좋아요 버튼 출력
   Widget getTitleWidget(String title, String writer) {
     return Column(children: [
       Container(
@@ -116,14 +123,21 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
       ),
       Container(
         width: width,
-        height: 30,
+        height: 50,
         alignment: Alignment.centerLeft,
         decoration: const BoxDecoration(
             border: Border(
                 bottom: BorderSide(color: Color(0xAAdadada), width: 1.3))),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(15.0, 0, 0, 0),
-          child: Text(writer, style: TextStyle(fontSize: 15)),
+          padding: const EdgeInsets.fromLTRB(10.0, 0, 0, 0),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(item.profileImage), //프로필 사진
+              ),
+              Text(writer, style: TextStyle(fontSize: 15)),
+            ],
+          ),
         ),
       ),
     ]);
@@ -151,10 +165,12 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               TextButton(
                   child: Text("수정", style: TextStyle(color: Colors.black)),
                   onPressed: (){
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => CommunityWritePage(context, item))
-                    );
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(builder: (context) => CommunityWritePage(context, item))
+                    // );
+                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityWritePage(context, item));
+                    Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
                   }
               ),
               TextButton(
@@ -227,11 +243,16 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
     );
   }
 
+
+
   // 아래는 댓글에 필요한 위젯들
-  //Write : 댓글작성창
-  //List : 전체 댓글 받아오기
-  //Item : 각 댓글 출력하기
-  //ModifyBtn : 본인 댓글일시 수정삭제 버튼 출력
+  //getCommentWriteWidget : 댓글작성창
+  //getCommentListWidget : 전체 댓글 받아오기
+  //getCommentItem : 각 댓글 출력하기
+  //getCommentBtnGroup : 본인 댓글일시 수정삭제 그룹 출력
+  //getCommentModifyBtn : 수정 버튼
+  //getCommentCompleteBtn : 수정 완료 버튼
+  //getCommentDeleteBtn : 삭제 버튼
   Widget getCommentWriteWidget(){
     return Container(
       width: (width > 750) ? (750) : (width),
@@ -266,7 +287,11 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                     time:DateTime.now(),
                     change: false
                 );
-                it.add(item.doc_id);
+                it.add(item);
+                item.commentNum += 1;
+                FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).update({
+                  'commentNum':item.commentNum
+                });
                 commentController.text = "";
               },
               child: Text("등록", style: TextStyle(color: Colors.black))
@@ -305,56 +330,86 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               child: ListTile(
                 title: (Text(commentItem.writer_nickname, style: const TextStyle(fontSize: 14, color: Colors.black))),
                 //수정 버튼을 눌렀다면 TextFromField 출력, 아니라면 댓글 내용 출력
-                subtitle: (commentItem.change)? (TextFormField(controller: commentModifyController)):
+                subtitle: (isOnGoing && commentItem.doc_id == changedDocID)?
+                  (TextFormField(controller: commentModifyController)):
                   (Text(commentItem.body, style: const TextStyle(fontSize: 14, color: Colors.black))),
-                leading: const Icon(Icons.account_box),
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(user.profileImageUrl), //프로필 사진
+                ),
                 minVerticalPadding: 0,
               ),
             ),
             //내가 댓글의 주인이면 수정, 삭제 버튼 출력
-            (commentItem.writer_id==user.uid)?(getCommentModifyBtn(commentItem)):(Container())
+            (commentItem.writer_id==user.uid)?(getCommentBtnGroup(commentItem)):(Container())
           ],
         ),
         const Divider(thickness: 0.7)
       ],
     );
   }
-  Widget getCommentModifyBtn(CommentItem coitem){
-    return Row(
-      children: [
-        Row(
-          children: [
-            TextButton(
-                child: Text(modiBtnName, style: TextStyle(color: Colors.black)),
-                onPressed: () {
-                  setState(() {
-                    //버튼을 눌렀을때(최초 상태는 false)
-                    //버튼 상태 변경(수정할지 안할지)
-                    coitem.change = !coitem.change;
-                    FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).collection('CommentDB').doc(coitem.doc_id)
-                        .update({'change': coitem.change});
 
-                    //수정상태라면 버튼 이름을 완료로 바꿈
-                    if (coitem.change) {
-                      modiBtnName = "완료";
-                      commentModifyController.text = coitem.body;
-                    }
-                    //아니라면 버튼 이름을 수정으로 하고,
-                    else{
-                      modiBtnName = "수정";
-                      FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).collection('CommentDB').doc(coitem.doc_id)
-                          .update({'body': commentModifyController.text});
-                    }
-                  });
-                }),
-            TextButton(
-                child: Text("삭제", style: TextStyle(color: Colors.black)),
-                onPressed: () {
-                  FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).collection('CommentDB').doc(coitem.doc_id).delete();
-                }),
-          ],
-        )
-      ],
-    );
+  Widget getCommentBtnGroup(CommentItem commentItem) {
+      return Row(
+        children: [
+          Row(
+            children: [(isOnGoing && commentItem.doc_id == changedDocID)?
+            (getCommentCompleteBtn(commentItem)):
+            (getCommentModifyBtn(commentItem)),
+              getCommentDeleteBtn(commentItem)
+            ],
+          )
+        ],
+      );
+    }
+  Widget getCommentModifyBtn(CommentItem commentItem) {
+    return TextButton(
+        child: Text("수정", style: TextStyle(color: Colors.black)),
+        style: ButtonStyle(
+            padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+            minimumSize: MaterialStateProperty.all(Size(30, 30)),
+            maximumSize: MaterialStateProperty.all(Size(40, 40))),
+        onPressed: () {
+          setState(() {
+            //버튼을 눌렀을때(최초 상태는 false)
+            changedDocID = (!isOnGoing)?(commentItem.doc_id):(changedDocID);
+            if(changedDocID == commentItem.doc_id){
+              isOnGoing = !isOnGoing;
+              commentModifyController.text = commentItem.body;
+            }
+          });
+        });
+  }
+  Widget getCommentCompleteBtn(CommentItem commentItem) {
+    return TextButton(
+        child: Text("완료", style: TextStyle(color: Colors.black)),
+        style: ButtonStyle(
+            padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+            minimumSize: MaterialStateProperty.all(Size(30, 30)),
+            maximumSize: MaterialStateProperty.all(Size(40, 40))),
+        onPressed: () {
+          setState(() {
+            //버튼을 눌렀을 때
+            if(commentItem.doc_id == changedDocID) {
+              isOnGoing = !isOnGoing;
+              FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id)
+                  .collection('CommentDB').doc(commentItem.doc_id).update({'body': commentModifyController.text});
+            }
+          });
+        });
+  }
+  Widget getCommentDeleteBtn(CommentItem commentItem) {
+    return TextButton(
+        child: Text("삭제", style: TextStyle(color: Colors.black)),
+        style: ButtonStyle(
+            padding:
+                MaterialStateProperty.all(EdgeInsets.fromLTRB(10, 0, 0, 0)),
+            minimumSize: MaterialStateProperty.all(Size(30, 30)),
+            maximumSize: MaterialStateProperty.all(Size(40, 40))),
+        onPressed: () {
+          FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id)
+              .collection('CommentDB').doc(commentItem.doc_id).delete();
+          item.commentNum -= 1;
+          FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).update({'commentNum': item.commentNum});
+        });
   }
 }

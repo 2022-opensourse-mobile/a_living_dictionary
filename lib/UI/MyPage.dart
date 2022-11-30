@@ -641,6 +641,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                   },
                 );
               }
+
             ),
           ),
         ),
@@ -1052,5 +1053,3 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 //     );
 //   }
 // }
-
-

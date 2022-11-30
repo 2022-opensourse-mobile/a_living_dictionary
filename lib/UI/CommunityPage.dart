@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'Supplementary//ThemeColor.dart';
 import '../DB/CommunityItem.dart';
 import 'Supplementary/CommunityWritePage.dart';
+import 'Supplementary/PageRouteWithAnimation.dart';
 
 ThemeColor themeColor = ThemeColor();
 
@@ -13,20 +14,22 @@ class CommunityPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MyCommunity(context2);
+    return Community(context2);
+  }
+  Widget build2(BuildContext context) {
+    return Community(context2);
   }
 }
 
-class MyCommunity extends StatefulWidget {
-  const MyCommunity(this.context, {Key? key}) : super(key: key);
+class Community extends StatefulWidget {
+  const Community(this.context, {Key? key}) : super(key: key);
   final BuildContext context;
 
   @override
-  State<MyCommunity> createState() => _MyComminityState(context);
+  State<Community> createState() => _ComminityState(context);
 }
-
-class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin{
-  _MyComminityState(this.context2);
+class _ComminityState extends State<Community> with TickerProviderStateMixin{
+  _ComminityState(this.context2);
   CommunityItem p = CommunityItem();
   late TabController _tabController;
   final BuildContext context2;
@@ -34,7 +37,6 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
   static const FREEBOARD = 0;
   static const HOTBOARD = 1;
   static const NOTICEBOARD = 2;
-
 
   @override
   void initState() {
@@ -92,10 +94,12 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
         highlightElevation: 0.0,
         hoverElevation: 0.0,
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CommunityWritePage(context, null))
-          );
+          // Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => CommunityWritePage(context, null))
+          // );
+          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityWritePage(context, null));
+          Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         },
         child: const Icon(
           Icons.add,
@@ -134,3 +138,4 @@ class _MyComminityState extends State<MyCommunity> with TickerProviderStateMixin
         });
   }
 }
+
