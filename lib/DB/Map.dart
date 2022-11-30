@@ -5,10 +5,9 @@ class Map extends Data<Map> {
   Map({
     this.address = "",
     this.store = "",
-    this.latitude = 36.1461382,
-    this.longitude = 128.3934882,
+    this.latitude = 0.0,
+    this.longitude = 0.0,
     this.like = 0,
-    this.markId = 0,
   });
 
   String address; // 주소
@@ -16,7 +15,6 @@ class Map extends Data<Map> {
   double latitude; // 위도
   double longitude; // 경도
   int like; // 좋아요 수
-  int markId; // 마커 번호
 
   @override
   void add(E) {
@@ -26,7 +24,6 @@ class Map extends Data<Map> {
       'latitude': E.latitude,
       'longitude': E.longitude,
       'like': E.like,
-      'markId': E.markId,
     });
   }
 
@@ -38,7 +35,6 @@ class Map extends Data<Map> {
       latitude: doc['latitude'],
       longitude: doc['longitude'],
       like: doc['like'],
-      markId: doc['markId'],
     );
   }
 }
