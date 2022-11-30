@@ -27,6 +27,7 @@ class _MyPageState extends State<MyPage> {
   late String myNickname, myEmail, askTitle, askContent;
   TextEditingController newPassword = TextEditingController();
   TextEditingController equalPassword = TextEditingController();
+  TextEditingController _nickNameController = TextEditingController(); 
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +93,26 @@ class _MyPageState extends State<MyPage> {
         Divider(thickness: 0.5,),
       ],
     );
+  }
+
+  @override
+  Future<void> resetPassword(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch(e)  {
+      const snackBar = SnackBar(
+        content: Text('잘못된 이메일 입니다.'),
+      );
+
+       // 사용자에게 비밀번호 재설정 메일을 한글로 전송 시도
+      // sendPasswordResetEmailByKorean() async {
+      //   await fAuth.setLanguageCode("ko");
+      //   // sendPasswordResetEmail();             한국어로 재발급 시도 ㄱ
+      // }
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    
   }
 
   Widget appAccount() { //계정 설정
@@ -217,9 +238,6 @@ class _MyPageState extends State<MyPage> {
 
 
   /* -------------------------------------------------------------------------------- 화면전환 페이지 */
-
-
-
   Widget myPosting() {
     return Scaffold(
       appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
@@ -396,7 +414,20 @@ class _MyPageState extends State<MyPage> {
               if (!snap.hasData) {
                 return CircularProgressIndicator();
               }
+
               final userDocuments = snap.data!.docs;
+
+              if (userDocuments.length == 0) {
+                return Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.no_accounts),
+                      Text("스크랩 목록이 비어있습니다"),
+                    ],
+                  )
+                );
+              }
   
               return Container(
                 child: GridView.builder(
@@ -518,97 +549,127 @@ class _MyPageState extends State<MyPage> {
           ),
         ),
       ],),
-      body: ListView(
+      body: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  child: Form(
-                      key: this.formKey,
-                      autovalidateMode: AutovalidateMode.always,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-
-                          TextFormField(
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            validator: (value) {
-                              if(value!.isEmpty) return '현재 비밀번호를 입력하세요';
-                            },
-                            cursorColor: themeColor.getMaterialColor(),
-                            decoration: InputDecoration(
-                              hintText: '현재 비밀번호',
-                              filled: true,
-                              fillColor: Colors.white,
-                              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),
-                              border: const OutlineInputBorder(),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),),
-                          ),
-                          Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
-                              child: Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1)),
-
-                          TextFormField(
-                            controller: newPassword,
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            validator: (value) {
-                              if(value!.isEmpty) return '새 비밀번호를 입력하세요';
-                            },
-                            cursorColor: themeColor.getMaterialColor(),
-                            decoration: InputDecoration(
-                              hintText: '새 비밀번호',
-                              filled: true,
-                              fillColor: Colors.white,
-                              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),
-                              border: const OutlineInputBorder(),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),),
-                          ),
-                          Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
-                          TextFormField(
-                            controller: equalPassword,
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            validator: (value) {
-                              if(value!.isEmpty) return '새 비밀번호를 재입력하세요';
-                              if(newPassword.text != equalPassword.text) return '비밀번호가 일치하지 않습니다';
-                            },
-                            cursorColor: themeColor.getMaterialColor(),
-                            decoration: InputDecoration(
-                              hintText: '새 비밀번호 확인',
-                              filled: true,
-                              fillColor: Colors.white,
-                              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),
-                              border: const OutlineInputBorder(),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),),
-                          ),
-                        ],
-                      )
-                  ),
-                ),
-              ],
+          TextFormField(
+            controller: newPassword,
+            keyboardType: TextInputType.emailAddress,
+            validator: (value) {
+              if(value!.isEmpty) return '비번변경';
+            },
+            cursorColor: themeColor.getMaterialColor(),
+            decoration: InputDecoration(
+              hintText: '이메일 입력',
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
+              ),
+              border: const OutlineInputBorder(),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: themeColor.getMaterialColor()),
+              ),),
+          ),
+          TextButton(
+            child: Text("비번변경"), 
+            onPressed: (){resetPassword(newPassword.text);},
+            style: TextButton.styleFrom(
+              backgroundColor: Colors.pink,
             ),
           ),
         ],
       )
+      // body: ListView(
+      //   children: [
+      //     Padding(
+      //       padding: EdgeInsets.all(10),
+      //       child: Column(
+      //         crossAxisAlignment: CrossAxisAlignment.start,
+      //         children: [
+      //           Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1),
+      //           Padding(
+      //             padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+      //             child: Form(
+      //                 key: this.formKey,
+      //                 autovalidateMode: AutovalidateMode.always,
+      //                 child: Column(
+      //                   crossAxisAlignment: CrossAxisAlignment.start,
+      //                   children: [
+
+      //                     TextFormField(
+      //                       keyboardType: TextInputType.visiblePassword,
+      //                       obscureText: true,
+      //                       validator: (value) {
+      //                         if(value!.isEmpty) return '현재 비밀번호를 입력하세요';
+      //                       },
+      //                       cursorColor: themeColor.getMaterialColor(),
+      //                       decoration: InputDecoration(
+      //                         hintText: '현재 비밀번호',
+      //                         filled: true,
+      //                         fillColor: Colors.white,
+      //                         enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
+      //                         ),
+      //                         border: const OutlineInputBorder(),
+      //                         focusedBorder: OutlineInputBorder(
+      //                           borderSide: BorderSide(color: themeColor.getMaterialColor()),
+      //                         ),),
+      //                     ),
+      //                     Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
+      //                         child: Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1)),
+
+      //                     TextFormField(
+      //                       controller: newPassword,
+      //                       keyboardType: TextInputType.visiblePassword,
+      //                       obscureText: true,
+      //                       validator: (value) {
+      //                         if(value!.isEmpty) return '새 비밀번호를 입력하세요';
+      //                       },
+      //                       cursorColor: themeColor.getMaterialColor(),
+      //                       decoration: InputDecoration(
+      //                         hintText: '새 비밀번호',
+      //                         filled: true,
+      //                         fillColor: Colors.white,
+      //                         enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
+      //                         ),
+      //                         border: const OutlineInputBorder(),
+      //                         focusedBorder: OutlineInputBorder(
+      //                           borderSide: BorderSide(color: themeColor.getMaterialColor()),
+      //                         ),),
+      //                     ),
+      //                     Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
+      //                     TextFormField(
+      //                       controller: equalPassword,
+      //                       keyboardType: TextInputType.visiblePassword,
+      //                       obscureText: true,
+      //                       validator: (value) {
+      //                         if(value!.isEmpty) return '새 비밀번호를 재입력하세요';
+      //                         if(newPassword.text != equalPassword.text) return '비밀번호가 일치하지 않습니다';
+      //                       },
+      //                       cursorColor: themeColor.getMaterialColor(),
+      //                       decoration: InputDecoration(
+      //                         hintText: '새 비밀번호 확인',
+      //                         filled: true,
+      //                         fillColor: Colors.white,
+      //                         enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
+      //                         ),
+      //                         border: const OutlineInputBorder(),
+      //                         focusedBorder: OutlineInputBorder(
+      //                           borderSide: BorderSide(color: themeColor.getMaterialColor()),
+      //                         ),),
+      //                     ),
+      //                   ],
+      //                 )
+      //             ),
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //   ],
+      // )
     );
   }
 
   Widget myNicknamed() {
+    
     return Scaffold(
       appBar: AppBar(title: Text('닉네임 변경'), elevation: 0.0, actions: [
         Padding(
@@ -616,23 +677,34 @@ class _MyPageState extends State<MyPage> {
           child: SizedBox(
             width: 50,
             height: 10,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: themeColor.getMaterialColor(),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1000),
-                ),
-              ),
-              child: Text('완료', style: TextStyle(color: Colors.white)),
-              onPressed: () {
-                if(this.formKey.currentState!.validate()) {
-                  Navigator.pop(context);
-                  snackBar('닉네임 변경이 완료되었습니다');
+            child: Consumer<Logineduser>(
+              builder: (context, userProvider, child) {
+                return TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: themeColor.getMaterialColor(),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(1000),
+                    ),
+                  ),
+                  child: Text('완료', style: TextStyle(color: Colors.white)),
+                  onPressed: () {
+                    if(this.formKey.currentState!.validate()) {
+                      
 
-                  /*  TODO: ↓ 완료버튼 누르면 실행되어야 할 부분 ↓ */
-                  // TODO: 여기에 작성
-                }
-              },
+                      /*  TODO: ↓ 완료버튼 누르면 실행되어야 할 부분 ↓ */
+                      if (_nickNameController.text.length < 3) {
+                        snackBar('닉네임을 두 글자 이상 입력해주세요!');
+                      } else {
+                        Provider.of<Logineduser>(context, listen: false).setNickName(_nickNameController.text);
+                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': _nickNameController.text});
+                        Navigator.pop(context);
+                        snackBar('닉네임 변경이 완료되었습니다');
+                      } // 이거!!!!!!다시@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@확인
+                        
+                    }
+                  },
+                );
+              }
             ),
           ),
         ),
@@ -650,25 +722,32 @@ class _MyPageState extends State<MyPage> {
                   child: Form(
                     key: this.formKey,
                     autovalidateMode: AutovalidateMode.always,
-                    child: TextFormField(
-                      initialValue: "나는야곰돌이", //TODO: 현재 내 닉네임이 출력되어야 함!!!!!!!!!!!!!!!!!!
-                      onSaved: (name) {myNickname = name!;},
-                      validator: (value) {
-                        if(value!.isEmpty) return '닉네임을 입력하세요';
-                      },
-                      cursorColor: themeColor.getMaterialColor(),
-                      decoration: InputDecoration(
-                        hintText: '닉네임',
-                        filled: true,
-                        fillColor: Colors.white,
-                        enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                          //border: InputBorder.none,
-                          //focusedBorder: InputBorder.none,
-                        ),
-                        border: const OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                        ),),
+                    child: Consumer<Logineduser>(
+                      builder: (context, userProvider, child) {
+                        _nickNameController = TextEditingController(text: userProvider.nickName); 
+                        
+                        return TextFormField(
+                          controller: _nickNameController,
+                          // initialValue: userProvider.nickName, initialvalue와 controllerㄹ를 같이 사용할 수 없음
+                          onSaved: (name) {myNickname = name!;},
+                          validator: (value) {
+                            if(value!.isEmpty) return '닉네임을 입력하세요';
+                          },
+                          cursorColor: themeColor.getMaterialColor(),
+                          decoration: InputDecoration(
+                            hintText: '닉네임',
+                            filled: true,
+                            fillColor: Colors.white,
+                            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
+                              //border: InputBorder.none,
+                              //focusedBorder: InputBorder.none,
+                            ),
+                            border: const OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: themeColor.getMaterialColor()),
+                            ),),
+                        );
+                      }
                     ),
                   ),
                 ),
@@ -834,6 +913,8 @@ class _MyPageState extends State<MyPage> {
                                     fontWeight: FontWeight.bold,),),
                                 onPressed: () {
                                   Navigator.pop(context);
+
+                                  // 메일 보내는 코드
                                   showDialog(
                                     context: context,
                                     builder: (context) =>
