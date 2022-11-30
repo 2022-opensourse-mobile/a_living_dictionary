@@ -3,7 +3,6 @@ import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter_provider/flutter_provider.dart';
 import '../DB/CommunityItem.dart';
 import 'Supplementary/DictionaryCardPage.dart';
 import 'Supplementary/ThemeColor.dart';
@@ -251,7 +250,7 @@ class MainPage extends StatelessWidget {
               ),
             ),
             StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time').snapshots(),
+                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
                 builder: (context, snap) {
                   // if (!snap.hasData) {
                   //   return CircularProgressIndicator();

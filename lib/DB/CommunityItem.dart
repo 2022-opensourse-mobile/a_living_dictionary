@@ -14,6 +14,8 @@ class CommunityItem with ChangeNotifier{
   DateTime? time;
   int boardType = 0;
   String hashTag = '';
+  int commentNum = 0;
+  String profileImage;
 
 
   CommunityItem({
@@ -25,7 +27,9 @@ class CommunityItem with ChangeNotifier{
     this.hashTag = '',
     this.doc_id = '',
     this.writer_nickname = '',
-    this.time
+    this.time,
+    this.commentNum = 0,
+    this.profileImage = ''
   }){}
 
 
@@ -40,7 +44,9 @@ class CommunityItem with ChangeNotifier{
       'time': stamp,
       'boardType':this.boardType,
       'hashTag':this.hashTag,
-      'writer_nickname':this.writer_nickname
+      'writer_nickname':this.writer_nickname,
+      'commentNum' : this.commentNum,
+      'profileImage' : this.profileImage
     });
   }
   void delete(){
@@ -53,11 +59,18 @@ class CommunityItem with ChangeNotifier{
         title : doc['title'],
         writer_id : doc['writer_id'],
         writer_nickname: doc['writer_nickname'],
+        profileImage: doc['profileImage'],
         body : doc['body'],
         like : doc['like'],
         time : stamp.toDate(),
         boardType : doc['boardType'],
-        hashTag : doc['hashTag']);
+        hashTag : doc['hashTag'],
+        commentNum: doc['commentNum']
+    );
+    if(item.like >= 10 && item.boardType == 0){
+      item.boardType = 1;
+      FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).update({'boardType' : item.boardType});
+    }
     return item;
   }
 
@@ -115,7 +128,8 @@ class CommunityItem with ChangeNotifier{
     if(n == -1) {
       n = (this.body.length > 10) ?(10):(this.body.length);
     }
-    String omittedBody = this.body.substring(0, n-1);
+    String omittedBody = this.body.substring(0, n);
+    if(n == 10) omittedBody += "...";
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
@@ -145,9 +159,9 @@ class CommunityItem with ChangeNotifier{
   Widget buildMain(BuildContext context) {
     String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
     return Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 2, 0),
+        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: ListTile(
-          title: Text(this.title),
+          title: Text(this.title, style: TextStyle(fontSize: 15.8)),
           visualDensity: const VisualDensity(vertical: -4),
           dense: true,
           trailing: Text(t),
@@ -173,7 +187,8 @@ class CommunityItem with ChangeNotifier{
 
   List<Widget> getWidgetList(BuildContext context, List<QueryDocumentSnapshot<Object?>> doc, int boardType){
     final board = doc.where((item)=> item['boardType'] == boardType).toList();
-    final subList = board.sublist(0,4);
+    int n = (board.length >= 4)?(4):(board.length);
+    final subList = board.sublist(0,n);
     final buildList = subList.map((doc){
       final item = CommunityItem.getDataFromDoc(doc);
       return item.buildMain(context);
@@ -193,18 +208,22 @@ class CommentItem{
   bool change;
   CommentItem({this.writer_id = '', this.body = '', this.time, this.writer_nickname = '', this.doc_id = '', this.change=false});
 
-  void add(String doc_id){
+  void add(CommunityItem communityItem){
     if(time == null){
       print("comment add error : there's no time");
       return;
     }
-    FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB').add({
+    FirebaseFirestore.instance.collection('CommunityDB').doc(communityItem.doc_id).collection('CommentDB').add({
       'body': this.body,
       'writer_id':this.writer_id,
       'time':this.time,
       'writer_nickname' : this.writer_nickname,
       'change' : this.change
     });
+    // if(communityItem.commentNum == 0){
+    //   FirebaseFirestore.instance.collection('CommunityDB').doc(communityItem.doc_id).set({"modify":""});
+    //   print("modified Comment Number");
+    // }
   }
   static CommentItem getDatafromDoc(DocumentSnapshot doc){
     Timestamp stamp = doc['time'];
