@@ -4,7 +4,7 @@ import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'CommunityPage.dart';
+import '../DB/CommunityItem.dart';
 import 'Supplementary//ThemeColor.dart';
 import 'Supplementary/PageRouteWithAnimation.dart';
 
@@ -23,7 +23,7 @@ class MyPage extends StatefulWidget {
   State<MyPage> createState() => _MyPageState();
 }
 
-class _MyPageState extends State<MyPage> {
+class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   final formKey = GlobalKey<FormState>();
   late String myNickname, myEmail, askTitle, askContent;
   TextEditingController newPassword = TextEditingController();
@@ -82,8 +82,12 @@ class _MyPageState extends State<MyPage> {
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
         ListTile(title: Text('작성한 게시물'), onTap: (){
-          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myPosting());
-          Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
+          //PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myPosting());
+          //Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => myPosting())
+          );
         }),
         ListTile(title: Text('작성한 댓글'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myComment());
@@ -238,13 +242,41 @@ class _MyPageState extends State<MyPage> {
   /* -------------------------------------------------------------------------------- 화면전환 페이지 */
 
 
-
   Widget myPosting() {
-    CommunityPage c = CommunityPage(context);
+    late Logineduser user = Provider.of<Logineduser>(context, listen: true);
     return Scaffold(
       appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
-      body: c.build(context)
-    );
+        body: SingleChildScrollView(
+            child: Column(
+          children: [
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('CommunityDB')
+                    .orderBy('time', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return CircularProgressIndicator();
+                  }
+                  final documents = snapshot.data!.docs;
+                  if (!documents.isEmpty) {
+                    return ListView(
+                        shrinkWrap: true,
+                        children: documents.map((doc) {
+                          if (doc['writer_id'] == user.uid) {
+                            CommunityItem item =
+                                CommunityItem.getDataFromDoc(doc);
+                            return item.build(context);
+                          } else {
+                            return Container();
+                          }
+                        }).toList());
+                  } else {
+                    return Text("작성한 게시글이 없습니다.");
+                  }
+                })
+          ],
+        )));
   }
 
   Widget myComment() {
@@ -264,7 +296,6 @@ class _MyPageState extends State<MyPage> {
       appBar: AppBar(
         title: Consumer2<DictionaryItemInfo, Logineduser>(
           builder: (context, dicProvider, userProvider, child) {
-
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -1021,3 +1052,51 @@ class _MyPageState extends State<MyPage> {
 //     // );
 //   }
 // }
+
+
+// class MyCommunity extends StatefulWidget {
+//   const MyCommunity({Key? key}) : super(key: key);
+//
+//   @override
+//   State<MyCommunity> createState() => _MyCommunityState();
+// }
+//
+// class _MyCommunityState extends State<MyCommunity> with TickerProviderStateMixin {
+//   late Logineduser user = Provider.of<Logineduser>(context, listen: true);
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//         appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
+//         body: Column(
+//           children: [
+//             StreamBuilder<QuerySnapshot>(
+//                 // stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true)
+//                 //     .where('writer_id', isEqualTo: user.uid).snapshots(),
+//               stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).where('writer_id', isEqualTo: user.uid).snapshots(),
+//                 builder: (context, snapshot) {
+//                   if (!snapshot.hasData) {
+//                     return CircularProgressIndicator();
+//                   }
+//                   final documents = snapshot.data!.docs;
+//                   if(!documents.isEmpty) {
+//                     return ListView(
+//                         shrinkWrap: true,
+//                         children: documents.map((doc) {
+//                           CommunityItem item = CommunityItem.getDataFromDoc(doc);
+//                           print(doc.id);
+//                           return item.build(context);
+//                         }).toList()
+//                     );
+//                   }
+//                   else{
+//                     return Text("작성한 게시글이 없습니다.");
+//                   }
+//                 })
+//           ],
+//         )
+//     );
+//   }
+// }
+
+
+

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'ThemeColor.dart';
 
 
-
+String basicProfileImage = "https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/%EA%B8%B0%EB%B3%B8%20%ED%94%84%EC%82%AC%20%EC%9E%84%EC%8B%9C.png?alt=media&token=1178da64-9c77-4f8b-bee7-e2782fa41db5";
 ThemeColor themeColor = ThemeColor();
 
 class CommunityWritePage extends StatelessWidget {
@@ -87,6 +87,7 @@ class CommunityWritePage extends StatelessWidget {
           ),
           child: Text('완료', style: TextStyle(color: Colors.white)),
           onPressed: () {
+            final profileIMG = (user.profileImageUrl != '')?(user.profileImageUrl):(basicProfileImage);
             final addedItem = CommunityItem(
                 title: titleController.text,
                 body: bodyController.text,
@@ -95,7 +96,8 @@ class CommunityWritePage extends StatelessWidget {
                 boardType: 0,
                 time: DateTime.now(),
                 like: 0,
-                commentNum: 0
+                commentNum: 0,
+                profileImage: profileIMG
             );
             if(isNull) {
               addedItem.add();

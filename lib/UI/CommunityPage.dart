@@ -37,7 +37,6 @@ class _ComminityState extends State<Community> with TickerProviderStateMixin{
   static const HOTBOARD = 1;
   static const NOTICEBOARD = 2;
 
-
   @override
   void initState() {
     super.initState();
@@ -137,38 +136,3 @@ class _ComminityState extends State<Community> with TickerProviderStateMixin{
   }
 }
 
-
-/*class MyCommunity extends StatelessWidget with TickerProviderStateMixin {
-  const MyCommunity({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-            child: child
-        )
-      ],
-    );
-  }
-  Widget getCommunityList() {
-    return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true)
-            .where('writer_id', isEqualTo: ).snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return CircularProgressIndicator();
-          }
-          final documents = snapshot.data!.docs;
-
-          return ListView(
-              shrinkWrap: true,
-              children: documents.map((doc) {
-                CommunityItem item = CommunityItem.getDataFromDoc(doc);
-                return item.build(context);
-              }).toList());
-        });
-  }
-}
-*/

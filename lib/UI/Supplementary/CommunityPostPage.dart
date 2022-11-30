@@ -132,7 +132,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
           child: Row(
             children: [
               CircleAvatar(
-                backgroundImage: NetworkImage(user.profileImageUrl), //프로필 사진
+                backgroundImage: NetworkImage(item.profileImage), //프로필 사진
               ),
               Text(writer, style: TextStyle(fontSize: 15)),
             ],

@@ -15,6 +15,7 @@ class CommunityItem with ChangeNotifier{
   int boardType = 0;
   String hashTag = '';
   int commentNum = 0;
+  String profileImage;
 
 
   CommunityItem({
@@ -27,7 +28,8 @@ class CommunityItem with ChangeNotifier{
     this.doc_id = '',
     this.writer_nickname = '',
     this.time,
-    this.commentNum = 0
+    this.commentNum = 0,
+    this.profileImage = ''
   }){}
 
 
@@ -43,7 +45,8 @@ class CommunityItem with ChangeNotifier{
       'boardType':this.boardType,
       'hashTag':this.hashTag,
       'writer_nickname':this.writer_nickname,
-      'commentNum' : this.commentNum
+      'commentNum' : this.commentNum,
+      'profileImage' : this.profileImage
     });
   }
   void delete(){
@@ -56,6 +59,7 @@ class CommunityItem with ChangeNotifier{
         title : doc['title'],
         writer_id : doc['writer_id'],
         writer_nickname: doc['writer_nickname'],
+        profileImage: doc['profileImage'],
         body : doc['body'],
         like : doc['like'],
         time : stamp.toDate(),
@@ -63,6 +67,10 @@ class CommunityItem with ChangeNotifier{
         hashTag : doc['hashTag'],
         commentNum: doc['commentNum']
     );
+    if(item.like >= 10 && item.boardType == 0){
+      item.boardType = 1;
+      FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).update({'boardType' : item.boardType});
+    }
     return item;
   }
 
@@ -179,7 +187,8 @@ class CommunityItem with ChangeNotifier{
 
   List<Widget> getWidgetList(BuildContext context, List<QueryDocumentSnapshot<Object?>> doc, int boardType){
     final board = doc.where((item)=> item['boardType'] == boardType).toList();
-    final subList = board.sublist(0,4);
+    int n = (board.length >= 4)?(4):(board.length);
+    final subList = board.sublist(0,n);
     final buildList = subList.map((doc){
       final item = CommunityItem.getDataFromDoc(doc);
       return item.buildMain(context);
