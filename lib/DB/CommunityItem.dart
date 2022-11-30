@@ -120,7 +120,8 @@ class CommunityItem with ChangeNotifier{
     if(n == -1) {
       n = (this.body.length > 10) ?(10):(this.body.length);
     }
-    String omittedBody = this.body.substring(0, n-1);
+    String omittedBody = this.body.substring(0, n);
+    if(n == 10) omittedBody += "...";
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
