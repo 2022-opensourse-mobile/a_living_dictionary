@@ -28,6 +28,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   late String myNickname, myEmail, askTitle, askContent;
   TextEditingController newPassword = TextEditingController();
   TextEditingController equalPassword = TextEditingController();
+  TextEditingController _nickNameController = TextEditingController(); 
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +98,27 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
       ],
     );
   }
+
+  @override
+  Future<void> resetPassword(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch(e)  {
+      const snackBar = SnackBar(
+        content: Text('잘못된 이메일 입니다.'),
+      );
+
+       // 사용자에게 비밀번호 재설정 메일을 한글로 전송 시도
+      // sendPasswordResetEmailByKorean() async {
+      //   await fAuth.setLanguageCode("ko");
+      //   // sendPasswordResetEmail();             한국어로 재발급 시도 ㄱ
+      // }
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    
+  }
+
 
   Widget appAccount() { //계정 설정
     return Consumer<Logineduser>(   // 로그인된 사용자 받아오기위한 provider consumer
@@ -595,24 +617,31 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           child: SizedBox(
             width: 50,
             height: 10,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: themeColor.getMaterialColor(),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1000),
-                ),
-              ),
-              child: Text('완료', style: TextStyle(color: Colors.white)),
-              onPressed: () {
-                if(this.formKey.currentState!.validate()) {
-                  /*  TODO: ↓ 닉네임 변경 완료버튼 누르면 실행되어야 할 부분 ↓ */
-                  // TODO: 여기에 작성
+            child: Consumer<Logineduser>(
+              builder: (context, userProvider, child) {
+                return TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: themeColor.getMaterialColor(),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(1000),
+                    ),
+                  ),
+                  child: Text('완료', style: TextStyle(color: Colors.white)),
+                  onPressed: () {
+                    if(this.formKey.currentState!.validate()) {
+                      if (_nickNameController.text.length < 2) {
+                        snackBar('닉네임을 두 글자 이상 입력해주세요!');
+                      } else {
+                        Provider.of<Logineduser>(context, listen: false).setNickName(_nickNameController.text);
+                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': _nickNameController.text});
+                        Navigator.pop(context);
+                        snackBar('닉네임 변경이 완료되었습니다');
+                      }
+                    }
+                  },
+                );
+              }
 
-
-                  Navigator.pop(context);
-                  snackBar('닉네임 변경이 완료되었습니다');
-                }
-              },
             ),
           ),
         ),
@@ -630,25 +659,32 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                   child: Form(
                     key: this.formKey,
                     autovalidateMode: AutovalidateMode.always,
-                    child: TextFormField(
-                      initialValue: "나는야곰돌이", //TODO: 현재 내 닉네임이 출력되어야 함!!!!!!!!!!!!!!!!!!
-                      onSaved: (name) {myNickname = name!;},
-                      validator: (value) {
-                        if(value!.isEmpty) return '닉네임을 입력하세요';
-                      },
-                      cursorColor: themeColor.getMaterialColor(),
-                      decoration: InputDecoration(
-                        hintText: '닉네임',
-                        filled: true,
-                        fillColor: Colors.white,
-                        enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                          //border: InputBorder.none,
-                          //focusedBorder: InputBorder.none,
-                        ),
-                        border: const OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                        ),),
+                    child: Consumer<Logineduser>(
+                      builder: (context, userProvider, child) {
+                        _nickNameController = TextEditingController(text: userProvider.nickName); 
+
+                        return TextFormField(
+                          controller: _nickNameController,
+                          // initialValue: userProvider.nickName, initialvalue와 controllerㄹ를 같이 사용할 수 없음
+                          onSaved: (name) {myNickname = name!;},
+                          validator: (value) {
+                            if(value!.isEmpty) return '닉네임을 입력하세요';
+                          },
+                          cursorColor: themeColor.getMaterialColor(),
+                          decoration: InputDecoration(
+                            hintText: '닉네임',
+                            filled: true,
+                            fillColor: Colors.white,
+                            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
+                              //border: InputBorder.none,
+                              //focusedBorder: InputBorder.none,
+                            ),
+                            border: const OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: themeColor.getMaterialColor()),
+                            ),),
+                        );
+                      }
                     ),
                   ),
                 ),
@@ -1017,6 +1053,3 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 //     );
 //   }
 // }
-
-
-

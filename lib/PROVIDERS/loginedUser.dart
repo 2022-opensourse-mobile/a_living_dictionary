@@ -18,6 +18,12 @@ class Logineduser  with ChangeNotifier {
     notifyListeners();
   }
 
+  void setNickName(nickName) {
+    this.nickName = nickName;
+
+    notifyListeners();
+  }
+
   void setDocID(doc_id) {
     this.doc_id = doc_id;
   }
