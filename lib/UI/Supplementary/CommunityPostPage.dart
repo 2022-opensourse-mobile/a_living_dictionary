@@ -122,14 +122,21 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
       ),
       Container(
         width: width,
-        height: 30,
+        height: 50,
         alignment: Alignment.centerLeft,
         decoration: const BoxDecoration(
             border: Border(
                 bottom: BorderSide(color: Color(0xAAdadada), width: 1.3))),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(15.0, 0, 0, 0),
-          child: Text(writer, style: TextStyle(fontSize: 15)),
+          padding: const EdgeInsets.fromLTRB(10.0, 0, 0, 0),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(user.profileImageUrl), //프로필 사진
+              ),
+              Text(writer, style: TextStyle(fontSize: 15)),
+            ],
+          ),
         ),
       ),
     ]);
@@ -320,9 +327,12 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               child: ListTile(
                 title: (Text(commentItem.writer_nickname, style: const TextStyle(fontSize: 14, color: Colors.black))),
                 //수정 버튼을 눌렀다면 TextFromField 출력, 아니라면 댓글 내용 출력
-                subtitle: (isOnGoing && commentItem.doc_id == changedDocID)? (TextFormField(controller: commentModifyController)):
+                subtitle: (isOnGoing && commentItem.doc_id == changedDocID)?
+                  (TextFormField(controller: commentModifyController)):
                   (Text(commentItem.body, style: const TextStyle(fontSize: 14, color: Colors.black))),
-                leading: const Icon(Icons.account_box),
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(user.profileImageUrl), //프로필 사진
+                ),
                 minVerticalPadding: 0,
               ),
             ),
