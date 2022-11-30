@@ -39,7 +39,7 @@ class _MyPageState extends State<MyPage> {
           appCommunity(),
           appAccount(),
           appGuide(),
-          appEtc(),
+          appLogout(),
 
         ],
       ),
@@ -142,7 +142,7 @@ class _MyPageState extends State<MyPage> {
                             fontWeight: FontWeight.bold,),), onPressed: () {
                           //이메일 형식을 잘 입력했으면
                             if(this.formKey.currentState!.validate()) {
-                              //TODO: ↓ 예 버튼 누르면 실행되어야 할 부분 ↓
+                              //TODO: ↓ 비밀번호 변경 팝업 창 - 예 버튼 누르면 실행되어야 할 부분 ↓
 
                               //TODO: ↑ 작성...
 
@@ -200,7 +200,7 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  Widget appEtc() { //로그아웃
+  Widget appLogout() { //로그아웃
     return Column(
       children: [
         ListTile(
@@ -496,7 +496,6 @@ class _MyPageState extends State<MyPage> {
                               ),
                             )
                         );
-
                       });
                 }
             ),
@@ -505,134 +504,6 @@ class _MyPageState extends State<MyPage> {
       ),
     );
   }
-
-  Widget myPassword() {
-    return Scaffold(
-      appBar: AppBar(title: Text('비밀번호 변경'), elevation: 0.0, actions: [
-        Padding(
-          padding: EdgeInsets.all(10),
-          child: SizedBox(
-            width: 50,
-            height: 10,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: themeColor.getMaterialColor(),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1000),
-                ),
-              ),
-              child: Text('완료', style: TextStyle(color: Colors.white)),
-              onPressed: () {
-                if(this.formKey.currentState!.validate()) {
-
-                  //TODO: ↓ 완료버튼 누르면 실행되어야 할 부분 ↓
-                  //파이어베이스에 비밀번호가 저장되어야 함....
-                  //TODO: ↑ 완료버튼 누르면 실행되어야 할 부분 ↑
-
-                  Navigator.pop(context);
-                  snackBar('비밀번호 변경이 완료되었습니다');
-
-                  //파이어베이스에 저장되고 나면 TextFormField 초기화해줘야 함
-                  newPassword.text = '';
-                  equalPassword.text = '';
-                }
-                },
-            ),
-          ),
-        ),
-      ],),
-      body: ListView(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('현재 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  child: Form(
-                      key: this.formKey,
-                      autovalidateMode: AutovalidateMode.always,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-
-                          TextFormField(
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            validator: (value) {
-                              if(value!.isEmpty) return '현재 비밀번호를 입력하세요';
-                            },
-                            cursorColor: themeColor.getMaterialColor(),
-                            decoration: InputDecoration(
-                              hintText: '현재 비밀번호',
-                              filled: true,
-                              fillColor: Colors.white,
-                              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),
-                              border: const OutlineInputBorder(),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),),
-                          ),
-                          Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
-                              child: Text('새 비밀번호', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1)),
-
-                          TextFormField(
-                            controller: newPassword,
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            validator: (value) {
-                              if(value!.isEmpty) return '새 비밀번호를 입력하세요';
-                            },
-                            cursorColor: themeColor.getMaterialColor(),
-                            decoration: InputDecoration(
-                              hintText: '새 비밀번호',
-                              filled: true,
-                              fillColor: Colors.white,
-                              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),
-                              border: const OutlineInputBorder(),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),),
-                          ),
-                          Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
-                          TextFormField(
-                            controller: equalPassword,
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            validator: (value) {
-                              if(value!.isEmpty) return '새 비밀번호를 재입력하세요';
-                              if(newPassword.text != equalPassword.text) return '비밀번호가 일치하지 않습니다';
-                            },
-                            cursorColor: themeColor.getMaterialColor(),
-                            decoration: InputDecoration(
-                              hintText: '새 비밀번호 확인',
-                              filled: true,
-                              fillColor: Colors.white,
-                              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),
-                              border: const OutlineInputBorder(),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                              ),),
-                          ),
-                        ],
-                      )
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      )
-    );
-  }
-
-
-
 
   Widget myNicknamed() {
     return Scaffold(
@@ -652,11 +523,12 @@ class _MyPageState extends State<MyPage> {
               child: Text('완료', style: TextStyle(color: Colors.white)),
               onPressed: () {
                 if(this.formKey.currentState!.validate()) {
+                  /*  TODO: ↓ 닉네임 변경 완료버튼 누르면 실행되어야 할 부분 ↓ */
+                  // TODO: 여기에 작성
+
+
                   Navigator.pop(context);
                   snackBar('닉네임 변경이 완료되었습니다');
-
-                  /*  TODO: ↓ 완료버튼 누르면 실행되어야 할 부분 ↓ */
-                  // TODO: 여기에 작성
                 }
               },
             ),
@@ -765,7 +637,7 @@ class _MyPageState extends State<MyPage> {
                           ),
                           ListTile(leading: Icon(Icons.image_not_supported), title: Text('프로필 이미지 삭제하기'),
                             onTap: () {
-                              //TODO: 삭제하기 누르면 실행되어야 할 부분
+                              //TODO: 프로필 이미지 삭제하기 누르면 실행되어야 할 부분
                             },
                           ),
                         ],
@@ -999,11 +871,7 @@ class _MyPageState extends State<MyPage> {
         )
     );
   }
-
-
 }
-
-
 
 // class temp extends StatelessWidget {
 //   const temp({super.key});
