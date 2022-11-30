@@ -691,15 +691,14 @@ class _MyPageState extends State<MyPage> {
                     if(this.formKey.currentState!.validate()) {
                       
 
-                      /*  TODO: ↓ 완료버튼 누르면 실행되어야 할 부분 ↓ */
-                      if (_nickNameController.text.length < 3) {
+                      if (_nickNameController.text.length < 2) {
                         snackBar('닉네임을 두 글자 이상 입력해주세요!');
                       } else {
                         Provider.of<Logineduser>(context, listen: false).setNickName(_nickNameController.text);
                         FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': _nickNameController.text});
                         Navigator.pop(context);
                         snackBar('닉네임 변경이 완료되었습니다');
-                      } // 이거!!!!!!다시@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@확인
+                      }
                         
                     }
                   },
