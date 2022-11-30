@@ -311,18 +311,26 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               MyPage()
             ],
           ),
-          bottomNavigationBar: TabBar(
-            controller: _tabController,
-            tabs: <Widget>[
-              Tab(icon: _curIndex == 0? Icon(Icons.home) : Icon(Icons.home_outlined), child: Text('홈', textScaleFactor: 1,), ),
-              Tab(icon: _curIndex == 1? Icon(Icons.book) : Icon(Icons.book_outlined,), child: Text('사전', textScaleFactor: 1,),),
-              Tab(icon: _curIndex == 2? Icon(Icons.people_alt) : Icon(Icons.people_alt_outlined), child: Text('커뮤\n니티', textScaleFactor: 1,),),
-              Tab(icon: _curIndex == 3? Icon(Icons.map) : Icon(Icons.map_outlined,), child: Text('맛집\n지도', textScaleFactor: 1,),),
-              Tab(icon: _curIndex == 4? Icon(Icons.settings) : Icon(Icons.settings_outlined,), child: Text('설정', textScaleFactor: 1,),),
-            ],
-            onTap: (index) {
-              setState(() {_curIndex = index;});
-            },
+          bottomNavigationBar: SizedBox(
+            height: 55,
+            child: TabBar(
+              controller: _tabController,
+              tabs: <Widget>[
+                Tab(icon: _curIndex == 0? Icon(Icons.home, size: 26,) : Icon(Icons.home_outlined, size: 26,),
+                  child: Text('홈', textScaleFactor: 0.9,), ),
+                Tab(icon: _curIndex == 1? Icon(Icons.book, size: 26,) : Icon(Icons.book_outlined, size: 26,),
+                  child: Text('사전', textScaleFactor: 0.9,), ),
+                Tab(icon: _curIndex == 2? Icon(Icons.people_alt, size: 26,) : Icon(Icons.people_alt_outlined, size: 26,),
+                  child: Text('커뮤니티', textScaleFactor: 0.9,), ),
+                Tab(icon: _curIndex == 3? Icon(Icons.map, size: 26,) : Icon(Icons.map_outlined, size: 26,),
+                  child: Text('맛집지도', textScaleFactor: 0.9,), ),
+                Tab(icon: _curIndex == 4? Icon(Icons.settings, size: 26,) : Icon(Icons.settings_outlined, size: 26,),
+                  child: Text('설정', textScaleFactor: 0.9,),),
+              ],
+              onTap: (index) {
+                setState(() {_curIndex = index;});
+              },
+            ),
           ),
     
         );
