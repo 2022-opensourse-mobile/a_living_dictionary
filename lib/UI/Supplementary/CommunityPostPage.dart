@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'CommunityWritePage.dart';
+import 'PageRouteWithAnimation.dart';
 //import 'Search.dart';
 import 'ThemeColor.dart';
 
@@ -164,10 +165,12 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               TextButton(
                   child: Text("수정", style: TextStyle(color: Colors.black)),
                   onPressed: (){
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => CommunityWritePage(context, item))
-                    );
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(builder: (context) => CommunityWritePage(context, item))
+                    // );
+                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityWritePage(context, item));
+                    Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
                   }
               ),
               TextButton(

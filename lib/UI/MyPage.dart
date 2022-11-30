@@ -82,12 +82,12 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
         ListTile(title: Text('작성한 게시물'), onTap: (){
-          //PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myPosting());
-          //Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => myPosting())
-          );
+          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myPosting());
+          Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
+          // Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => myPosting())
+          // );
         }),
         ListTile(title: Text('작성한 댓글'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myComment());
@@ -142,6 +142,10 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                         ),
                       ),
                       actions: [
+                        TextButton(child: Text('취소',
+                          style: TextStyle(color: themeColor.getMaterialColor(),
+                            fontWeight: FontWeight.bold,),),
+                            onPressed: () { Navigator.pop(context); }),
                         TextButton(child: Text('전송',
                           style: TextStyle(color: themeColor.getMaterialColor(),
                             fontWeight: FontWeight.bold,),), onPressed: () {
@@ -200,6 +204,55 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
         }),
         ListTile(title: Text('버전 정보'), trailing: Text('$version', style: TextStyle(color: Colors.grey)), //버전 설정
             onTap: (){ snackBar('현재 버전은 $version 입니다'); }), //클릭 시 스낵바에 현재 버전 출력
+
+
+
+        ListTile(title: Text('이메일 가입 - 닉네임 입력 테스트'), onTap: (){
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('사용할 닉네임 입력',
+                  style: TextStyle(
+                      color: themeColor.getMaterialColor(),
+                      fontWeight: FontWeight.bold)),
+              content: Form(
+                key: this.formKey,
+                autovalidateMode: AutovalidateMode.always,
+                child: TextFormField(
+                  onSaved: (name) {myNickname = name!;},
+                  validator: (value) {
+                    if(value!.isEmpty) return '닉네임을 입력하세요';
+                  },
+                  cursorColor: themeColor.getMaterialColor(),
+                  decoration: InputDecoration(
+                    hintText: '닉네임',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
+                    ),
+                    border: const UnderlineInputBorder(),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: themeColor.getMaterialColor()),
+                    ),),
+                ),
+              ),
+              actions: [
+                TextButton(child: Text('확인',
+                  style: TextStyle(color: themeColor.getMaterialColor(),
+                    fontWeight: FontWeight.bold,),),
+                    onPressed: () {
+                      if(this.formKey.currentState!.validate()) {
+                        /*  TODO: ↓ 닉네임 입력 완료버튼 누르면 실행되어야 할 부분 ↓ */
+                        // TODO: 여기에 작성
+
+
+                        Navigator.pop(context);
+                      }
+                }),
+              ],
+            ),
+          );
+        }),
         Divider(thickness: 0.5,)
       ],
     );
@@ -726,8 +779,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                 if(this.formKey.currentState!.validate()) {
                   showDialog(
                     context: context,
-                    builder: (context) =>
-                        AlertDialog(
+                    builder: (context) => AlertDialog(
                           title: Text('개인정보 수집 및 이용 동의 안내',
                               style: TextStyle(
                                   color: themeColor.getMaterialColor(),

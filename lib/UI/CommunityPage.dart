@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'Supplementary//ThemeColor.dart';
 import '../DB/CommunityItem.dart';
 import 'Supplementary/CommunityWritePage.dart';
+import 'Supplementary/PageRouteWithAnimation.dart';
 
 ThemeColor themeColor = ThemeColor();
 
@@ -93,10 +94,12 @@ class _ComminityState extends State<Community> with TickerProviderStateMixin{
         highlightElevation: 0.0,
         hoverElevation: 0.0,
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CommunityWritePage(context, null))
-          );
+          // Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => CommunityWritePage(context, null))
+          // );
+          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityWritePage(context, null));
+          Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         },
         child: const Icon(
           Icons.add,
