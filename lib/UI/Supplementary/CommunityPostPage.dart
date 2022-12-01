@@ -1,5 +1,6 @@
 import 'package:a_living_dictionary/DB/CommunityItem.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+import 'package:a_living_dictionary/UI/Supplementary/CheckClick.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,7 @@ class CommunityPostPage extends StatefulWidget {
   const CommunityPostPage(this.tabName, this.item, {Key? key}) : super(key: key);
   final String tabName;
   final CommunityItem item;
+
   @override
   State<CommunityPostPage> createState() => _CommunityPostPageState(tabName, item);
 }
@@ -28,10 +30,10 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
 
   Icon likeIcon = Icon(Icons.favorite_border_rounded);
   final CommunityItem item;
+  final String tabName;
   late var width, height;
   bool isClickedGlobal = false;
-  final String tabName;
-
+  final CheckClick clickCheck = CheckClick();
 
 
   bool myChange = false;
@@ -220,6 +222,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
           tooltip: "좋아요",
           onPressed: (){
             setState(() {
+              if(clickCheck.isRedundentClick(DateTime.now())) return;
               isClickedGlobal = !isClickedGlobal;
               if(isClickedGlobal){
                 item.addLikeNum();
@@ -281,6 +284,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                   SizedBox(height: 19),
                   TextButton(
                       onPressed: (){
+                        if(commentController.text == '') return;
                         final it = CommentItem(
                             writer_id: user.uid,
                             writer_nickname: user.nickName,
@@ -334,7 +338,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
             SizedBox(
               width: (width > 750) ? (630) : (width-120),
               child: ListTile(
-                title: (Text(commentItem.writer_nickname, style: const TextStyle(fontSize: 14, color: Colors.black))),
+                title: (Text(commentItem.writer_nickname, style: const TextStyle(fontSize: 14,fontWeight: FontWeight.bold, color: Colors.black))),
                 //수정 버튼을 눌렀다면 TextFromField 출력, 아니라면 댓글 내용 출력
                 subtitle: (isOnGoing && commentItem.doc_id == changedDocID)?
                 (TextFormField(controller: commentModifyController)):
