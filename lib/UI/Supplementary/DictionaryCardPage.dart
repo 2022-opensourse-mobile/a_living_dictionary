@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+import 'package:a_living_dictionary/UI/Supplementary/CheckClick.dart';
 
 import '../DictionaryPage.dart';
 import 'PageRouteWithAnimation.dart';
@@ -15,6 +16,7 @@ class DictionaryCardPage {
 
   var width, height, portraitH, landscapeH;
   var isPortrait;
+  final CheckClick clickCheck = CheckClick();
 
   //메인화면 post
   Widget mainPostList(BuildContext context, int postNum) {
@@ -303,6 +305,7 @@ class DictionaryCardPage {
                           size: 30,   
                         ),
                         onPressed: (){
+                          if(clickCheck.isRedundentClick(DateTime.now())) return;
                           FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id).get().then((value) {
                             value.docs.forEach((element) {
                               FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList")
@@ -322,6 +325,7 @@ class DictionaryCardPage {
                           size: 30,   
                         ),
                         onPressed: (){
+                          if(clickCheck.isRedundentClick(DateTime.now())) return;
                           FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").add({'docID' : dicProvider.doc_id});
                           
                           dicProvider.addScrapNum(dicProvider.doc_id);

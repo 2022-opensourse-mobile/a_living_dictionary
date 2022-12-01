@@ -38,6 +38,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   TextEditingController newPassword = TextEditingController();
   TextEditingController equalPassword = TextEditingController();
   TextEditingController _nickNameController = TextEditingController(); 
+  TextEditingController _emailController = TextEditingController(); 
 
   String defaultImgUrl = 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260';
 
@@ -113,20 +114,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   @override
   Future<void> resetPassword(String email) async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      await FirebaseAuth.instance.setLanguageCode("kr");
+      await FirebaseAuth.instance.sendPasswordResetEmail(email:email);
+      snackBar('작성하신 이메일로 비밀번호를 전송했습니다');
     } on FirebaseAuthException catch(e)  {
-      const snackBar = SnackBar(
-        content: Text('잘못된 이메일 입니다.'),
-      );
-
-       // 사용자에게 비밀번호 재설정 메일을 한글로 전송 시도
-      // sendPasswordResetEmailByKorean() async {
-      //   await fAuth.setLanguageCode("ko");
-      //   // sendPasswordResetEmail();             한국어로 재발급 시도 ㄱ
-      // }
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      snackBar('잘못된 이메일 입니다.');
     }
+
     
   }
 
@@ -157,39 +151,69 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                           style: TextStyle(
                               color: themeColor.getMaterialColor(),
                               fontWeight: FontWeight.bold)),
-                      content: Form(
-                        key: this.formKey,
-                        autovalidateMode: AutovalidateMode.always,
-                        child: TextFormField(
-                          onSaved: (email) {myEmail = email!;},
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) => validateEmail(value),
-                          cursorColor: themeColor.getMaterialColor(),
-                          decoration: InputDecoration(
-                            hintText: '이메일 입력 (abcd@naver.com)',
-                            filled: true,
-                            fillColor: Colors.white,
-                            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
-                            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Form(
+                            key: this.formKey,
+                            autovalidateMode: AutovalidateMode.always,
+                            child: TextFormField(
+                              controller: _emailController,
+                              onSaved: (email) {myEmail = email!;},
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) => validateEmail(value),
+                              cursorColor: themeColor.getMaterialColor(),
+                              decoration: InputDecoration(
+                                hintText: '이메일 입력',      //  (abcd@naver.com)
+                                filled: true,
+                                fillColor: Colors.white,
+                                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                              ),
+                            ),
                           ),
-                        ),
+                          SizedBox(height: 10,),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "- 비밀번호 재설정 메일을 보냅니다" ,
+                              style: TextStyle(
+                                color: themeColor.getMaterialColor(),
+                                fontWeight: FontWeight.normal,
+                                fontSize: 12)
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "- 메일이 오지 않는다면 스팸함을 확인해주세요",
+                              style: TextStyle(
+                                color: themeColor.getMaterialColor(),
+                                fontWeight: FontWeight.normal,
+                                fontSize: 12)
+                            ),
+                          ),
+                        ],
                       ),
                       actions: [
                         TextButton(child: Text('취소',
                           style: TextStyle(color: themeColor.getMaterialColor(),
                             fontWeight: FontWeight.bold,),),
                             onPressed: () { Navigator.pop(context); }),
-                        TextButton(child: Text('전송',
+                        TextButton(child: Text('확인', //'전송'
                           style: TextStyle(color: themeColor.getMaterialColor(),
-                            fontWeight: FontWeight.bold,),), onPressed: () {
+                            fontWeight: FontWeight.bold,
+                            )
+                            ,), onPressed: () {
                           //이메일 형식을 잘 입력했으면
                             if(this.formKey.currentState!.validate()) {
-                              //TODO: ↓ 비밀번호 변경 팝업 창 - 예 버튼 누르면 실행되어야 할 부분 ↓
 
-                              //TODO: ↑ 작성...
+                              resetPassword(_emailController.text);
+                              _emailController.clear();
 
                               Navigator.pop(context);
-                              snackBar('작성하신 이메일로 비밀번호를 전송했습니다');
+                              // snackBar('작성하신 이메일로 비밀번호를 전송했습니다');
                             }
                         })
                       ],
@@ -944,7 +968,32 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
       appBar: AppBar(title: Text('앱 이용 규칙'), elevation: 0.0),
       body: ListView(
         children: [
-          Text('앱 이용 규칙 페이지', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
+          LiteraryWorld('앱 이용 규칙', appRuleText),
+          LiteraryWorld('백과사전 이용 규칙', dontDoingText),
+          LiteraryWorld('커뮤니티 이용 규칙', communityRuleText),
+          LiteraryWorld('혼밥맵 이용 규칙', dontDoingText),
+          LiteraryWorld('금지사항', dontDoingText),
+          LiteraryWorld('기타', otherRuleText)
+        ],
+      ),
+    );
+  }
+
+  Widget LiteraryWorld(String subTitle, String content) {
+    return Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              subTitle,  
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20
+            ), 
+            textScaleFactor: 1.0 
+          )),
+          SizedBox(height: 10,),
+          Text(content)
         ],
       ),
     );
@@ -1156,6 +1205,41 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
         )
     );
   }
+
+  String appRuleText = '''
+  커뮤니티 이용규칙은 쾌적한 서비스 운영을 위해 주기적으로 업데이트 됩니다.
+  회사는 이용자가 커뮤니티 운영 시스템, 금지 행위, 게시물 작성`수정`삭제 규칙 등 커뮤니티 이용규칙을 숙지하지 않아 발생하는 피해에 대하여 회사의 고의 또는 중대한 과실이 없는 한 어떠한 책임도 지지 않습니다.
+  
+  이 커뮤니티 이용규칙은 2022년 11월 25일에 개정되었습니다. 
+  ''';
+  String dictionaryRuleText = '''
+
+  ''';
+  String communityRuleText = '''
+커뮤니티 이용 규칙은 누구나 기분 좋게 참여할 수 있는 커뮤니티를 만들기 위해 제정되었습니다. 서비스 내 모든 커뮤니티는 커뮤니티 이용규칙에 의해 운영되므로, 이용자는 커뮤니티 이용 전 반드시 모든 내용을 숙지하여야 합니다.
+방송통신심의위원회의 정보통신에 관한 심의규정, 현행 법률, 서비스 이용약관 및 커뮤니티 이용규칙을 위반하거나, 사회 통념 및 관련 법령을 기준으로 타 이용자에게 악영향을 끼치는 경우, 게시물이 삭제되고 서비스 이용이 일정 기간 제한될 수 있습니다.
+
+커뮤니티 이용규칙은 불법 행위, 각정 차별 및 혐오, 사회적 갈등 조장, 타인의 권리 침해, 다른 이용자에게 불쾌감을 주는 행위, 커뮤니티 유출 행위, 시스템 장애를 유발하는 비정상 행위 등 커뮤니티 분위기 형성과 운영에 악영향을 미치는 행위들을 제한하기 위해 지속적으로 개정됩니다. 중대한 변경 사항이 있는 경우에는 공지사항을 통해 고지하므로 반드시 확인해주시기 바랍니다.
+
+커뮤니티 이용규칙에서 사용된 용어의 정의는 서비스 이용 약관을 따릅니다.
+  ''';
+  String mapRuleText = '''
+혼밥 맵 이용 규칙은 주변 맛집에 대한 정보를 쾌적하게 얻을 수 있도록 하기 위해 제정되었습니다. 서비스 내 모든 후기는 혼밥맵 이용규칙에 의해 운영되므로, 이용자는 혼밥맵 이용 전 반드시 모든 내용을 숙지하여야 합니다.
+
+허위정보로 후기를 작성하는 경우, 통지없이 후기글이 삭제되고 서비스 이용이 일정 기간 제한될 수 있습니다. 
+
+  ''';
+  String dontDoingText = '''
+
+  ''';
+  String otherRuleText = ''' 
+  커뮤니티 이용규칙은 쾌적한 서비스 운영을 위해 주기적으로 업데이트 됩니다.
+  회사는 이용자가 커뮤니티 운영 시스템, 금지 행위, 게시물 작성`수정`삭제 규칙 등 커뮤니티 이용규칙을 숙지하지 않아 발생하는 피해에 대하여 회사의 고의 또는 중대한 과실이 없는 한 어떠한 책임도 지지 않습니다.
+  
+
+  이 커뮤니티 이용규칙은 2022년 11월 25일에 개정되었습니다. 
+  ''';
+  
 }
 
 // class temp extends StatelessWidget {
@@ -1176,6 +1260,4 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 //     // );
 //   }
 // }
-
-
 
