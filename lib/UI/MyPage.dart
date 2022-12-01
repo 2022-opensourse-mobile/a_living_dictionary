@@ -37,6 +37,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   TextEditingController newPassword = TextEditingController();
   TextEditingController equalPassword = TextEditingController();
   TextEditingController _nickNameController = TextEditingController(); 
+  TextEditingController _emailController = TextEditingController(); 
 
   String defaultImgUrl = 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260';
 
@@ -112,20 +113,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   @override
   Future<void> resetPassword(String email) async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      await FirebaseAuth.instance.setLanguageCode("kr");
+      await FirebaseAuth.instance.sendPasswordResetEmail(email:email);
+      snackBar('작성하신 이메일로 비밀번호를 전송했습니다');
     } on FirebaseAuthException catch(e)  {
-      const snackBar = SnackBar(
-        content: Text('잘못된 이메일 입니다.'),
-      );
-
-       // 사용자에게 비밀번호 재설정 메일을 한글로 전송 시도
-      // sendPasswordResetEmailByKorean() async {
-      //   await fAuth.setLanguageCode("ko");
-      //   // sendPasswordResetEmail();             한국어로 재발급 시도 ㄱ
-      // }
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      snackBar('잘못된 이메일 입니다.');
     }
+
     
   }
 
@@ -156,39 +150,69 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                           style: TextStyle(
                               color: themeColor.getMaterialColor(),
                               fontWeight: FontWeight.bold)),
-                      content: Form(
-                        key: this.formKey,
-                        autovalidateMode: AutovalidateMode.always,
-                        child: TextFormField(
-                          onSaved: (email) {myEmail = email!;},
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) => validateEmail(value),
-                          cursorColor: themeColor.getMaterialColor(),
-                          decoration: InputDecoration(
-                            hintText: '이메일 입력 (abcd@naver.com)',
-                            filled: true,
-                            fillColor: Colors.white,
-                            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
-                            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Form(
+                            key: this.formKey,
+                            autovalidateMode: AutovalidateMode.always,
+                            child: TextFormField(
+                              controller: _emailController,
+                              onSaved: (email) {myEmail = email!;},
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) => validateEmail(value),
+                              cursorColor: themeColor.getMaterialColor(),
+                              decoration: InputDecoration(
+                                hintText: '이메일 입력',      //  (abcd@naver.com)
+                                filled: true,
+                                fillColor: Colors.white,
+                                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                              ),
+                            ),
                           ),
-                        ),
+                          SizedBox(height: 10,),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "- 비밀번호 재설정 메일을 보냅니다" ,
+                              style: TextStyle(
+                                color: themeColor.getMaterialColor(),
+                                fontWeight: FontWeight.normal,
+                                fontSize: 12)
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "- 메일이 오지 않는다면 스팸함을 확인해주세요",
+                              style: TextStyle(
+                                color: themeColor.getMaterialColor(),
+                                fontWeight: FontWeight.normal,
+                                fontSize: 12)
+                            ),
+                          ),
+                        ],
                       ),
                       actions: [
                         TextButton(child: Text('취소',
                           style: TextStyle(color: themeColor.getMaterialColor(),
                             fontWeight: FontWeight.bold,),),
                             onPressed: () { Navigator.pop(context); }),
-                        TextButton(child: Text('전송',
+                        TextButton(child: Text('확인', //'전송'
                           style: TextStyle(color: themeColor.getMaterialColor(),
-                            fontWeight: FontWeight.bold,),), onPressed: () {
+                            fontWeight: FontWeight.bold,
+                            )
+                            ,), onPressed: () {
                           //이메일 형식을 잘 입력했으면
                             if(this.formKey.currentState!.validate()) {
-                              //TODO: ↓ 비밀번호 변경 팝업 창 - 예 버튼 누르면 실행되어야 할 부분 ↓
 
-                              //TODO: ↑ 작성...
+                              resetPassword(_emailController.text);
+                              _emailController.clear();
 
                               Navigator.pop(context);
-                              snackBar('작성하신 이메일로 비밀번호를 전송했습니다');
+                              // snackBar('작성하신 이메일로 비밀번호를 전송했습니다');
                             }
                         })
                       ],
