@@ -7,6 +7,7 @@ import 'package:a_living_dictionary/LOGIN/main_view_model.dart';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
+import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -166,11 +167,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    String user_docID = '';
-    String user_uid = '';
-    String user_nickName ='';
-    String user_email ='';
-    String user_profileImageUrl = '';
+
 
     return Consumer<Logineduser>(
         builder: (context, userProvider, child) {
@@ -234,7 +231,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                         user_nickName = FirebaseAuth.instance.currentUser!.displayName ?? '';
                         user_email = FirebaseAuth.instance.currentUser!.email ?? '';
                         user_profileImageUrl = FirebaseAuth.instance.currentUser!.photoURL ?? '';
-
+  
                         // 금방 로그인한 유저에 대한 정보
                         // 데이터베이스에 유저가 저장되어있는지 확인
                         FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
@@ -261,84 +258,107 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     onPressed: () async {
                       await Navigator.pushNamed(context, '/authPage') as Logineduser;
                     }, 
-                     
                   )
-                    
                 ],
               );
             }
+            
+            
+            
+            // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(firstPage());
+            // Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
+            // print("@@! go!");
 
-            // 사용자의 uid
-            user_uid = userProvider.uid;
-            FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
-              snap.docs.forEach((doc) {
-                loginedUser.nickName = doc['nickName'];
-                loginedUser.email = doc['email'];
-                loginedUser.doc_id = doc.id;
-                loginedUser.profileImageUrl = doc['profileImageUrl'];
-                loginedUser.uid = user_uid;
-              }); 
-              }
-            );
-
-            Provider.of<Logineduser>(context, listen: false).setDocID(loginedUser.doc_id);
-            Provider.of<Logineduser>(context, listen: false).setInfo(loginedUser.uid, loginedUser.nickName, loginedUser.email, loginedUser.profileImageUrl);
-
-            // 로그인이 된 상태
-            return Scaffold(
-              appBar: AppBar(
-                  title: Text(
-                    widget.title,
-                    style: TextStyle(color: themeColor.getColor(), fontWeight: FontWeight.bold),
-                  ),
-                  elevation: 0.0,
-                  actions: <Widget>[
-                    IconButton(
-                      icon: new Icon(Icons.search),
-                      onPressed: () => {
-                        showSearch(context: context, delegate:Search(list))
-                      },
-                    )
-                    
-                  ]
-              ),
-              body: TabBarView(
-                physics:NeverScrollableScrollPhysics(),
-                controller: _tabController,
-                children: [
-                  MainPage(tabController: _tabController),
-                  DictionaryPage(),
-                  CommunityPage(context),
-                  RestaurantPage(),
-                  MyPage()
-                ],
-              ),
-              bottomNavigationBar: SizedBox(
-                height: 60,
-                child: TabBar(
-                  controller: _tabController,
-                  tabs: <Widget>[
-                    Tab(icon: _curIndex == 0? Icon(Icons.home, size: 26,) : Icon(Icons.home_outlined, size: 26,),
-                      child: Text('홈', textScaleFactor: 0.8,), ),
-                    Tab(icon: _curIndex == 1? Icon(Icons.book, size: 26,) : Icon(Icons.book_outlined, size: 26,),
-                      child: Text('사전', textScaleFactor: 0.8,), ),
-                    Tab(icon: _curIndex == 2? Icon(Icons.people_alt, size: 26,) : Icon(Icons.people_alt_outlined, size: 26,),
-                      child: Text('커뮤니티', textScaleFactor: 0.8,), ),
-                    Tab(icon: _curIndex == 3? Icon(Icons.map, size: 26,) : Icon(Icons.map_outlined, size: 26,),
-                      child: Text('맛집지도', textScaleFactor: 0.8,), ),
-                    Tab(icon: _curIndex == 4? Icon(Icons.settings, size: 26,) : Icon(Icons.settings_outlined, size: 26,),
-                      child: Text('설정', textScaleFactor: 0.8,),),
-                  ],
-                  onTap: (index) {
-                    setState(() {_curIndex = index;});
-                  },
-                ),
-              ),
         
+            
+            // 로그인이 된 상태
+            return FutureBuilder(
+              future: getUser(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                Provider.of<Logineduser>(context, listen: false).setDocID(user_docID);
+                Provider.of<Logineduser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl);
+
+                print("@@! user: " + userProvider.doc_id + "    " + userProvider.nickName);
+
+                print("@@! 나중에 코드");
+
+                return Scaffold(
+                  appBar: AppBar(
+                      title: Text(
+                        widget.title,
+                        style: TextStyle(color: themeColor.getColor(), fontWeight: FontWeight.bold),
+                      ),
+                      elevation: 0.0,
+                      actions: <Widget>[
+                        IconButton(
+                          icon: new Icon(Icons.search),
+                          onPressed: () {
+                            showSearch(context: context, delegate:Search(list));
+                            print("userProvider: " + userProvider.uid + "   " + userProvider.nickName);
+                          },
+                        )
+
+                      ]
+                  ),
+                  body: TabBarView(
+                    physics:NeverScrollableScrollPhysics(),
+                    controller: _tabController,
+                    children: [
+                      MainPage(tabController: _tabController),
+                      DictionaryPage(),
+                      CommunityPage(context),
+                      RestaurantPage(),
+                      MyPage()
+                    ],
+                  ),
+                  bottomNavigationBar: SizedBox(
+                    height: 60,
+                    child: TabBar(
+                      controller: _tabController,
+                      tabs: <Widget>[
+                        Tab(icon: _curIndex == 0? Icon(Icons.home, size: 26,) : Icon(Icons.home_outlined, size: 26,),
+                          child: Text('홈', textScaleFactor: 0.8,), ),
+                        Tab(icon: _curIndex == 1? Icon(Icons.book, size: 26,) : Icon(Icons.book_outlined, size: 26,),
+                          child: Text('사전', textScaleFactor: 0.8,), ),
+                        Tab(icon: _curIndex == 2? Icon(Icons.people_alt, size: 26,) : Icon(Icons.people_alt_outlined, size: 26,),
+                          child: Text('커뮤니티', textScaleFactor: 0.8,), ),
+                        Tab(icon: _curIndex == 3? Icon(Icons.map, size: 26,) : Icon(Icons.map_outlined, size: 26,),
+                          child: Text('맛집지도', textScaleFactor: 0.8,), ),
+                        Tab(icon: _curIndex == 4? Icon(Icons.settings, size: 26,) : Icon(Icons.settings_outlined, size: 26,),
+                          child: Text('설정', textScaleFactor: 0.8,),),
+                      ],
+                      onTap: (index) {
+                        setState(() {_curIndex = index;});
+                      },
+                    ),
+                  ),
+        
+                );
+              }
             );
           }
         );
       }
     );
+  }
+  
+    String user_docID = '';
+  String user_uid = '';
+  String user_nickName ='';
+  String user_email ='';
+  String user_profileImageUrl = '';
+  
+  getUser() {
+    FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
+      snap.docs.forEach((doc) {
+        user_uid = FirebaseAuth.instance.currentUser!.uid;
+        user_docID =  doc.id;
+        user_nickName =doc['nickName'];
+        user_email =doc['email'];
+        user_profileImageUrl = doc['profileImageUrl'];
+      }); 
+      }
+    );
+    // 사용자의 uid
   }
 }
