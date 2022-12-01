@@ -11,7 +11,7 @@ ThemeColor themeColor = ThemeColor();
 
 class CommunityWritePage extends StatelessWidget {
   final BuildContext context2;
-  late final CommunityItem? item;
+  late CommunityItem? item;
   late final width;
   late final isNull;
   final TextEditingController titleController = TextEditingController();
@@ -24,6 +24,7 @@ class CommunityWritePage extends StatelessWidget {
       isNull = true;
     }
     else {
+      print("here!!");
       isNull = false;
       titleController.text = item!.title;
       bodyController.text = item!.body;
