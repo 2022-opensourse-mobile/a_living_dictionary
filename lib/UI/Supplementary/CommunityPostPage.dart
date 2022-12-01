@@ -17,6 +17,7 @@ class CommunityPostPage extends StatefulWidget {
   const CommunityPostPage(this.tabName, this.item, {Key? key}) : super(key: key);
   final String tabName;
   final CommunityItem item;
+
   @override
   State<CommunityPostPage> createState() => _CommunityPostPageState(tabName, item);
 }
@@ -27,14 +28,12 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   TextEditingController commentController = TextEditingController();
   TextEditingController commentModifyController = TextEditingController();
 
-  Icon likeIcon = Icon(Icons.thumb_up_off_alt);
+  Icon likeIcon = Icon(Icons.favorite_border_rounded);
   final CommunityItem item;
   final String tabName;
   late var width, height;
   bool isClickedGlobal = false;
   final CheckClick clickCheck = CheckClick();
-
-
 
 
   bool myChange = false;
@@ -60,20 +59,25 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
         theme: ThemeData(
           primarySwatch: themeColor.getWhiteMaterialColor(),
           scaffoldBackgroundColor: Colors.white,
+          textSelectionTheme: TextSelectionThemeData(
+              cursorColor: themeColor.getMaterialColor(), //커서 색상
+              selectionColor: Color(0xffEAEAEA), //드래그 색상
+              selectionHandleColor: themeColor.getMaterialColor() //water drop 색상
+          ),
         ),
         home: Scaffold(
-            appBar: AppBar(
-              title: Text(tabName, style: TextStyle(color: Colors.black)),
-              elevation: 0.0,
-              actions: <Widget>[
-                IconButton(
-                  icon: new Icon(Icons.search),
-                  onPressed: () => {
-                    //showSearch(context: context, delegate:Search(null))
-                  },
-                )
-              ],
-            ),
+          appBar: AppBar(
+            title: Text(tabName, style: TextStyle(color: Colors.black)),
+            elevation: 0.0,
+            actions: <Widget>[
+              IconButton(
+                icon: new Icon(Icons.search),
+                onPressed: () => {
+                  //showSearch(context: context, delegate:Search(null))
+                },
+              )
+            ],
+          ),
           //Body : 싱글 스크롤
           body: Align(
             alignment: Alignment.topCenter,
@@ -85,7 +89,8 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                   getTitleWidget(item.title, item.writer_nickname),
                   getBodyWidget(item.body),
                   getLikeInfo(),
-                  const Divider(thickness: 1.0, color: Color(0xaadddddd)),
+                  Divider(thickness: 0.5),
+                  //const Divider(thickness: 1.0, color: Color(0xaadddddd)),
                   getCommentWriteWidget(),
                   getCommentListWidget()
                 ],
@@ -105,20 +110,13 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
     return Column(children: [
       Container(
         width: (width > 750) ? (750) : (width),
-        height: 40,
         alignment: Alignment.centerLeft,
-        decoration: const BoxDecoration(
-            border: Border(
-              top: BorderSide(color: Color(0xAAdadada), width: 1.5),
-              bottom: BorderSide(color: Color(0xAAdadada), width: 1.3),
-            ),
-            color: Color(0xAAefefef)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(15.0, 0, 0, 0),
-              child: Text(title, style: TextStyle(fontSize: 25)),
+              padding: EdgeInsets.fromLTRB(15, 10, 0, 10),
+              child: Text(title, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
             ),
             getModifyBtn(),
           ],
@@ -128,28 +126,27 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
         width: width,
         height: 50,
         alignment: Alignment.centerLeft,
-        decoration: const BoxDecoration(
-            border: Border(
-                bottom: BorderSide(color: Color(0xAAdadada), width: 1.3))),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10.0, 0, 0, 0),
+          padding: const EdgeInsets.fromLTRB(15, 0, 0, 10),
           child: Row(
             children: [
               CircleAvatar(
                 backgroundImage: NetworkImage(item.profileImage), //프로필 사진
               ),
-              Text(writer, style: TextStyle(fontSize: 15)),
+              Text(" $writer", style: TextStyle(fontSize: 15)),
             ],
           ),
         ),
       ),
+
+      Divider(thickness: 0.5),
     ]);
   }
   Widget getBodyWidget(String body) {
     return Container(
       width: (width > 750) ? (750) : (width),
       height: 300,
-      padding: const EdgeInsets.fromLTRB(15, 5, 0, 0),
+      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
       margin: const EdgeInsets.fromLTRB(0, 0, 0, 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,10 +165,6 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               TextButton(
                   child: Text("수정", style: TextStyle(color: Colors.black)),
                   onPressed: (){
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(builder: (context) => CommunityWritePage(context, item))
-                    // );
                     PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityWritePage(context, item));
                     Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
                   }
@@ -222,7 +215,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
     return Row(
       children: [
         IconButton(
-          icon: (isClickedGlobal)?(Icon(Icons.thumb_up_off_alt_rounded)):(Icon(Icons.thumb_up_off_alt)),
+          icon: (isClickedGlobal)?(Icon(Icons.favorite_rounded, color: Color(0xffD83064))):(Icon(Icons.favorite_border_rounded, color: Color(0xffD83064))),
           style: ButtonStyle(
             mouseCursor: MaterialStateProperty.all(MouseCursor.defer),
           ),
@@ -258,51 +251,63 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   //getCommentCompleteBtn : 수정 완료 버튼
   //getCommentDeleteBtn : 삭제 버튼
   Widget getCommentWriteWidget(){
-    return Container(
-      width: (width > 750) ? (750) : (width),
-      height: 100,
-      decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xAAdadada), width: 1.0)
-      ),
-      padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-      child: Row(
-        children: [
-          SizedBox(
-            width: (width > 750) ? (650) : (width-100),
-            height: 120,
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: "댓글 입력",
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+            padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+            child: Text('댓글', style:TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.4)),
+
+        Container(
+          width: (width > 750) ? (750) : (width),
+          height: 100,
+          padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+          child: Row(
+            children: [
+              SizedBox(
+                width: (width > 750) ? (650) : (width-100),
+                height: 120, //120
+                child: TextField(
+                  decoration: const InputDecoration(
+                    hintText: "내용을 입력하세요",
+                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(0xffededed))),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(0xffededed))),
+                  ),
+                  controller: commentController,
+                  maxLines: null,
+                  maxLength: 100,
+                  minLines: 3,
+                ),
               ),
-              controller: commentController,
-              maxLines: null,
-              maxLength: 100,
-              cursorColor: Colors.black,
-            ),
+              Column(
+                children: [
+                  SizedBox(height: 19),
+                  TextButton(
+                      onPressed: (){
+                        if(commentController.text == '') return;
+                        final it = CommentItem(
+                            writer_id: user.uid,
+                            writer_nickname: user.nickName,
+                            body: commentController.text,
+                            time:DateTime.now(),
+                            change: false
+                        );
+                        it.add(item);
+                        item.commentNum += 1;
+                        FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).update({
+                          'commentNum':item.commentNum
+                        });
+                        commentController.text = "";
+                      },
+                      child: Text("등록", style: TextStyle(color: Colors.black))
+                  ),
+                ],
+              )
+            ],
           ),
-          TextButton(
-              onPressed: (){
-                if(commentController.text == '') return;
-                final it = CommentItem(
-                    writer_id: user.uid,
-                    writer_nickname: user.nickName,
-                    body: commentController.text,
-                    time:DateTime.now(),
-                    change: false
-                );
-                it.add(item);
-                item.commentNum += 1;
-                FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).update({
-                  'commentNum':item.commentNum
-                });
-                commentController.text = "";
-              },
-              child: Text("등록", style: TextStyle(color: Colors.black))
-          )
-        ],
-      ),
+        ),
+        SizedBox(height: 18)
+      ],
     );
   }
   Widget getCommentListWidget() {
@@ -333,11 +338,11 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
             SizedBox(
               width: (width > 750) ? (630) : (width-120),
               child: ListTile(
-                title: (Text(commentItem.writer_nickname, style: const TextStyle(fontSize: 14, color: Colors.black))),
+                title: (Text(commentItem.writer_nickname, style: const TextStyle(fontSize: 14,fontWeight: FontWeight.bold, color: Colors.black))),
                 //수정 버튼을 눌렀다면 TextFromField 출력, 아니라면 댓글 내용 출력
                 subtitle: (isOnGoing && commentItem.doc_id == changedDocID)?
-                  (TextFormField(controller: commentModifyController)):
-                  (Text(commentItem.body, style: const TextStyle(fontSize: 14, color: Colors.black))),
+                (TextFormField(controller: commentModifyController)):
+                (Text(commentItem.body, style: const TextStyle(fontSize: 14, color: Colors.black))),
                 leading: CircleAvatar(
                   backgroundImage: NetworkImage(user.profileImageUrl), //프로필 사진
                 ),
@@ -348,24 +353,24 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
             (commentItem.writer_id==user.uid)?(getCommentBtnGroup(commentItem)):(Container())
           ],
         ),
-        const Divider(thickness: 0.7)
+        const Divider(thickness: 0.5)
       ],
     );
   }
 
   Widget getCommentBtnGroup(CommentItem commentItem) {
-      return Row(
-        children: [
-          Row(
-            children: [(isOnGoing && commentItem.doc_id == changedDocID)?
-            (getCommentCompleteBtn(commentItem)):
-            (getCommentModifyBtn(commentItem)),
-              getCommentDeleteBtn(commentItem)
-            ],
-          )
-        ],
-      );
-    }
+    return Row(
+      children: [
+        Row(
+          children: [(isOnGoing && commentItem.doc_id == changedDocID)?
+          (getCommentCompleteBtn(commentItem)):
+          (getCommentModifyBtn(commentItem)),
+            getCommentDeleteBtn(commentItem)
+          ],
+        )
+      ],
+    );
+  }
   Widget getCommentModifyBtn(CommentItem commentItem) {
     return TextButton(
         child: Text("수정", style: TextStyle(color: Colors.black)),
@@ -407,7 +412,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
         child: Text("삭제", style: TextStyle(color: Colors.black)),
         style: ButtonStyle(
             padding:
-                MaterialStateProperty.all(EdgeInsets.fromLTRB(10, 0, 0, 0)),
+            MaterialStateProperty.all(EdgeInsets.fromLTRB(10, 0, 0, 0)),
             minimumSize: MaterialStateProperty.all(Size(30, 30)),
             maximumSize: MaterialStateProperty.all(Size(40, 40))),
         onPressed: () {
