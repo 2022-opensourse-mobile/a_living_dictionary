@@ -27,7 +27,12 @@ class Logineduser  with ChangeNotifier {
   void setDocID(doc_id) {
     this.doc_id = doc_id;
   }
+
+  String getDocID() {
+    return this.doc_id;
+  }
 }
+
 
     // showDialog(
     //   barrierDismissible: false,

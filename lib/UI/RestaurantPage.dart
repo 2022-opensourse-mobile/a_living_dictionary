@@ -1,6 +1,5 @@
 import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
-import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 import 'package:a_living_dictionary/main.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -16,13 +15,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'package:a_living_dictionary/nearby_response.dart';
+import 'Supplementary/CheckClick.dart';
 
 ThemeColor themeColor = ThemeColor();
+CheckClick checkClick = CheckClick();
 
 // Google Map API Key
 final _mapApiKey = 'AIzaSyDV1uWDF4S16dDx5oQAAJ399p3e9Cbot90';
 
 final GlobalKey scrollKey = GlobalKey(); // 키 생성
+final formKey = GlobalKey<FormState>();
 
 class RestaurantPage extends StatelessWidget {
   const RestaurantPage({Key? key}) : super(key: key);
@@ -31,7 +33,7 @@ class RestaurantPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Map(),
+        child: restaurantMap(),
       ),
       floatingActionButton: upButton(),
     );
@@ -39,24 +41,22 @@ class RestaurantPage extends StatelessWidget {
 }
 
 /* -------------------------------- Map 공간 */
-class Map extends StatefulWidget {
-  const Map({Key? key}) : super(key: key);
+class restaurantMap extends StatefulWidget {
+  const restaurantMap({Key? key}) : super(key: key);
 
   @override
-  State<Map> createState() => _MapState();
+  State<restaurantMap> createState() => _restaurantMapState();
 }
 
-class _MapState extends State<Map> {
+class _restaurantMapState extends State<restaurantMap> {
   late GoogleMapController _controller;
-  TextEditingController _textEditingController = TextEditingController();
   NearbyPlacesResponse nearbyPlacesResponse = NearbyPlacesResponse();
   MapInfo mapInfo = MapInfo();
 
-  final List<Marker> markers = []; // 마커를 등록할 목록
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   String m_id = ""; // Map Id
 
   // DB에 저장된 마커 지도에 추가(좋아요 100개 이상인 마커만)
-  // TODO: 좋아요 100개 넘는 DB 따로 만들어서 가져오기
   Widget getMarker(BuildContext context) {
     double lat, lng;
     String store;
@@ -64,35 +64,28 @@ class _MapState extends State<Map> {
       stream: FirebaseFirestore.instance.collection('MapDB').snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
         if (!snapshot.hasData)
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
 
         final documents = snapshot.data!.docs;
-
         for (int i = 0; i < documents.length; i++) {
           lat = double.parse(documents[i]['latitude'].toString());
           lng = double.parse(documents[i]['longitude'].toString());
           store = documents[i]['store'];
           if (int.parse(documents[i]['like'].toString()) >= 100) { // 좋아요가 100개 이상인 것만 마커 추가
-            markers.add(Marker(
-                position: LatLng(lat, lng),
-                markerId: MarkerId(store),
-                infoWindow: InfoWindow(
-                  title: store,
-                ),
-                // onTap: () {
-                //   m_id = documents[i].id;
-                //   mapInfo.setInfo(m_id, documents[i]['address'], documents[i]['store'], lat, lng,
-                //       documents[i]['like'], documents[i]['markId']);
-                //   Provider.of<MapInfo>(context, listen: false).setInfo(m_id, documents[i]['address'], documents[i]['store'], lat, lng,
-                //       documents[i]['like'], documents[i]['markId']);
-                //   Navigator.push(context, MaterialPageRoute(
-                //     builder: (context) => detailPage(context, m_id),
-                //   ));
-                // }
-            ));
+            final MarkerId markerId = MarkerId(store);
+
+            markers[markerId] = Marker(
+              // icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
+              position: LatLng(lat, lng),
+              markerId: MarkerId(store),
+              infoWindow: InfoWindow(
+                title: store,
+                snippet: "좋아요: ${documents[i]['like']}",
+              ),
+            );
           }
         }
-        return googleMap(context);
+        return getUserMarker(context);
       },
     );
   }
@@ -100,67 +93,63 @@ class _MapState extends State<Map> {
   // 각 사용자 DB에 저장된 마커(좋아요 표시) 지도에 추가
   Widget getUserMarker(BuildContext context) {
     double lat, lng;
-    String store;
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('userInfo').doc(loginedUser.doc_id).collection('MapLikeList').snapshots(),
-      builder: (context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData)
-          return CircularProgressIndicator();
+    String store, udoc_id;
 
-        final documents = snapshot.data!.docs;
+    return Consumer<Logineduser>(
+      builder: (context, userProvider, child) {
+        udoc_id = userProvider.getDocID();
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('userInfo').doc(udoc_id).collection('MapLikeList').snapshots(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData)
+              return Center(child: CircularProgressIndicator());
 
-        for (int i = 0; i < documents.length; i++) {
-          lat = double.parse(documents[i]['latitude'].toString());
-          lng = double.parse(documents[i]['longitude'].toString());
-          store = documents[i]['store'];
-          markers.add(Marker(
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-            position: LatLng(lat, lng),
-            markerId: MarkerId(store),
-            infoWindow: InfoWindow(
-              title: store,
-            ),
-            // onTap: () {
-            //   m_id = documents[i].id;
-            //   mapInfo.setInfo(m_id, documents[i]['address'], documents[i]['store'], lat, lng,
-            //       documents[i]['like'], documents[i]['markId']);
-            //   Provider.of<MapInfo>(context, listen: false).setInfo(m_id, documents[i]['address'], documents[i]['store'], lat, lng,
-            //       documents[i]['like'], documents[i]['markId']);
-            //   Navigator.push(context, MaterialPageRoute(
-            //     builder: (context) => detailPage(context, m_id),
-            //   ));
-            // }
-          ));
-        }
-        return getMarker(context);
+            final documents = snapshot.data!.docs;
+
+            for (int i = 0; i < documents.length; i++) {
+              lat = double.parse(documents[i]['latitude'].toString());
+              lng = double.parse(documents[i]['longitude'].toString());
+              store = documents[i]['store'];
+              final MarkerId markerId = MarkerId(store);
+
+              markers[markerId] = Marker(
+                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+                position: LatLng(lat, lng),
+                markerId: MarkerId(store),
+                infoWindow: InfoWindow(
+                  title: store,
+                ),
+              );
+            }
+            return googleMap(context);
+          },
+        );
       },
     );
   }
 
   // 음식점 좋아요 누른 경우, 개별 지도에 마커 추가
   void addMarker(BuildContext context, double lat, double lng, String store) {
+    final MarkerId markerId = MarkerId(store);
+
+    final Marker marker = Marker(
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+      position: LatLng(lat, lng),
+      markerId: markerId,
+      infoWindow: InfoWindow(
+        title: store,
+      ),
+    );
+
     setState(() {
-      markers.add(Marker(
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // 마커 파란색
-        position: LatLng(lat, lng),
-        markerId: MarkerId(store),
-        infoWindow: InfoWindow(
-          title: store,
-        ),
-      ));
+      markers[markerId] = marker;
     });
   }
 
   void deleteMarker(BuildContext context, String store) {
-    MarkerId id = MarkerId(store);
-    setState(() {
-      // markers.removeWhere((marker) => marker.markerId == MarkerId(store));
-      // markers.remove(marker);
-      // markers.removeWhere(());
-      markers.remove(
-        markers.firstWhere((Marker marker) => marker.markerId == MarkerId(store))
-      );
-    });
+    markers.removeWhere((key, value) => key == MarkerId(store));
+    getUserMarker(context);
+
   }
 
   // 좋아요 아이콘
@@ -170,17 +159,19 @@ class _MapState extends State<Map> {
           .where('docID', isEqualTo: mapProvider.doc_id).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData)
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
 
         // 이미 좋아요 누른 경우
         if (snapshot.data!.size != 0) {
           return IconButton(
             icon: Icon(
               Icons.favorite,
-              color: Colors.red,
+              color: Color(0xffD83064),
               size: 30,
             ),
             onPressed: () {
+              if (checkClick.isRedundentClick(DateTime.now()))
+                return;
               FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
                   .where('docID', isEqualTo: mapProvider.doc_id).get().then((value) {
                 value.docs.forEach((element) {
@@ -189,7 +180,6 @@ class _MapState extends State<Map> {
                 });
               });
               mapProvider.subLikeNum(mapProvider.doc_id);
-              // TODO: 좋아요 취소 시, 마커 삭제가 안됨..
               deleteMarker(context, mapProvider.store);
             },
           );
@@ -203,6 +193,8 @@ class _MapState extends State<Map> {
               size: 30,
             ),
             onPressed: () {
+              if (checkClick.isRedundentClick(DateTime.now()))
+                return;
               FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList').add({
                 'docID': mapProvider.doc_id,
                 'latitude' : mapProvider.latitude,
@@ -217,276 +209,165 @@ class _MapState extends State<Map> {
       },
     );
   }
-  bool testCheck = false;
 
   // 마커 클릭 시 나오는 페이지
-  // TODO: UI 수정
-  Widget detailPage(BuildContext context, String id) {
+  Widget detailPage(BuildContext context, String store, String id) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("상세 페이지"),
-        elevation: 0.0,
-      ),
+      appBar: AppBar(title: Text('$store 상세 정보'), elevation: 0.0),
+      floatingActionButton: editUI(),
       body: Consumer2<MapInfo, Logineduser>(
-          builder: (context, mapProvider, userProvider, child) {
-            return Container(
-              height: MediaQuery.of(context).size.height,
-              child: SingleChildScrollView(
-                child: StreamBuilder(
-                    stream: FirebaseFirestore.instance.collection('MapDB').doc(id).snapshots(),
-                    builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (!snapshot.hasData)
-                        return CircularProgressIndicator();
+        builder: (context, mapProvider, userProvider, child) {
+          return StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('MapDB').doc(id).snapshots(),
+            builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+              if (!snapshot.hasData)
+                return Center(child: CircularProgressIndicator());
 
-                      final mapDocument = snapshot.data!;
+              final mapDocument = snapshot.data!;
 
-                      return Column(
-                        children: [
-                          Divider(),
-                          // 가게명, 좋아요 수
-                          ListTile(
-                            title: Row(
-                              children: [
-                                Expanded(
-                                  flex: 8,
-                                  child: Container(
-                                    child: Text(mapDocument['store'], textScaleFactor: 1.2,),
-                                    // child: Padding(
-                                    //   padding: EdgeInsets.all(10),
-                                    //   child: Text(mapDocument['store'], textScaleFactor: 1.2,),
-                                    // )
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Container(
-                                    child: Column(
-                                      children: [
-                                        likeIcon(mapProvider, userProvider),
-                                        Text(mapDocument['like'].toString(), textScaleFactor: 1.0,)
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Divider(),
-                          ListTile(title: Text("주소: ${mapDocument['address']}", textScaleFactor: 1.0, overflow: TextOverflow.ellipsis, maxLines: 1,)), Divider(),
-                          ListTile(
-                            title: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => reviewPage(),
-                                ));
-                              },
-                              child: Text("후기 작성"),
-                            ),
-                          ),
-                          Divider(),
-                          StreamBuilder(
-                              stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').orderBy('time', descending: true).snapshots(),
-                              builder: (context, AsyncSnapshot snapshot) {
-                                if (!snapshot.hasData)
-                                  return CircularProgressIndicator();
+              return ListView(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(15,10,15,0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('$store', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.8),
+                        Text('${mapDocument['address']}', style: TextStyle(color: Colors.grey, height: 1.6), textScaleFactor: 1.2),
+                      ],
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.fromLTRB(4,0,0,0),
+                    child: Row(
+                      children: [
+                        likeIcon(mapProvider, userProvider),
+                        Text('${mapDocument['like']}', textScaleFactor: 1.2),
+                      ],
+                    ),
+                  ),
+                  Divider(thickness: 0.5),
+                  Padding(
+                    padding: EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('$store 후기', style:TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.4),
+                      ],
+                    )
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(15),
+                    child: StreamBuilder(
+                        stream: FirebaseFirestore.instance.collection(
+                            'MapDB').doc(id)
+                            .collection('reviewDB')
+                            .orderBy('time', descending: true)
+                            .snapshots(),
+                        builder: (context, AsyncSnapshot snapshot) {
+                          if (!snapshot.hasData)
+                            return Center(child: CircularProgressIndicator());
 
-                                final reviewDocuments = snapshot.data!.docs;
+                          final reviewDocuments = snapshot.data!.docs;
 
-                                return ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: reviewDocuments.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Text(reviewDocuments[index]['content'].toString()),
-                                    );
-                                  },
-                                );
-                              }
-                          ),
-                        ],
-                      );
-                      // return Column(
-                      //   children: [
-                      //     Row(
-                      //     children: [
-                      //       Container(
-                      //         width: MediaQuery.of(context).size.width * 0.8,
-                      //         child: Column(
-                      //           crossAxisAlignment: CrossAxisAlignment.start,
-                      //             children: [
-                      //               Text("${mapDocument['store']}", textScaleFactor: 1.2,),
-                      //               Text("${documents[0]['address']}",
-                      //     textScaleFactor: 1.0,
-                      //     overflow: TextOverflow.ellipsis,
-                      //     maxLines: 1,
-                      //     style: TextStyle(
-                      //     color: Colors.grey
-                      //     ),),
-                      //     ],
-                      //     ),
-                      //     ),
-                      //       ],
-                      //     ),
-                      // );
-
-                    //   return Column(
-                    //     children: [
-                    //       ListTile(title: Text(mapDocument['store'])), Divider(),
-                    //       ListTile(
-                    //         title: Row(
-                    //           children: [
-                    //             Text("좋아요 수: ${mapProvider.like}"),
-                    //             Spacer(),
-                    //             likeIcon(mapProvider, userProvider),
-                    //
-                    //             // StreamBuilder(
-                    //             //   stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
-                    //             //       .where('docID', isEqualTo: mapProvider.doc_id).snapshots(),
-                    //             //   builder: (context, snapshot) {
-                    //             //     if (!snapshot.hasData)
-                    //             //       return CircularProgressIndicator();
-                    //             //
-                    //             //     // 이미 좋아요 누른 경우
-                    //             //     if (snapshot.data!.size != 0) {
-                    //             //       return IconButton(
-                    //             //         icon: Icon(
-                    //             //           Icons.favorite,
-                    //             //           color: Colors.pink,
-                    //             //           size: 30,
-                    //             //         ),
-                    //             //         onPressed: () {
-                    //             //           FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
-                    //             //               .where('docID', isEqualTo: mapProvider.doc_id).get().then((value) {
-                    //             //             value.docs.forEach((element) {
-                    //             //               FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
-                    //             //                   .doc(element.id).delete();
-                    //             //             });
-                    //             //           });
-                    //             //           mapProvider.subLikeNum(mapProvider.doc_id);
-                    //             //           // 마커 삭제 코드 넣기
-                    //             //           // deleteMarker 함수 추가해야 함(아마 addMarker와 매개변수 비슷하게 주면 될 듯)
-                    //             //           // userInfo에 정보(가게명, 주소, lat, lng) 삭제하기
-                    //             //         },
-                    //             //       );
-                    //             //     }
-                    //             //     // 좋아요 안 누른 경우
-                    //             //     else {
-                    //             //       return IconButton(
-                    //             //         icon: Icon(
-                    //             //           Icons.favorite_border,
-                    //             //           color: Colors.pink,
-                    //             //           size: 30,
-                    //             //         ),
-                    //             //         onPressed: () {
-                    //             //           FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList').add({
-                    //             //             'docID': mapProvider.doc_id
-                    //             //           });
-                    //             //           mapProvider.addLikeNum(mapProvider.doc_id);
-                    //             //           // 마커 추가 코드 넣기
-                    //             //           // addMarker에 userProvider.doc_id랑 mapProvider.doc_id 넘겨주기
-                    //             //           // userInfo에 MapDB로부터 가게명, 주소, lat, lng 가져와서 저장 후 마커 찍기
-                    //             //         },
-                    //             //       );
-                    //             //     }
-                    //             //   },
-                    //             // ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //       Divider(),
-                    //       ListTile(title: Text("주소: ${mapDocument['address']}")), Divider(),
-                    //       ListTile(
-                    //         title: Row(
-                    //           children: [
-                    //             Text("${mapDocument['store']} 후기"),
-                    //             Spacer(),
-                    //             ElevatedButton(
-                    //               onPressed: () {
-                    //                 Navigator.push(context, MaterialPageRoute(
-                    //                   builder: (context) => reviewPage(),
-                    //                 ));
-                    //               },
-                    //               child: Text("후기 작성"),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //       Divider(),
-                    //       StreamBuilder(
-                    //           stream: FirebaseFirestore.instance.collection('MapDB').doc(id).collection('reviewDB').orderBy('time', descending: true).snapshots(),
-                    //           builder: (context, AsyncSnapshot snapshot) {
-                    //             if (!snapshot.hasData)
-                    //               return CircularProgressIndicator();
-                    //
-                    //             final reviewDocuments = snapshot.data!.docs;
-                    //
-                    //             return ListView.builder(
-                    //               shrinkWrap: true,
-                    //               itemCount: reviewDocuments.length,
-                    //               itemBuilder: (context, index) {
-                    //                 return ListTile(
-                    //                   title: Text(reviewDocuments[index]['content'].toString()),
-                    //                 );
-                    //               },
-                    //             );
-                    //           }
-                    //       ),
-                    //     ],
-                    //   );
-                    }
-                ),
-              ),
-            );
-          }
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: reviewDocuments.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(
+                                    reviewDocuments[index]['content']
+                                        .toString()),
+                              );
+                            },
+                          );
+                        }
+                    ),
+                  ),
+                ]
+              );
+            },
+          );
+        },
       ),
     );
   }
 
-  // review 작성 페이지
-  // TODO: UI 수정
-  Widget reviewPage() {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text("후기 작성"),
-      ),
-      body: Column(
-        children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: "후기 작성",
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    width: 1.0,
+  // 리뷰 작성 폼
+  Widget editUI() {
+    String? review;
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Container(
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+                color: Colors.black12, width: 1
+            )
+        ),
+        child: FloatingActionButton(
+            tooltip: "후기 작성하기",
+            child: Icon(Icons.edit),
+            focusColor: Colors.white54,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            hoverElevation: 0,
+            focusElevation: 0,
+            highlightElevation: 0,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('후기 작성하기',
+                    style: TextStyle(
+                      color: themeColor.getMaterialColor(),
+                      fontWeight: FontWeight.bold)),
+                  content: Form(
+                    key: formKey,
+                    autovalidateMode: AutovalidateMode.always,
+                    child: TextFormField(
+                      onChanged: (value) {
+                        review = value;
+                      },
+                      validator: (value) {
+                        if(value!.isEmpty) return '내용을 입력하세요';
+                      },
+                      cursorColor: themeColor.getMaterialColor(),
+                      minLines: 1,
+                      maxLines: 10,
+                      decoration: InputDecoration(
+                        hintText: '내용을 입력하세요',
+                        filled: true,
+                        fillColor: Colors.white,
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                      ),
+                    ),
                   ),
+                  actions: [
+                    TextButton(child: Text('취소',
+                      style: TextStyle(color: themeColor.getMaterialColor(),
+                        fontWeight: FontWeight.bold,),),
+                        onPressed: () { Navigator.pop(context); }),
+                    TextButton(child: Text('확인',
+                      style: TextStyle(color: themeColor.getMaterialColor(),
+                      fontWeight: FontWeight.bold,),),
+                      onPressed: () {
+                        if(formKey.currentState!.validate()) {
+                          Timestamp timestamp = Timestamp.now();
+                          FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').add({
+                            'content': review,
+                            'writer': loginedUser.nickName,
+                            'time': timestamp,
+                          });
+                          Navigator.pop(context);
+                        }
+                      }),
+                  ],
                 ),
-              ),
-              controller: _textEditingController,
-              maxLines: null,
-              maxLength: 50,
-              cursorColor: Colors.black,
-            ),
-          ),
-          ElevatedButton(
-            onPressed: (){
-              Timestamp timestamp = Timestamp.now();
-              if (_textEditingController.text != "") {
-                FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').add({
-                  'content': _textEditingController.text.toString(),
-                  'writer': loginedUser.nickName,
-                  'time': timestamp,
-                });
-                _textEditingController.text = "";
-                Navigator.pop(context);
-              }
-            },
-            child: Text("후기 등록", textScaleFactor: 1,),
-          ),
-        ],
+              );
+            }
+        ),
       ),
     );
   }
@@ -502,7 +383,7 @@ class _MapState extends State<Map> {
           _controller = controller;
         });
       },
-      markers: markers.toSet(),
+      markers: Set<Marker>.of(markers.values),
       myLocationEnabled: true, // 현재 위치를 파란색 점으로 표시
       myLocationButtonEnabled: false, // 현재 위치 버튼
       onTap: (coordinate) { // 클릭한 위치 중앙에 표시
@@ -651,8 +532,6 @@ class _MapState extends State<Map> {
                             child: Container(
                               child: Column(
                                 children: [
-                                  // TODO: 가능하면 음식점 리스트에서도 좋아요 클릭할 수 있도록 하기
-                                  // likeIcon(mapProvider, userProvider),
                                   Icon(Icons.favorite_outlined, size: 30, color: themeColor.getColor(),),
                                   Text("${documents[0]['like'].toString()}", textScaleFactor: 1.0,),
                                 ],
@@ -668,7 +547,7 @@ class _MapState extends State<Map> {
                     mapInfo.setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'], documents[0]['like']);
                     Provider.of<MapInfo>(context, listen: false).setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'], documents[0]['like']);
                     Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => detailPage(context, m_id),
+                      builder: (context) => detailPage(context, store, m_id),
                     ));
                   },
                 ),
@@ -683,23 +562,28 @@ class _MapState extends State<Map> {
 
   @override
   Widget build(BuildContext context) {
+    double w = MediaQuery.of(context).size.width;
+    double h = MediaQuery.of(context).size.height;
+    // MediaQuery.of(context).p
+    final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Column(
       children: [
         Container(
           key: scrollKey,
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height * 0.7,
+          width: w,
+          height: isPortrait? h * 0.7 : h * 0.55,
           color: Colors.grey,
           child: Stack(
             children: [
-              getUserMarker(context),
+              getMarker(context),
+              // getUserMarker(context),
               Align(
                 alignment: Alignment.topRight,
                 child: Padding(
                   padding: EdgeInsets.all(15),
                   child: Container(
-                    width: MediaQuery.of(context).size.width * 0.12,
-                    height: MediaQuery.of(context).size.width * 0.12,
+                    width: isPortrait? w * 0.12 : h * 0.12,
+                    height: isPortrait? w * 0.12 : h * 0.12,
                     decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       border: Border.all(
@@ -712,7 +596,7 @@ class _MapState extends State<Map> {
                       onPressed: () {
                         _currentLocation();
                       },
-                      child: Icon(Icons.my_location, size: MediaQuery.of(context).size.width * 0.08,),
+                      child: Icon(Icons.my_location, size: isPortrait? w * 0.08 : h * 0.08, color: Colors.black54,),
                       shape: RoundedRectangleBorder(),
                       elevation: 2.0,
                     ),
@@ -770,136 +654,3 @@ Widget upButton() {
     ],
   );
 }
-
-// /* -------------------------------- 추천 리스트 (수정 중) */
-// Widget recommendList(){
-//   return Container(
-//       child: Column(
-//         children: [
-//           Padding(
-//             padding: EdgeInsets.fromLTRB(10,20,10,10),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Row(
-//                   children: [
-//                     Text('근처 추천 맛집', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.4),
-//                     //Icon(Icons.star_rounded, color: Colors.amberAccent),
-//                   ],
-//                 ),
-//                 postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
-//                 postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
-//                 postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
-//                 postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
-//                 postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
-//                 postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
-//                 postList('메가커피 금오공대점', '4.5', '딸기쿠키프라페 짱!!'),
-//                 postList('아리랑컵밥 금오공대점', '5.0', '낙지컵밥 냠냠'),
-//                 postList('어벤더치 금오공대점', '5.0', '아이스크림 맛있어요'),
-//               ],
-//             ),
-//           ),
-//         ],
-//       )
-//   );
-// }
-//
-// /* -------------------------------- 게시글 출력 (수정 중) */
-// Widget postList(String text, String star, String description) {
-//   return Row(
-//     children: [
-//       Expanded(
-//         child: Card(
-//           margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-//           child: Padding(
-//             padding: EdgeInsets.all(10),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Row(
-//                   children: [
-//                     Text('$text', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.20), //가게명
-//                     Icon(Icons.star_rounded, color: Colors.amberAccent,),
-//                     Text('$star', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.20), //별점
-//                   ],
-//                 ),
-//                 Text('$description', style: TextStyle(color: Colors.grey), textScaleFactor: 1.0), //평가 (서술)
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     ],
-//   );
-// }
-// /* -------------------------------- 검색 위젯: 일단 3개 작성 (삭제 금지) */
-// Widget restaurantSearch(){
-//   return Row(
-//     key: scrollKey,
-//     children: [
-//       Expanded(
-//         child: Padding(
-//           padding: EdgeInsets.fromLTRB(10,0,10,5),
-//           child: TextButton(
-//             onPressed: () {}, //버튼 눌렀을 때 주소 검색지로 이동해야 함
-//             style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color(0xfff2f3f6))),
-//             child: Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 Text('위치 검색', style: TextStyle(color: Color(0xff81858d), leadingDistribution: TextLeadingDistribution.even,), textScaleFactor: 1.1),
-//                 Icon(Icons.search_rounded, color: Color(0xff81858d)),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     ],
-//   );
-// }
-// Widget searchDesign() {
-//   return Row(
-//     children: [
-//       Expanded(
-//         child: Container(
-//           margin: EdgeInsets.fromLTRB(10, 10, 10, 4),
-//           padding: EdgeInsets.all(5),
-//           decoration: BoxDecoration(
-//             borderRadius: BorderRadius.circular(25.0),
-//             color: Color(0xfff2f3f6),
-//           ),
-//           child: Row(
-//             children: [
-//               IconButton(
-//                 onPressed: () => {},
-//                 icon: Icon(Icons.search_rounded, color: Color(0xff81858d)),
-//               ),
-//               Text("검색", style: TextStyle(color: Color(0xff81858d)),),
-//             ],
-//           ),
-//         ),
-//       )
-//     ],
-//   );
-// }
-// Widget textfieldSearch() {
-//   return Padding(
-//     padding: EdgeInsets.fromLTRB(10, 10, 10, 4),
-//     child: TextFormField(
-//       onTap: () {},
-//       decoration: InputDecoration(
-//         suffixIcon: IconButton(onPressed: () {  }, icon: Icon(Icons.search), color: Color(0xff81858d),),
-//         hintText: '위치 검색',
-//         hintStyle: TextStyle(
-//           fontSize: (16/360),
-//           color: Color(0xff81858d),
-//         ),
-//         border: InputBorder.none,
-//         // enabledBorder: OutlineInputBorder(
-//         //   borderRadius: BorderRadius.all(Radius.circular(20)),
-//         // ),
-//         filled: true,
-//         fillColor: Color(0xfff2f3f6),
-//       ),
-//     ),
-//   );
-// }
