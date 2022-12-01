@@ -179,7 +179,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               TextButton(
                   child: Text("삭제", style: TextStyle(color: Colors.black)),
                   onPressed: (){
-                    item.delete();
+                    item.delete(user);
                     Navigator.pop(context);
                   }
               ),
@@ -247,7 +247,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
     );
   }
 
-
+//Schroll
 
   // 아래는 댓글에 필요한 위젯들
   //getCommentWriteWidget : 댓글작성창
@@ -293,9 +293,13 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                     change: false
                 );
                 it.add(item);
-                item.commentNum += 1;
-                FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).update({
-                  'commentNum':item.commentNum
+
+                Future.delayed(const Duration(milliseconds: 1000), () {
+                  FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('CommentList').add({
+                    'comment_id' : it.doc_id,
+                    'community_id' : item.doc_id,
+                    'time' : Timestamp.fromDate(it.time!)
+                  });
                 });
                 commentController.text = "";
               },
@@ -411,10 +415,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
             minimumSize: MaterialStateProperty.all(Size(30, 30)),
             maximumSize: MaterialStateProperty.all(Size(40, 40))),
         onPressed: () {
-          FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id)
-              .collection('CommentDB').doc(commentItem.doc_id).delete();
-          item.commentNum -= 1;
-          FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).update({'commentNum': item.commentNum});
+          commentItem.delete(item, user);
         });
   }
 }

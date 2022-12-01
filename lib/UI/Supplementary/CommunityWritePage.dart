@@ -96,7 +96,7 @@ class CommunityWritePage extends StatelessWidget {
                 body: bodyController.text,
                 writer_id: user.uid,
                 writer_nickname: nickName,
-                boardType: 2,
+                boardType: 0,
                 time: DateTime.now(),
                 like: 0,
                 commentNum: 0,
@@ -104,10 +104,7 @@ class CommunityWritePage extends StatelessWidget {
             if (isNull) {
               addedItem.add();
             } else {
-              FirebaseFirestore.instance
-                  .collection('CommunityDB')
-                  .doc(item!.doc_id)
-                  .update({
+              FirebaseFirestore.instance.collection('CommunityDB').doc(item!.doc_id).update({
                 'title': addedItem.title,
                 'body': addedItem.body,
                 'time': DateTime.now()

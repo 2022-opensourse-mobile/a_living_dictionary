@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 
-class CommunityItem with ChangeNotifier{
+class CommunityItem{
   String doc_id = '';
   String title = '';
   String writer_id = '';
@@ -48,14 +48,15 @@ class CommunityItem with ChangeNotifier{
       'writer_nickname':this.writer_nickname,
       'commentNum' : this.commentNum,
       'profileImage' : this.profileImage
-    });
+    }).then((value) => FirebaseFirestore.instance.collection('CommunityDB').doc(value.id).update({'doc_id':value.id}));
+
   }
-  Future<void> delete() async {
+  Future<void> delete(Logineduser user) async {
     final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB');
     await FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).delete();
     await for (var snapshot in instance.snapshots()){
       for (var doc in snapshot.docs){
-        instance.doc(doc.id).delete();
+        CommentItem.getDatafromDoc(doc).delete(this, user);
       }
     }
   }
@@ -129,6 +130,7 @@ class CommunityItem with ChangeNotifier{
 
 
   Widget build(BuildContext context) {
+
     String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
 
     int n = this.body.indexOf('\n');
@@ -214,22 +216,47 @@ class CommentItem{
   bool change;
   CommentItem({this.writer_id = '', this.body = '', this.time, this.writer_nickname = '', this.doc_id = '', this.change=false});
 
-  void add(CommunityItem communityItem){
+  void add(CommunityItem communityItem) async {
+    final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(communityItem.doc_id).collection('CommentDB');
     if(time == null){
       print("comment add error : there's no time");
       return;
     }
-    FirebaseFirestore.instance.collection('CommunityDB').doc(communityItem.doc_id).collection('CommentDB').add({
+    instance.add({
       'body': this.body,
       'writer_id':this.writer_id,
       'time':this.time,
       'writer_nickname' : this.writer_nickname,
       'change' : this.change
+    }).then((value) async {
+      instance.doc(value.id).update({'doc_id':value.id});
+      await for(var snap in instance.snapshots()){
+        for(var doc in snap.docs){
+          if(doc.id == value.id){
+            doc_id = doc.id;
+          }
+        }
+      }
     });
-    // if(communityItem.commentNum == 0){
-    //   FirebaseFirestore.instance.collection('CommunityDB').doc(communityItem.doc_id).set({"modify":""});
-    //   print("modified Comment Number");
-    // }
+
+  }
+  void delete (CommunityItem item, Logineduser user) async {
+    FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id)
+        .collection('CommentDB').doc(doc_id).delete();
+
+    final instance = FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('CommentList');
+    await for(var snapshot in instance.snapshots()){
+      for (var doc in snapshot.docs){
+        if(doc.get('comment_id') == doc_id)
+          instance.doc(doc.id).delete();
+      }
+    }
+
+    // final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB');
+    // await FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).delete();
+    // await for (var snapshot in instance.snapshots()){
+    
+    
   }
   static CommentItem getDatafromDoc(DocumentSnapshot doc){
     Timestamp stamp = doc['time'];
@@ -242,8 +269,5 @@ class CommentItem{
       change: doc['change']
     );
     return item;
-  }
-  void setChange(){
-    this.change = !this.change;
   }
 }

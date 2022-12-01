@@ -82,10 +82,7 @@ class _ComminityState extends State<Community> with TickerProviderStateMixin{
     return Container(
       decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(
-              color: Colors.black12, width: 1
-          )
-      ),
+          border: Border.all(color: Colors.black12, width: 1)),
       child: FloatingActionButton(
         focusColor: Colors.white54,
         backgroundColor: Colors.white,
@@ -94,10 +91,6 @@ class _ComminityState extends State<Community> with TickerProviderStateMixin{
         highlightElevation: 0.0,
         hoverElevation: 0.0,
         onPressed: () {
-          // Navigator.push(
-          //     context,
-          //     MaterialPageRoute(builder: (context) => CommunityWritePage(context, null))
-          // );
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityWritePage(context, null));
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         },

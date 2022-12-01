@@ -326,49 +326,95 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     late Logineduser user = Provider.of<Logineduser>(context, listen: true);
     return Scaffold(
       appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
-        body: SingleChildScrollView(
-            child: Column(
+        body: Column(
           children: [
-            StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('CommunityDB')
-                    .orderBy('time', descending: true)
-                    .snapshots(),
+            Expanded(child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return CircularProgressIndicator();
                   }
                   final documents = snapshot.data!.docs;
                   if (!documents.isEmpty) {
-                    return ListView(
-                        shrinkWrap: true,
-                        children: documents.map((doc) {
-                          if (doc['writer_id'] == user.uid) {
-                            CommunityItem item =
-                                CommunityItem.getDataFromDoc(doc);
-                            return item.build(context);
-                          } else {
-                            return Container();
-                          }
-                        }).toList());
+                    return Expanded(
+                        child: ListView(
+                            children: documents.map((doc) {
+                      if (doc['writer_id'] == user.uid) {
+                        CommunityItem item = CommunityItem.getDataFromDoc(doc);
+                        return item.build(context);
+                      } else {
+                        return Container();
+                      }
+                    }).toList()));
                   } else {
                     return Text("작성한 게시글이 없습니다.");
                   }
-                })
+                }))
           ],
-        )));
+        )
+    );
   }
 
   Widget myComment() {
+    late Logineduser user = Provider.of<Logineduser>(context, listen: false);
+    String userDocID = user.doc_id;
     return Scaffold(
-      appBar: AppBar(title: Text('작성한 댓글'), elevation: 0.0),
-      body: ListView(
-        children: [
-          Text('작성한 댓글 페이지', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
-        ],
-      ),
+        appBar: AppBar(title: Text('작성한 댓글'), elevation: 0.0),
+        body: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance.collection('userInfo').doc(userDocID).collection("CommentList").snapshots(),
+            builder: (context, AsyncSnapshot snap) {
+              if (!snap.hasData) {
+                return CircularProgressIndicator();
+              }
+              if(snap.hasError){
+                return CircularProgressIndicator();
+              }
+              final userDocuments = snap.data!.docs;
+              return Container(
+                  child: ListView.builder(
+                    physics: ScrollPhysics(),
+                    shrinkWrap: true,
+                    padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
+                    itemCount: userDocuments.length,
+                    itemBuilder: (context, index) {
+                      return StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance.collection('CommunityDB').where('doc_id', isEqualTo: userDocuments[index]['community_id']).snapshots(),
+                          builder: (context, snap) {
+                            if (!snap.hasData) {
+                              return CircularProgressIndicator();
+                            }
+                            if(snap.hasError){
+                              return CircularProgressIndicator();
+                            }
+                            final itemDocuments = snap.data!.docs;
+
+
+                            return Container(
+                              child: CommunityItem.getDataFromDoc(itemDocuments.first).build(context)
+                            );
+                          }
+                      );
+                    },
+                    ),
+              );
+            })
     );
   }
+
+  Future<List<String>> get() async {
+    late Logineduser user = Provider.of<Logineduser>(context, listen: false);
+    String uid = user.uid;
+    List<String> commentList = <String>[];
+    final instance = FirebaseFirestore.instance.collection('userInfo').doc(uid).collection('CommentList');
+    await for (var snapshot in instance.snapshots()){
+      for (var doc in snapshot.docs){
+        commentList.add(doc.get('community_id'));
+      }
+    }
+    return commentList;
+  }
+
+
 
   Widget pageView(BuildContext context, DictionaryItemInfo? dicItemInfo) {
 
@@ -549,10 +595,10 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                         height: width*(101515),
                                         child: InkWell(
                                           onTap: () {
-                                            String clicked_id = itemDocuments[0].id; // 지금 클릭한 dictionaryItem의 item_id
+                                            String clickedId = itemDocuments[0].id; // 지금 클릭한 dictionaryItem의 item_id
                                             DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
-                                            dicItemInfo.setInfo(clicked_id, itemDocuments[0]['author'], itemDocuments[0]['card_num'], itemDocuments[0]['date'], itemDocuments[0]['hashtag'], itemDocuments[0]['scrapnum'], itemDocuments[0]['thumbnail'], itemDocuments[0]['title']);
-                                            Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, itemDocuments[0]['author'], itemDocuments[0]['card_num'], itemDocuments[0]['date'], itemDocuments[0]['hashtag'], itemDocuments[0]['scrapnum'], itemDocuments[0]['thumbnail'], itemDocuments[0]['title']);
+                                            dicItemInfo.setInfo(clickedId, itemDocuments[0]['author'], itemDocuments[0]['card_num'], itemDocuments[0]['date'], itemDocuments[0]['hashtag'], itemDocuments[0]['scrapnum'], itemDocuments[0]['thumbnail'], itemDocuments[0]['title']);
+                                            Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clickedId, itemDocuments[0]['author'], itemDocuments[0]['card_num'], itemDocuments[0]['date'], itemDocuments[0]['hashtag'], itemDocuments[0]['scrapnum'], itemDocuments[0]['thumbnail'], itemDocuments[0]['title']);
                                             PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, dicItemInfo));
                                             Navigator.push(
                                                 context, pageRouteWithAnimation.slideLeftToRight());
