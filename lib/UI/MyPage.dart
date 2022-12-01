@@ -230,6 +230,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
 
         ListTile(title: Text('이메일 가입 - 닉네임 입력 테스트'), onTap: (){
+ 
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -274,7 +275,10 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               ],
             ),
           );
+        
+        
         }),
+        
         Divider(thickness: 0.5,)
       ],
     );
@@ -625,6 +629,9 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(1000),
                     ),
+
+
+                    
                   ),
                   child: Text('완료', style: TextStyle(color: Colors.white)),
                   onPressed: () {
