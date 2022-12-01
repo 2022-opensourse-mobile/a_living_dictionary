@@ -1,5 +1,6 @@
 import 'package:a_living_dictionary/DB/CommunityItem.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+import 'package:a_living_dictionary/UI/Supplementary/CheckClick.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,9 +29,11 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
 
   Icon likeIcon = Icon(Icons.thumb_up_off_alt);
   final CommunityItem item;
+  final String tabName;
   late var width, height;
   bool isClickedGlobal = false;
-  final String tabName;
+  final CheckClick clickCheck = CheckClick();
+
 
 
 
@@ -226,6 +229,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
           tooltip: "좋아요",
           onPressed: (){
             setState(() {
+              if(clickCheck.isRedundentClick(DateTime.now())) return;
               isClickedGlobal = !isClickedGlobal;
               if(isClickedGlobal){
                 item.addLikeNum();
@@ -280,6 +284,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
           ),
           TextButton(
               onPressed: (){
+                if(commentController.text == '') return;
                 final it = CommentItem(
                     writer_id: user.uid,
                     writer_nickname: user.nickName,
