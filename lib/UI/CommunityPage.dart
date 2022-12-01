@@ -41,7 +41,7 @@ class _ComminityState extends State<Community> with TickerProviderStateMixin{
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -106,7 +106,7 @@ class _ComminityState extends State<Community> with TickerProviderStateMixin{
         stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
           final documents = snapshot.data!.docs;
 

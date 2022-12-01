@@ -11,12 +11,12 @@ ThemeColor themeColor = ThemeColor();
 
 class CommunityWritePage extends StatelessWidget {
   final BuildContext context2;
-  CommunityItem? item;
-  late var width;
+  late final CommunityItem? item;
+  late final width;
   late final isNull;
-  TextEditingController titleController = TextEditingController();
-  TextEditingController bodyController = TextEditingController();
-  late Logineduser user = Provider.of<Logineduser>(context2, listen: false);
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController bodyController = TextEditingController();
+  late final Logineduser user = Provider.of<Logineduser>(context2, listen: false);
 
   CommunityWritePage(this.context2, this.item, {super.key}){
     if(item == null){
@@ -53,17 +53,17 @@ class CommunityWritePage extends StatelessWidget {
 
   Widget writePost() {
     return Scaffold(
-      appBar: AppBar(title: Text('글 쓰기'), elevation: 0.0, actions: [
+      appBar: AppBar(title: const Text('글 쓰기'), elevation: 0.0, actions: [
         getFinishButton()
       ]),
       body: ListView(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Column(
                 children: [
                   getTitleWidget(),
-                  Divider(thickness: 0.5),
+                  const Divider(thickness: 0.5),
                   getBodyWidget(),
                   getCautionWidget()
                 ],
@@ -74,7 +74,7 @@ class CommunityWritePage extends StatelessWidget {
   }
   Widget getFinishButton(){
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: SizedBox(
         width: 50,
         height: 10,
@@ -85,7 +85,7 @@ class CommunityWritePage extends StatelessWidget {
               borderRadius: BorderRadius.circular(1000),
             ),
           ),
-          child: Text('완료', style: TextStyle(color: Colors.white)),
+          child: const Text('완료', style: TextStyle(color: Colors.white)),
           onPressed: () {
             final profileIMG = (user.profileImageUrl != '')
                 ? (user.profileImageUrl)
@@ -94,8 +94,8 @@ class CommunityWritePage extends StatelessWidget {
             final addedItem = CommunityItem(
                 title: titleController.text,
                 body: bodyController.text,
-                writer_id: user.uid,
-                writer_nickname: nickName,
+                writerID: user.uid,
+                writerNickname: nickName,
                 boardType: 0,
                 time: DateTime.now(),
                 like: 0,
@@ -120,7 +120,7 @@ class CommunityWritePage extends StatelessWidget {
     return TextFormField(
       controller: titleController,
       cursorColor: themeColor.getMaterialColor(),
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         hintText: '제목',
         filled: true,
         fillColor: Colors.white,
@@ -137,7 +137,7 @@ class CommunityWritePage extends StatelessWidget {
         cursorColor: themeColor.getMaterialColor(),
         maxLines: 100,
         controller: bodyController,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           hintText: '내용을 입력하세요',
           filled: true,
           fillColor: Colors.white,
@@ -149,10 +149,10 @@ class CommunityWritePage extends StatelessWidget {
   }
   Widget getCautionWidget(){
     return Padding(
-      padding: EdgeInsets.fromLTRB(10,10,10,0),
+      padding: const EdgeInsets.fromLTRB(10,10,10,0),
       child: Container(
         height: 220, //210 이상으로만 설정하기 (글자 출력되는 부분 크기)
-        child: Text(
+        child: const Text(
           '자취 백과사전은 깨끗한 커뮤니티를 만들기 위해 커뮤니티 이용규칙을 제정하여 운영하고 있습니다. '
               '위반 시 게시물이 삭제되고 서비스 이용이 제한되오니 반드시 숙지하시길 바랍니다.\n\n'
               '※ 욕설, 비하, 차별, 혐오, 폭력이 관련된 글 금지\n'

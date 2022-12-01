@@ -388,9 +388,8 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                             }
                             final itemDocuments = snap.data!.docs;
 
-
                             return Container(
-                              child: CommunityItem.getDataFromDoc(itemDocuments.first).build(context)
+                              child: CommunityItem.getDataFromDoc(itemDocuments.first).build(context, commentItemID: userDocuments[index]['comment_id'])
                             );
                           }
                       );
