@@ -110,6 +110,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   late TabController _tabController;
   int _curIndex = 0;
 
+  String user_docID = '';
+  String user_uid = '';
+  String user_nickName ='';
+  String user_email ='';
+  String user_profileImageUrl = '';
+
   
 
   @override
@@ -175,6 +181,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           stream: FirebaseAuth.instance.authStateChanges() , // 로그인 되고 안될때마다 새로운 스트림이 들어옴
           builder: (BuildContext context, snapshot) {
             
+            
             if(!snapshot.hasData) { // 로그인이 안 된 상태 - 로그인 화면
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -231,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                         user_nickName = FirebaseAuth.instance.currentUser!.displayName ?? '';
                         user_email = FirebaseAuth.instance.currentUser!.email ?? '';
                         user_profileImageUrl = FirebaseAuth.instance.currentUser!.photoURL ?? '';
-  
+
                         // 금방 로그인한 유저에 대한 정보
                         // 데이터베이스에 유저가 저장되어있는지 확인
                         FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
@@ -262,25 +269,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 ],
               );
             }
-            
-            
-            
-            // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(firstPage());
-            // Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
-            // print("@@! go!");
-
         
             
             // 로그인이 된 상태
             return FutureBuilder(
-              future: getUser(),
+              future: getUser(),    //  db 에서 먼저 데이터를 받아옴. provider로
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 Provider.of<Logineduser>(context, listen: false).setDocID(user_docID);
                 Provider.of<Logineduser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl);
-
-                print("@@! user: " + userProvider.doc_id + "    " + userProvider.nickName);
-
-                print("@@! 나중에 코드");
 
                 return Scaffold(
                   appBar: AppBar(
@@ -294,7 +290,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           icon: new Icon(Icons.search),
                           onPressed: () {
                             showSearch(context: context, delegate:Search(list));
-                            print("userProvider: " + userProvider.uid + "   " + userProvider.nickName);
                           },
                         )
 
@@ -341,22 +336,18 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       }
     );
   }
+
   
-    String user_docID = '';
-  String user_uid = '';
-  String user_nickName ='';
-  String user_email ='';
-  String user_profileImageUrl = '';
-  
-  getUser() {
-    FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
+  getUser() async {
+    await FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid).get().then( (QuerySnapshot snap) {
       snap.docs.forEach((doc) {
         user_uid = FirebaseAuth.instance.currentUser!.uid;
         user_docID =  doc.id;
         user_nickName =doc['nickName'];
         user_email =doc['email'];
         user_profileImageUrl = doc['profileImageUrl'];
-      }); 
+      }
+      ); 
       }
     );
     // 사용자의 uid
