@@ -5,11 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 
-class CommunityItem with ChangeNotifier{
+class CommunityItem{
   String doc_id = '';
   String title = '';
-  String writer_id = '';
-  String writer_nickname = '';
+  String writerID = '';
+  String writerNickname = '';
   String body = '';
   int like = 0;
   DateTime? time;
@@ -21,45 +21,52 @@ class CommunityItem with ChangeNotifier{
 
   CommunityItem({
     this.title = '',
-    this.writer_id = '',
+    this.writerID = '',
     this.body = '',
     this.like = 0,
     this.boardType = 0,
     this.hashTag = '',
     this.doc_id = '',
-    this.writer_nickname = '',
+    this.writerNickname = '',
     this.time,
     this.commentNum = 0,
     this.profileImage = ''
-  }){}
+  });
 
 
-
+//
   void add() {
-    Timestamp stamp = Timestamp.fromDate(this.time!);
+    Timestamp stamp = Timestamp.fromDate(time!);
     FirebaseFirestore.instance.collection('CommunityDB').add({
-      'title': this.title,
-      'like': this.like,
-      'writer_id': this.writer_id,
-      'body':this.body,
+      'title': title,
+      'like': like,
+      'writer_id': writerID,
+      'body':body,
       'time': stamp,
-      'boardType':this.boardType,
-      'hashTag':this.hashTag,
-      'writer_nickname':this.writer_nickname,
-      'commentNum' : this.commentNum,
-      'profileImage' : this.profileImage
-    });
+      'boardType':boardType,
+      'hashTag':hashTag,
+      'writer_nickname':writerNickname,
+      'commentNum' : commentNum,
+      'profileImage' : profileImage
+    }).then((value) => FirebaseFirestore.instance.collection('CommunityDB').doc(value.id).update({'doc_id':value.id}));
+
   }
-  void delete(){
-    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).delete();
+  Future<void> delete(Logineduser user) async {
+    final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB');
+    await FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).delete();
+    await for (var snapshot in instance.snapshots()){
+      for (var doc in snapshot.docs){
+        CommentItem.getDatafromDoc(doc).delete(this, user);
+      }
+    }
   }
   static CommunityItem getDataFromDoc(DocumentSnapshot doc){
     Timestamp stamp = doc['time'];
     final item = CommunityItem(
         doc_id : doc.id,
         title : doc['title'],
-        writer_id : doc['writer_id'],
-        writer_nickname: doc['writer_nickname'],
+        writerID : doc['writer_id'],
+        writerNickname: doc['writer_nickname'],
         profileImage: doc['profileImage'],
         body : doc['body'],
         like : doc['like'],
@@ -77,35 +84,35 @@ class CommunityItem with ChangeNotifier{
 
 
   void addLikeNum(){
-    this.like++;
-    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
-      'like': this.like
+    like++;
+    FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).update({
+      'like': like
     });
-    if(isHotPost()){
+    if(isHotPost() && boardType != 2){
       updateBoardType(1);
     }
   }
   void subLikeNum(){
-    this.like--;
-    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
-      'like': this.like
+    like--;
+    FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).update({
+      'like': like
     });
-    if(!isHotPost()){
+    if(!isHotPost() && boardType != 2){
       updateBoardType(0);
     }
   }
   bool isHotPost(){
-    return (this.like >= 10);
+    return (like >= 10);
   }
   void updateBoardType(i){
     boardType = i;
-    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).update({
-      'boardType': this.boardType
+    FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).update({
+      'boardType': boardType
     });
   }
   void registerThisPost(Logineduser user){
     FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').add({
-      'like_doc_id' : this.doc_id
+      'like_doc_id' : doc_id
     }).then((value) => FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').doc(value.id).update(
         {'id':value.id}));
   }
@@ -113,7 +120,7 @@ class CommunityItem with ChangeNotifier{
     final instance = FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList');
     await for (var snapshot in instance.snapshots()){
       for (var doc in snapshot.docs){
-        if(doc['like_doc_id'] == this.doc_id){
+        if(doc['like_doc_id'] == doc_id){
           instance.doc(doc['id']).delete();
         }
       }
@@ -122,35 +129,27 @@ class CommunityItem with ChangeNotifier{
 
 
 
-  Widget build(BuildContext context) {
-    String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
-
-    int n = this.body.indexOf('\n');
-    if(n == -1) {
-      n = (this.body.length > 10) ?(10):(this.body.length);
-    }
-    String omittedBody = this.body.substring(0, n);
-    if(n == 10) omittedBody += "...";
+  Widget build(BuildContext context, {String? commentItemID}) {
+    String timeText = '${time!.hour.toString()}:${time!.minute.toString()}';
+    String omittedBody = getOmittedBody();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
       child: Column(
         children: [
           ListTile(
-            title: Text("${this.title}"),
+            title: Text(title.toString()),
             subtitle: Text(omittedBody),
             shape: const RoundedRectangleBorder(
                 side: BorderSide(style: BorderStyle.none)
             ),
-            trailing: Text(t),
+            trailing: Text(timeText),
             style: ListTileStyle.list,
             onTap: () {
-              String tabName = getTabName(this.boardType);
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
-              // );
-              PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityPostPage(tabName, this));
+              String tabName = getTabName(boardType);
+              PageRouteWithAnimation pageRouteWithAnimation = (commentItemID == null)
+                  ? (PageRouteWithAnimation(CommunityPostPage(tabName, this)))
+                  : (PageRouteWithAnimation(CommunityPostPage(tabName, this, commentItemID: commentItemID)));
               Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
             },
           ),
@@ -159,17 +158,27 @@ class CommunityItem with ChangeNotifier{
       ),
     );
   }
+  String getOmittedBody(){
+    int n = body.indexOf('\n');
+    if(n == -1) {
+      n = (body.length > 10) ?(10):(body.length);
+    }
+    String omittedBody = body.substring(0, n);
+    if(n == 10) omittedBody += "...";
+    return omittedBody;
+  }
+
   Widget buildMain(BuildContext context) {
-    String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
+    String t = '${time!.hour.toString()}:${time!.minute.toString()}';
     return Padding(
         padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: ListTile(
-          title: Text(this.title, style: TextStyle(fontSize: 15.8)),
+          title: Text(title, style: const TextStyle(fontSize: 15.8)),
           visualDensity: const VisualDensity(vertical: -4),
           dense: true,
           trailing: Text(t),
           onTap: (){
-            String tabName = getTabName(this.boardType);
+            String tabName = getTabName(boardType);
             Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
@@ -180,11 +189,11 @@ class CommunityItem with ChangeNotifier{
   String getTabName(int boardType){
     switch(boardType){
       case 1:
-        return "인기게시판";
+        return "인기글";
       case 2:
-        return "공지게시판";
+        return "공지글";
       default:
-        return "자유게시판";
+        return "최신글";
     }
   }
 
@@ -202,45 +211,67 @@ class CommunityItem with ChangeNotifier{
 
 
 class CommentItem{
-  String writer_id;
-  String writer_nickname;
+  String writerID;
+  String writerNickname;
   String body;
   DateTime? time;
   String doc_id;
 
   bool change;
-  CommentItem({this.writer_id = '', this.body = '', this.time, this.writer_nickname = '', this.doc_id = '', this.change=false});
+  CommentItem({this.writerID = '', this.body = '', this.time, this.writerNickname = '', this.doc_id = '', this.change=false});
 
-  void add(CommunityItem communityItem){
+  void add(CommunityItem communityItem) async {
+    final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(communityItem.doc_id).collection('CommentDB');
     if(time == null){
-      print("comment add error : there's no time");
       return;
     }
-    FirebaseFirestore.instance.collection('CommunityDB').doc(communityItem.doc_id).collection('CommentDB').add({
-      'body': this.body,
-      'writer_id':this.writer_id,
-      'time':this.time,
-      'writer_nickname' : this.writer_nickname,
-      'change' : this.change
+    instance.add({
+      'body': body,
+      'writer_id':writerID,
+      'time':time,
+      'writer_nickname' : writerNickname,
+      'change' : change
+    }).then((value) async {
+      instance.doc(value.id).update({'doc_id':value.id});
+      await for(var snap in instance.snapshots()){
+        for(var doc in snap.docs){
+          if(doc.id == value.id){
+            doc_id = doc.id;
+          }
+        }
+      }
     });
-    // if(communityItem.commentNum == 0){
-    //   FirebaseFirestore.instance.collection('CommunityDB').doc(communityItem.doc_id).set({"modify":""});
-    //   print("modified Comment Number");
-    // }
+
+  }
+  void delete (CommunityItem item, Logineduser user) async {
+    FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id)
+        .collection('CommentDB').doc(doc_id).delete();
+
+    final instance = FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('CommentList');
+    await for(var snapshot in instance.snapshots()){
+      for (var doc in snapshot.docs){
+        if(doc.get('comment_id') == doc_id) {
+          instance.doc(doc.id).delete();
+        }
+      }
+    }
+
+    // final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB');
+    // await FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).delete();
+    // await for (var snapshot in instance.snapshots()){
+    
+    
   }
   static CommentItem getDatafromDoc(DocumentSnapshot doc){
     Timestamp stamp = doc['time'];
     final item = CommentItem(
-      writer_id : doc['writer_id'],
-      writer_nickname: doc['writer_nickname'],
+      writerID : doc['writer_id'],
+      writerNickname: doc['writer_nickname'],
       body : doc['body'],
       time : stamp.toDate(),
       doc_id: doc.id,
       change: doc['change']
     );
     return item;
-  }
-  void setChange(){
-    this.change = !this.change;
   }
 }
