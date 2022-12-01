@@ -191,8 +191,9 @@ class DictionaryCardPage {
                                   ),
                                 ),
                                 Text(
-                                    // snapshot.data!.docs[0]['title']
-                                    documents[index]['title'])
+                                  documents[index]['title'],
+                                  overflow: TextOverflow.ellipsis,  
+                                )
                               ],
                             ),
                           ),
@@ -417,30 +418,31 @@ class DictionaryCardPage {
       ),
       itemCount: 1,
       itemBuilder: (context, index) {
-        return Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                      'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d'),
-                  // 임의 사진
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: ClipRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                  child: Container(
-                    decoration:
-                        BoxDecoration(color: Colors.black.withOpacity(0.5)),
-                  ),
-                ),
-              ),
-            ),
+        return Text("카드 없음");
+        // return Stack(
+        //   children: [
+            // Container(
+            //   decoration: BoxDecoration(
+            //     image: DecorationImage(
+            //       image: NetworkImage(
+            //           'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/recommend1.png?alt=media&token=8ea9b90f-321f-4a9e-800c-36fc3181073d'),
+            //       // 임의 사진
+            //       fit: BoxFit.cover,
+            //     ),
+            //   ),
+            //   child: ClipRect(
+            //     child: BackdropFilter(
+            //       filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+            //       child: Container(
+            //         decoration:
+            //             BoxDecoration(color: Colors.black.withOpacity(0.5)),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             
-          ],
-        );
+        //   ],
+        // );
       },
     );
   }

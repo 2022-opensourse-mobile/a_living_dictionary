@@ -3,6 +3,7 @@ import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/UI/Supplementary/CommunityPostPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 
 class CommunityItem with ChangeNotifier{
   String doc_id = '';
@@ -145,10 +146,12 @@ class CommunityItem with ChangeNotifier{
             style: ListTileStyle.list,
             onTap: () {
               String tabName = getTabName(this.boardType);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
-              );
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
+              // );
+              PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityPostPage(tabName, this));
+              Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
             },
           ),
           const Divider(thickness: 1.0)
