@@ -286,9 +286,8 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                   TextButton(
                       onPressed: (){
                         if(commentController.text == '') return;
-                        final it = CommentItem(
-                            writer_id: user.uid,
-                            writer_nickname: user.nickName,
+                        final it = CommentItem(writerID: user.uid,
+                            writerNickname: user.nickName,
                             body: commentController.text,
                             time:DateTime.now(),
                             change: false
@@ -311,7 +310,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               )
             ],
           ),
-    );
+    )]);
   }
   Widget getCommentListWidget() {
     return StreamBuilder<QuerySnapshot>(
