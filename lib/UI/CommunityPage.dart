@@ -57,9 +57,9 @@ class _ComminityState extends State<Community> with TickerProviderStateMixin{
               indicatorColor: themeColor.getColor(),
               unselectedLabelColor: Colors.black,
               tabs: const [
-                Tab(text: "자유 게시판"),
-                Tab(text: "인기 게시판"),
-                Tab(text: "공지 게시판"),
+                Tab(text: "최신글"),
+                Tab(text: "인기글"),
+                Tab(text: "공지글"),
               ],
             ),
             // 탭 내용
@@ -121,10 +121,19 @@ class _ComminityState extends State<Community> with TickerProviderStateMixin{
           if(boardType == FREEBOARD) {
             return ListView(
                 shrinkWrap: true,
-                children: documents.map((doc) {
+                children: documents.where((element) => element['boardType']== FREEBOARD || element['boardType'] == HOTBOARD).map((doc) {
                   CommunityItem item = CommunityItem.getDataFromDoc(doc);
                   return item.build(context);
                 }).toList());
+          }
+          else if(boardType == NOTICEBOARD){
+            return ListView(
+                shrinkWrap: true,
+                children: documents.where((element) => element['boardType']==NOTICEBOARD).map((doc){
+                  CommunityItem item = CommunityItem.getDataFromDoc(doc);
+                  return item.build(context);
+                }).toList()
+            );
           }
           else{
             return ListView(

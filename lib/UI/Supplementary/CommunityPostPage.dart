@@ -339,7 +339,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                   (TextFormField(controller: commentModifyController)):
                   (Text(commentItem.body, style: const TextStyle(fontSize: 14, color: Colors.black))),
                 leading: CircleAvatar(
-                  backgroundImage: NetworkImage(user.profileImageUrl), //프로필 사진
+                  backgroundImage: NetworkImage(item.profileImage), //프로필 사진
                 ),
                 minVerticalPadding: 0,
               ),

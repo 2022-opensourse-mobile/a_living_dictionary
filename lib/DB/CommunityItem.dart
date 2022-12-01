@@ -50,8 +50,14 @@ class CommunityItem with ChangeNotifier{
       'profileImage' : this.profileImage
     });
   }
-  void delete(){
-    FirebaseFirestore.instance.collection('CommunityDB').doc(this.doc_id).delete();
+  Future<void> delete() async {
+    final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB');
+    await FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).delete();
+    await for (var snapshot in instance.snapshots()){
+      for (var doc in snapshot.docs){
+        instance.doc(doc.id).delete();
+      }
+    }
   }
   static CommunityItem getDataFromDoc(DocumentSnapshot doc){
     Timestamp stamp = doc['time'];
@@ -146,10 +152,6 @@ class CommunityItem with ChangeNotifier{
             style: ListTileStyle.list,
             onTap: () {
               String tabName = getTabName(this.boardType);
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
-              // );
               PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityPostPage(tabName, this));
               Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
             },
@@ -159,6 +161,7 @@ class CommunityItem with ChangeNotifier{
       ),
     );
   }
+
   Widget buildMain(BuildContext context) {
     String t = '${this.time!.hour.toString()}:${this.time!.minute.toString()}';
     return Padding(
@@ -180,11 +183,11 @@ class CommunityItem with ChangeNotifier{
   String getTabName(int boardType){
     switch(boardType){
       case 1:
-        return "인기게시판";
+        return "인기글";
       case 2:
-        return "공지게시판";
+        return "공지글";
       default:
-        return "자유게시판";
+        return "최신글";
     }
   }
 

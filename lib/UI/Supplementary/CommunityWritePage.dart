@@ -87,26 +87,30 @@ class CommunityWritePage extends StatelessWidget {
           ),
           child: Text('완료', style: TextStyle(color: Colors.white)),
           onPressed: () {
-            final profileIMG = (user.profileImageUrl != '')?(user.profileImageUrl):(basicProfileImage);
+            final profileIMG = (user.profileImageUrl != '')
+                ? (user.profileImageUrl)
+                : (basicProfileImage);
+            final nickName = (user.nickName != '') ? (user.nickName) : ("익명");
             final addedItem = CommunityItem(
                 title: titleController.text,
                 body: bodyController.text,
                 writer_id: user.uid,
-                writer_nickname: user.nickName,
-                boardType: 0,
+                writer_nickname: nickName,
+                boardType: 2,
                 time: DateTime.now(),
                 like: 0,
                 commentNum: 0,
-                profileImage: profileIMG
-            );
-            if(isNull) {
+                profileImage: profileIMG);
+            if (isNull) {
               addedItem.add();
-            }
-            else{
-              FirebaseFirestore.instance.collection('CommunityDB').doc(item!.doc_id).update({
+            } else {
+              FirebaseFirestore.instance
+                  .collection('CommunityDB')
+                  .doc(item!.doc_id)
+                  .update({
                 'title': addedItem.title,
-                'body' : addedItem.body,
-                'time' : DateTime.now()
+                'body': addedItem.body,
+                'time': DateTime.now()
               });
             }
             Navigator.pop(context2);
