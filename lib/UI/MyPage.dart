@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import '../DB/CommunityItem.dart';
 import 'Supplementary//ThemeColor.dart';
@@ -10,6 +11,13 @@ import 'Supplementary/PageRouteWithAnimation.dart';
 
 import 'package:provider/provider.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
+
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as path;
+
+
 
 // 화면전환 페이지 위젯은 전부 'my___'로 시작함
 
@@ -29,6 +37,8 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   TextEditingController newPassword = TextEditingController();
   TextEditingController equalPassword = TextEditingController();
   TextEditingController _nickNameController = TextEditingController(); 
+
+  String defaultImgUrl = 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260';
 
   @override
   Widget build(BuildContext context) {
@@ -705,6 +715,53 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     );
   }
 
+    // Select and image from the gallery or take a picture with the camera
+  // Then upload to Firebase Storage
+  Future<void> _upload(String inputSource, user_doc_id) async {
+    final picker = ImagePicker();
+    XFile? pickedImage;
+    try {
+      pickedImage = await picker.pickImage(
+          source: inputSource == 'camera'
+              ? ImageSource.camera
+              : ImageSource.gallery,
+          maxWidth: 1920);
+
+      final String fileName = path.basename(pickedImage!.path);
+      File imageFile = File(pickedImage.path);
+
+      try {
+        // Uploading the selected image with some custom meta data
+        Reference ref = await FirebaseStorage.instance.ref(fileName);
+        UploadTask uploadTask = ref.putFile( 
+          imageFile,
+          SettableMetadata(customMetadata: {
+            'uploaded_by': 'user',
+            'description': 'userProfileImage'
+          })
+        );
+        var dowurl = await (await uploadTask).ref.getDownloadURL();
+        
+        String imgUrl = dowurl.toString();
+        
+        Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(imgUrl);
+
+        await FirebaseFirestore.instance.collection('userInfo').doc(user_doc_id).update({
+          'profileImageUrl': imgUrl,
+        });
+
+      } on FirebaseException catch (error) {
+        if (kDebugMode) {
+          print(error);
+        }
+      }
+    } catch (err) {
+      if (kDebugMode) {
+        print(err);
+      }
+    }
+  }
+
   Widget myProfileImg() {
     return Scaffold(
       appBar: AppBar(title: Text('프로필 이미지 변경'), elevation: 0.0, actions: [
@@ -729,53 +786,98 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           ),
         ),
       ],),
-      body: ListView(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: Center(
-              child: CircleAvatar(
-                backgroundImage: NetworkImage('https://picsum.photos/250?image=9'), //TODO: 프로필 이미지
-                minRadius: 80,
-                maxRadius: 120,
+      body: Consumer<Logineduser>(
+        builder: (context, userProvider, child) {
+          return ListView(
+            children: [
+              
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Center(
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(userProvider.profileImageUrl), //TODO: 프로필 이미지
+                  minRadius: 80,
+                  maxRadius: 120,
+                ),
+              ),),
+              
+              TextButton(
+                  child: Text('프로필 이미지 변경하기',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: themeColor.getMaterialColor()),
+                      textScaleFactor: 1.2),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+
+                        return Wrap(
+                          children: [
+                            ListTile(leading: Icon(Icons.photo_library), title: Text('갤러리'),
+                              onTap: () async{
+                                Navigator.pop(context);
+                                _upload('gallery', userProvider.doc_id);
+                              },
+                            ),
+                            ListTile(leading: Icon(Icons.camera_alt), title: Text('카메라'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                _upload('camera', userProvider.doc_id);
+                              },
+                              
+                            ),
+                            ListTile(leading: Icon(Icons.image_not_supported), title: Text('프로필 이미지 삭제하기'),
+                              onTap: () async {
+                                await showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: Text('프로필 이미지 삭제',
+                                      style: TextStyle(
+                                        color: themeColor.getMaterialColor(),
+                                        fontWeight: FontWeight.bold)),
+                                        content: Text('정말로 삭제하겠습니까?'),
+                                        actions: [
+                                          TextButton(child: Text('확인',
+                                            style: TextStyle(
+                                              color: themeColor.getMaterialColor(),
+                                              fontWeight: FontWeight.bold,),),
+                                              onPressed: () async {
+                                                await FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({
+                                                  'profileImageUrl': defaultImgUrl,
+                                                });
+                                                Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(defaultImgUrl);                             
+                                                Navigator.pop(context);
+                                                snackBar('프로필 이미지 삭제가 완료되었습니다');
+                                              }),
+                                          TextButton(
+                                            child: Text('취소',
+                                              style: TextStyle(
+                                                color: themeColor.getMaterialColor(),
+                                                fontWeight: FontWeight.bold,),),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              }
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        );
+                        
+                      }
+                    );
+                  }
               ),
-            ),),
-          TextButton(
-              child: Text('프로필 이미지 변경하기',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: themeColor.getMaterialColor()),
-                  textScaleFactor: 1.2),
-              onPressed: () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return Wrap(
-                        children: [
-                          ListTile(leading: Icon(Icons.photo_library), title: Text('갤러리'),
-                            onTap: () {
-                              //TODO: 갤러리 누르면 실행되어야 할 부분
-                            },
-                          ),
-                          ListTile(leading: Icon(Icons.camera_alt), title: Text('카메라'),
-                            onTap: () {
-                              //TODO: 카메라 누르면 실행되어야 할 부분
-                            },
-                          ),
-                          ListTile(leading: Icon(Icons.image_not_supported), title: Text('프로필 이미지 삭제하기'),
-                            onTap: () {
-                              //TODO: 프로필 이미지 삭제하기 누르면 실행되어야 할 부분
-                            },
-                          ),
-                        ],
-                      );
-                    }
-                );
-              }
-          ),
-          Padding(
-              padding: EdgeInsets.fromLTRB(10, 5, 10, 10),
-              child: Text('※ 욕설, 비하, 성적 수치심을 유발하는 이미지는 관리자가 임의로 변경하오니 주의 바랍니다.',
-                     style: TextStyle(color: Colors.grey), textScaleFactor: 0.9))
-        ],
+              Padding(
+                  padding: EdgeInsets.fromLTRB(10, 5, 10, 10),
+                  child: Text('※ 욕설, 비하, 성적 수치심을 유발하는 이미지는 관리자가 임의로 변경하오니 주의 바랍니다.',
+                         style: TextStyle(color: Colors.grey), textScaleFactor: 0.9))
+            ],
+          );
+        }
       )
     );
   }
@@ -876,6 +978,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                           ],
                         ),
                   );
+                
                 }},
             ),
           ),
