@@ -213,12 +213,13 @@ class CommunityItem{
 class CommentItem{
   String writerID;
   String writerNickname;
+  String profileImage;
   String body;
   DateTime? time;
   String doc_id;
 
   bool change;
-  CommentItem({this.writerID = '', this.body = '', this.time, this.writerNickname = '', this.doc_id = '', this.change=false});
+  CommentItem({this.writerID = '', this.body = '', this.time, this.writerNickname = '', this.doc_id = '', this.change=false, this.profileImage = ''});
 
   void add(CommunityItem communityItem) async {
     final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(communityItem.doc_id).collection('CommentDB');
@@ -230,7 +231,8 @@ class CommentItem{
       'writer_id':writerID,
       'time':time,
       'writer_nickname' : writerNickname,
-      'change' : change
+      'change' : change,
+      'profileImage' : profileImage
     }).then((value) async {
       instance.doc(value.id).update({'doc_id':value.id});
       await for(var snap in instance.snapshots()){
@@ -255,12 +257,6 @@ class CommentItem{
         }
       }
     }
-
-    // final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB');
-    // await FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).delete();
-    // await for (var snapshot in instance.snapshots()){
-    
-    
   }
   static CommentItem getDatafromDoc(DocumentSnapshot doc){
     Timestamp stamp = doc['time'];
@@ -270,7 +266,8 @@ class CommentItem{
       body : doc['body'],
       time : stamp.toDate(),
       doc_id: doc.id,
-      change: doc['change']
+      change: doc['change'],
+      profileImage: doc['profileImage']
     );
     return item;
   }
