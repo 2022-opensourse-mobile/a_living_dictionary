@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
+import 'package:a_living_dictionary/UI/RestaurantPage.dart';
 import 'package:a_living_dictionary/UI/Supplementary/CheckClick.dart';
 import 'package:a_living_dictionary/UI/Supplementary/DictionaryCardPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -86,7 +87,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ListTile(title: Text('사전 & 커뮤니티',
+        ListTile(title: Text('사전 & 커뮤니티 & 맛집지도',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: themeColor.getColor(),
@@ -107,6 +108,10 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
         }),
         ListTile(title: Text('작성한 댓글'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myComment());
+          Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
+        }),
+        ListTile(title: Text('맛집지도 좋아요 목록'), onTap: (){
+          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myLike());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
         Divider(thickness: 0.5,),
@@ -418,6 +423,40 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
   /* -------------------------------------------------------------------------------- 화면전환 페이지 */
 
+  Widget myLike() {
+    late Logineduser user = Provider.of<Logineduser>(context, listen: false);
+    String userDocID = user.doc_id;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('맛집지도 좋아요 목록'),
+        elevation: 0.0,
+      ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('userInfo').doc(userDocID).collection('MapLikeList').snapshots(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData)
+            return Center(child: CircularProgressIndicator());
+
+          if (snapshot.hasError)
+            return Center(child: CircularProgressIndicator());
+
+          final userDocuments = snapshot.data!.docs;
+
+          if (userDocuments.length == 0)
+            return Center(child: Text("좋아요 목록이 없습니다", textScaleFactor: 1.2,));
+
+          return SingleChildScrollView(
+            child:Column(
+              children: [
+                for (int i=0; i<userDocuments.length; i++)
+                  restaurantMapState().nearbyPlacesWidget(userDocuments[i]['store']),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   Widget myPosting() {
     late Logineduser user = Provider.of<Logineduser>(context, listen: true);
