@@ -484,10 +484,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                               return CircularProgressIndicator();
                             }
                             final itemDocuments = snap.data!.docs;
-
-                            return Container(
-                              child: CommunityItem.getDataFromDoc(itemDocuments.first).build(context, commentItemID: userDocuments[index]['comment_id'])
-                            );
+                            if(itemDocuments.isNotEmpty){
+                              return Container(
+                                child: CommunityItem.getDataFromDoc(itemDocuments.first).build(context, commentItemID: userDocuments[index]['comment_id'])
+                              );
+                            }else{
+                              return Container();
+                            }
                           }
                       );
                     },

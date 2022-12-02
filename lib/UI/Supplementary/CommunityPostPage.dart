@@ -38,7 +38,6 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   final CheckClick clickCheck = CheckClick();
 
 
-  bool myChange = false;
   String changedDocID = '';
   bool isOnGoing = false;
 
@@ -291,7 +290,6 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                             profileImage: user.profileImageUrl,
                             body: commentController.text,
                             time:DateTime.now(),
-                            change: false
                         );
                         it.add(item);
                         Future.delayed(const Duration(milliseconds: 1000), () {
@@ -399,7 +397,6 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
       child: const Text("수정", style: TextStyle(color: Colors.black)),
     );
   }
-
   Widget getCommentCompleteBtn(CommentItem commentItem) {
     return TextButton(
       style: ButtonStyle(

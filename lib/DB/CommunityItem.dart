@@ -217,9 +217,7 @@ class CommentItem{
   String body;
   DateTime? time;
   String doc_id;
-
-  bool change;
-  CommentItem({this.writerID = '', this.body = '', this.time, this.writerNickname = '', this.doc_id = '', this.change=false, this.profileImage = ''});
+  CommentItem({this.writerID = '', this.body = '', this.time, this.writerNickname = '', this.doc_id = '', this.profileImage = ''});
 
   void add(CommunityItem communityItem) async {
     final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(communityItem.doc_id).collection('CommentDB');
@@ -231,7 +229,6 @@ class CommentItem{
       'writer_id':writerID,
       'time':time,
       'writer_nickname' : writerNickname,
-      'change' : change,
       'profileImage' : profileImage
     }).then((value) async {
       instance.doc(value.id).update({'doc_id':value.id});
@@ -266,7 +263,6 @@ class CommentItem{
       body : doc['body'],
       time : stamp.toDate(),
       doc_id: doc.id,
-      change: doc['change'],
       profileImage: doc['profileImage']
     );
     return item;
