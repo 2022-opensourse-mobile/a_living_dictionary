@@ -67,15 +67,12 @@ class _SearchScreenState extends State<SearchScreen> {
                       controller: _filter,
                       textInputAction: TextInputAction.search,
                       cursorColor: Colors.white,
-                      onChanged: (value) {
-                        _searchText = value;
-                      },
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white24,
                         floatingLabelBehavior: FloatingLabelBehavior.never,
                         prefixIcon: Icon(Icons.search, color: Colors.white60, size: 20,),
-                        suffixIcon: focusNode.hasFocus
+                        suffixIcon: _searchText != ""
                           ? IconButton(
                               icon: Icon(Icons.cancel,size: 20,),
                               onPressed: (){
@@ -84,8 +81,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   _searchText = "";
                                 });
                               },
-                            ) : Container(),
-                        hintText: '검색',
+                            ) : SizedBox(),
+                        hintText: curIndex == 2? "글 제목, 내용" : "글 제목, 해시태그",
                         labelStyle: TextStyle(color: Colors.black),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.transparent),
