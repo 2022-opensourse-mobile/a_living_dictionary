@@ -112,23 +112,6 @@ class _SearchScreenState extends State<SearchScreen> {
                       },
                     ),
                   ),
-                  // focusNode.hasFocus
-                  //   ? Expanded(
-                  //       child: TextButton(
-                  //         child: Text('취소'),
-                  //         onPressed: (){
-                  //           setState(() {
-                  //             _filter.clear();
-                  //             _searchText = "";
-                  //             focusNode.unfocus();
-                  //             Navigator.pop(context);
-                  //           });
-                  //         },
-                  //       ),
-                  //     ) : Expanded(
-                  //       flex: 0,
-                  //       child: Container(),
-                  //   ),
                 ],
               ),
             ),
