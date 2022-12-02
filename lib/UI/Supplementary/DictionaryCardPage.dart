@@ -374,6 +374,7 @@ class DictionaryCardPage {
                             image: NetworkImage(cardDocList[0]['img']),
                             // 카드 맨 첫 번째 사진으로 배경 설정
                             fit: BoxFit.cover,
+                            ///여기다 넣어라@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                           ),
                         ),
                         child: ClipRect(

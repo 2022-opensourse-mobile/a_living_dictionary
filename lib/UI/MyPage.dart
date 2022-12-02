@@ -40,7 +40,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   TextEditingController newPassword = TextEditingController();
   TextEditingController equalPassword = TextEditingController();
   TextEditingController _nickNameController = TextEditingController(); 
-  TextEditingController _emailController = TextEditingController(); 
+  // TextEditingController _emailController = TextEditingController(); 
   final CheckClick clickCheck = CheckClick();
 
   String defaultImgUrl = 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260';
@@ -75,7 +75,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                 ),
                 title: Text(userProvider.nickName, style: TextStyle(fontWeight: FontWeight.bold),), //닉네임 출력
               ),
-              Divider(thickness: 0.5,),
+              const Divider(thickness: 0.5,),
             ],
           );
         }
@@ -93,11 +93,11 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               leadingDistribution: TextLeadingDistribution.even,
             ),
             textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
-        ListTile(title: Text('사전 스크랩 목록'), onTap: (){
+        ListTile(title: const Text('사전 스크랩 목록'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myScrap());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
-        ListTile(title: Text('작성한 게시물'), onTap: (){
+        ListTile(title: const Text('작성한 게시물'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myPosting());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
           // Navigator.push(
@@ -105,11 +105,11 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           //     MaterialPageRoute(builder: (context) => myPosting())
           // );
         }),
-        ListTile(title: Text('작성한 댓글'), onTap: (){
+        ListTile(title: const Text('작성한 댓글'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myComment());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
-        Divider(thickness: 0.5,),
+        const Divider(thickness: 0.5,),
       ],
     );
   }
@@ -142,7 +142,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                 ),
                 textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
             ListTile(
-              title: Text('비밀번호 변경'), 
+              title: const Text('비밀번호 변경'), 
               onTap: (){
                 if (userProvider.uid.substring(0,5) == 'kakao' || userProvider.uid.substring(0,5) == 'naver') { // 소셜 로그인 유저
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("소셜 로그인 유저는 비밀번호를 변경할 수 없습니다"),));
@@ -226,7 +226,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                  showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text('비밀번호 재설정 메일을 보냅니다',
+                      title: const Text('비밀번호 재설정 메일을 보냅니다',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 17,
@@ -268,7 +268,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                             ,), onPressed: () {
 
                               resetPassword(userProvider.email);
-                              _emailController.clear();
+                              // _emailController.clear();
 
                               Navigator.pop(context);
                             }
@@ -285,15 +285,15 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                 }
               }
             ),
-            ListTile(title: Text('닉네임 변경'), onTap: (){
+            ListTile(title: const Text('닉네임 변경'), onTap: (){
               PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myNicknamed());
               Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
             }),
-            ListTile(title: Text('프로필 이미지 변경'), onTap: (){
+            ListTile(title: const Text('프로필 이미지 변경'), onTap: (){
               PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myProfileImg());
               Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
             }),
-            Divider(thickness: 0.5,),
+            const Divider(thickness: 0.5,),
           ],
         );
       }
@@ -310,73 +310,24 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               leadingDistribution: TextLeadingDistribution.even,
             ),
             textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
-        ListTile(title: Text('공지 사항'), onTap: (){
+        ListTile(title: const Text('공지 사항'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myNotice());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
-        ListTile(title: Text('앱 이용 규칙'), onTap: (){
+        ListTile(title: const Text('앱 이용 규칙'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myAppRule());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
-        ListTile(title: Text('문의하기'), onTap: (){
+        ListTile(title: const Text('문의하기'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myAsk());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
-        ListTile(title: Text('버전 정보'), trailing: Text('$version', style: TextStyle(color: Colors.grey)), //버전 설정
-            onTap: (){ snackBar('현재 버전은 $version 입니다'); }), //클릭 시 스낵바에 현재 버전 출력
+        ListTile(title: const Text('버전 정보'), trailing: Text('$version', style: TextStyle(color: Colors.grey)), //버전 설정
+          onTap: (){ snackBar('현재 버전은 $version 입니다'); }
+        ), //클릭 시 스낵바에 현재 버전 출력
 
 
 
-        ListTile(title: Text('이메일 가입 - 닉네임 입력 테스트'), onTap: (){
- 
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('사용할 닉네임 입력',
-                  style: TextStyle(
-                      color: themeColor.getMaterialColor(),
-                      fontWeight: FontWeight.bold)),
-              content: Form(
-                key: this.formKey,
-                autovalidateMode: AutovalidateMode.always,
-                child: TextFormField(
-                  onSaved: (name) {myNickname = name!;},
-                  validator: (value) {
-                    if(value!.isEmpty) return '닉네임을 입력하세요';
-                  },
-                  cursorColor: themeColor.getMaterialColor(),
-                  decoration: InputDecoration(
-                    hintText: '닉네임',
-                    filled: true,
-                    fillColor: Colors.white,
-                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                    ),
-                    border: const UnderlineInputBorder(),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                    ),),
-                ),
-              ),
-              actions: [
-                TextButton(child: Text('확인',
-                  style: TextStyle(color: themeColor.getMaterialColor(),
-                    fontWeight: FontWeight.bold,),),
-                    onPressed: () {
-                      if(this.formKey.currentState!.validate()) {
-                        /*  TODO: ↓ 닉네임 입력 완료버튼 누르면 실행되어야 할 부분 ↓ */
-                        // TODO: 여기에 작성
-
-
-                        Navigator.pop(context);
-                      }
-                }),
-              ],
-            ),
-          );
-        
-        
-        }),
-        
         Divider(thickness: 0.5,)
       ],
     );
@@ -395,7 +346,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                content: Text('로그아웃하시겠습니까?'),
+                content: const Text('로그아웃하시겠습니까?'),
                 actions: [
                   TextButton(child: Text('아니오',
                     style: TextStyle(color: themeColor.getMaterialColor(),
