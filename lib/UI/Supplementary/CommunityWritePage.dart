@@ -12,22 +12,19 @@ ThemeColor themeColor = ThemeColor();
 class CommunityWritePage extends StatelessWidget {
   final BuildContext context2;
   late CommunityItem? item;
+  late CommunityItem communityItem;
   var width;
   late final isNull;
+
   final TextEditingController titleController = TextEditingController();
   final TextEditingController bodyController = TextEditingController();
   late final Logineduser user = Provider.of<Logineduser>(context2, listen: false);
 
   CommunityWritePage(this.context2, this.item, {super.key}){
-    if(item == null){
-      item = CommunityItem();
-      isNull = true;
-    }
-    else {
-      isNull = false;
-      titleController.text = item!.title;
-      bodyController.text = item!.body;
-    }
+    communityItem = (item != null)?(item!):(CommunityItem());
+    isNull = (item != null)?(false):(true);
+    titleController.text = communityItem.title;
+    bodyController.text = communityItem.body;
   }
 
 
@@ -62,6 +59,8 @@ class CommunityWritePage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Column(
                 children: [
+                  getHashTag(communityItem: communityItem),
+                  const Divider(thickness: 0.5),
                   getTitleWidget(),
                   const Divider(thickness: 0.5),
                   getBodyWidget(),
@@ -87,27 +86,26 @@ class CommunityWritePage extends StatelessWidget {
           ),
           child: const Text('완료', style: TextStyle(color: Colors.white)),
           onPressed: () {
-            final profileIMG = (user.profileImageUrl != '')
-                ? (user.profileImageUrl)
-                : (basicProfileImage);
+            final profileIMG = (user.profileImageUrl != '')?(user.profileImageUrl):(basicProfileImage);
             final nickName = (user.nickName != '') ? (user.nickName) : ("익명");
-            final addedItem = CommunityItem(
-                title: titleController.text,
-                body: bodyController.text,
-                writerID: user.uid,
-                writerNickname: nickName,
-                boardType: 0,
-                time: DateTime.now(),
-                like: 0,
-                commentNum: 0,
-                profileImage: profileIMG);
-            if (isNull) {
-              addedItem.add();
-            } else {
+
+            communityItem.profileImage = profileIMG;
+            communityItem.writerNickname = nickName;
+            communityItem.body = bodyController.text;
+            communityItem.title = bodyController.text;
+
+            if(isNull){
+              communityItem.writerID = user.uid;
+              communityItem.boardType = 0;
+              communityItem.time = DateTime.now();
+              communityItem.like = 0;
+              communityItem.add();
+            }else{
               FirebaseFirestore.instance.collection('CommunityDB').doc(item!.doc_id).update({
-                'title': addedItem.title,
-                'body': addedItem.body,
-                'time': DateTime.now()
+                'title': communityItem.title,
+                'body': communityItem.body,
+                'time': communityItem.time,
+                'hashTag' : communityItem.hashTag
               });
             }
             Navigator.pop(context2);
@@ -167,4 +165,43 @@ class CommunityWritePage extends StatelessWidget {
         ),
       ));
   }
+}
+
+class getHashTag extends StatefulWidget {
+  const getHashTag({Key? key, required this.communityItem}) : super(key: key);
+  final CommunityItem communityItem;
+
+  @override
+  State<getHashTag> createState() => _getHashTagState(communityItem);
+}
+
+class _getHashTagState extends State<getHashTag> {
+  _getHashTagState(this.communityItem){
+    selectTag = (communityItem.hashTag != '')?(communityItem.hashTag):("#잡담");
+    communityItem.hashTag = selectTag;
+  }
+
+  final CommunityItem communityItem;
+  final hashTag = ['#잡담', '#일상', '#꿀팁', '#힐링'];
+  var selectTag;
+  String? value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0), child:
+    DropdownButtonHideUnderline(child: DropdownButton<String>(
+      value: selectTag, //기본적으로 선택되어 있는 해시태그
+      isExpanded: true,
+      items: hashTag.map(buildMenuItem).toList(),
+      onChanged: (value) => setState(() {
+        selectTag = value!;
+        communityItem.hashTag = value;
+      }),
+    )
+    ),);
+  }
+
+  DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(value: item, child:
+  Text(item, style: TextStyle(color: themeColor.getColor()), textScaleFactor: 0.9,)
+  );
 }
