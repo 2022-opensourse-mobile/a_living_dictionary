@@ -40,15 +40,14 @@ class RestaurantPage extends StatelessWidget {
   }
 }
 
-/* -------------------------------- Map 공간 */
 class restaurantMap extends StatefulWidget {
-  const restaurantMap({Key? key}) : super(key: key);
+  restaurantMap({Key? key}) : super(key: key);
 
   @override
-  State<restaurantMap> createState() => _restaurantMapState();
+  State<restaurantMap> createState() => restaurantMapState();
 }
 
-class _restaurantMapState extends State<restaurantMap> {
+class restaurantMapState extends State<restaurantMap> {
   late GoogleMapController _controller;
   NearbyPlacesResponse nearbyPlacesResponse = NearbyPlacesResponse();
   MapInfo mapInfo = MapInfo();
@@ -146,6 +145,7 @@ class _restaurantMapState extends State<restaurantMap> {
     });
   }
 
+  // 좋아요 취소 시, 마커 삭제
   void deleteMarker(BuildContext context, String store) {
     markers.removeWhere((key, value) => key == MarkerId(store));
     getUserMarker(context);
@@ -226,65 +226,65 @@ class _restaurantMapState extends State<restaurantMap> {
               final mapDocument = snapshot.data!;
 
               return ListView(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(15,10,15,0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('$store', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.8),
-                        Text('${mapDocument['address']}', style: TextStyle(color: Colors.grey, height: 1.6), textScaleFactor: 1.2),
-                      ],
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(15,10,15,0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('$store', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.8),
+                          Text('${mapDocument['address']}', style: TextStyle(color: Colors.grey, height: 1.6), textScaleFactor: 1.2),
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(padding: EdgeInsets.fromLTRB(4,0,0,0),
-                    child: Row(
-                      children: [
-                        likeIcon(mapProvider, userProvider),
-                        Text('${mapDocument['like']}', textScaleFactor: 1.2),
-                      ],
+                    Padding(padding: EdgeInsets.fromLTRB(4,0,0,0),
+                      child: Row(
+                        children: [
+                          likeIcon(mapProvider, userProvider),
+                          Text('${mapDocument['like']}', textScaleFactor: 1.2),
+                        ],
+                      ),
                     ),
-                  ),
-                  Divider(thickness: 0.5),
-                  Padding(
-                    padding: EdgeInsets.all(15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('$store 후기', style:TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.4),
-                      ],
-                    )
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(15),
-                    child: StreamBuilder(
-                        stream: FirebaseFirestore.instance.collection(
-                            'MapDB').doc(id)
-                            .collection('reviewDB')
-                            .orderBy('time', descending: true)
-                            .snapshots(),
-                        builder: (context, AsyncSnapshot snapshot) {
-                          if (!snapshot.hasData)
-                            return Center(child: CircularProgressIndicator());
+                    Divider(thickness: 0.5),
+                    Padding(
+                        padding: EdgeInsets.all(15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('$store 후기', style:TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.4),
+                          ],
+                        )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(15),
+                      child: StreamBuilder(
+                          stream: FirebaseFirestore.instance.collection(
+                              'MapDB').doc(id)
+                              .collection('reviewDB')
+                              .orderBy('time', descending: true)
+                              .snapshots(),
+                          builder: (context, AsyncSnapshot snapshot) {
+                            if (!snapshot.hasData)
+                              return Center(child: CircularProgressIndicator());
 
-                          final reviewDocuments = snapshot.data!.docs;
+                            final reviewDocuments = snapshot.data!.docs;
 
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: reviewDocuments.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(
-                                    reviewDocuments[index]['content']
-                                        .toString()),
-                              );
-                            },
-                          );
-                        }
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: reviewDocuments.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  title: Text(
+                                      reviewDocuments[index]['content']
+                                          .toString()),
+                                );
+                              },
+                            );
+                          }
+                      ),
                     ),
-                  ),
-                ]
+                  ]
               );
             },
           );
@@ -319,9 +319,9 @@ class _restaurantMapState extends State<restaurantMap> {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: Text('후기 작성하기',
-                    style: TextStyle(
-                      color: themeColor.getMaterialColor(),
-                      fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          color: themeColor.getMaterialColor(),
+                          fontWeight: FontWeight.bold)),
                   content: Form(
                     key: formKey,
                     autovalidateMode: AutovalidateMode.always,
@@ -351,24 +351,101 @@ class _restaurantMapState extends State<restaurantMap> {
                         onPressed: () { Navigator.pop(context); }),
                     TextButton(child: Text('확인',
                       style: TextStyle(color: themeColor.getMaterialColor(),
-                      fontWeight: FontWeight.bold,),),
-                      onPressed: () {
-                        if(formKey.currentState!.validate()) {
-                          Timestamp timestamp = Timestamp.now();
-                          FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').add({
-                            'content': review,
-                            'writer': loginedUser.nickName,
-                            'time': timestamp,
-                          });
-                          Navigator.pop(context);
-                        }
-                      }),
+                        fontWeight: FontWeight.bold,),),
+                        onPressed: () {
+                          if(formKey.currentState!.validate()) {
+                            Timestamp timestamp = Timestamp.now();
+                            FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').add({
+                              'content': review,
+                              'writer': loginedUser.nickName,
+                              'time': timestamp,
+                            });
+                            Navigator.pop(context);
+                          }
+                        }),
                   ],
                 ),
               );
             }
         ),
       ),
+    );
+  }
+
+  // 근처 음식점 정보 위젯으로 출력
+  Widget nearbyPlacesWidget(String store) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).snapshots(),
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return Center(child: CircularProgressIndicator());
+
+        if (!snapshot.hasData)
+          return Center(child: CircularProgressIndicator());
+
+        final documents = snapshot.data!.docs;
+
+        return Consumer2<MapInfo, Logineduser>(
+            builder: (context, mapProvider, userProvider, child) {
+              return Column(
+                children: [
+                  InkWell(
+                    child: Card(
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      elevation: 0,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 9,
+                              child: Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("$store", textScaleFactor: 1.2,),
+                                    Text("${documents[0]['address']}",
+                                      textScaleFactor: 1.0,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                          color: Colors.grey
+                                      ),),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Spacer(),
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.favorite_outlined, size: 30, color: themeColor.getColor(),),
+                                    Text("${documents[0]['like'].toString()}", textScaleFactor: 1.0,),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      m_id = documents[0].id;
+                      mapInfo.setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'], documents[0]['like']);
+                      Provider.of<MapInfo>(context, listen: false).setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'], documents[0]['like']);
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => detailPage(context, store, m_id),
+                      ));
+                    },
+                  ),
+                  Divider(),
+                ],
+              );
+            }
+        );
+      },
     );
   }
 
@@ -484,87 +561,10 @@ class _restaurantMapState extends State<restaurantMap> {
     });
   }
 
-  // 근처 음식점 정보 위젯으로 출력
-  Widget nearbyPlacesWidget(Results results) {
-    String store = results.name!;
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).snapshots(),
-      builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting)
-          return Center(child: CircularProgressIndicator());
-
-        final documents = snapshot.data!.docs;
-
-        return Consumer2<MapInfo, Logineduser>(
-          builder: (context, mapProvider, userProvider, child) {
-            return Column(
-              children: [
-                InkWell(
-                  child: Card(
-                    margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                    elevation: 0,
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 9,
-                            child: Container(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("$store", textScaleFactor: 1.2,),
-                                  Text("${documents[0]['address']}",
-                                    textScaleFactor: 1.0,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                        color: Colors.grey
-                                    ),),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Spacer(),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              child: Column(
-                                children: [
-                                  Icon(Icons.favorite_outlined, size: 30, color: themeColor.getColor(),),
-                                  Text("${documents[0]['like'].toString()}", textScaleFactor: 1.0,),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  onTap: () {
-                    m_id = documents[0].id;
-                    mapInfo.setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'], documents[0]['like']);
-                    Provider.of<MapInfo>(context, listen: false).setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'], documents[0]['like']);
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => detailPage(context, store, m_id),
-                    ));
-                  },
-                ),
-                Divider(),
-              ],
-            );
-          }
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
-    // MediaQuery.of(context).p
     final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Column(
       children: [
@@ -585,10 +585,10 @@ class _restaurantMapState extends State<restaurantMap> {
                     width: isPortrait? w * 0.12 : h * 0.12,
                     height: isPortrait? w * 0.12 : h * 0.12,
                     decoration: BoxDecoration(
-                      shape: BoxShape.rectangle,
-                      border: Border.all(
-                      color: Colors.black12, width: 1
-                      )
+                        shape: BoxShape.rectangle,
+                        border: Border.all(
+                            color: Colors.black12, width: 1
+                        )
                     ),
                     child: FloatingActionButton(
                       heroTag: "location",
@@ -608,7 +608,7 @@ class _restaurantMapState extends State<restaurantMap> {
         ),
         if(nearbyPlacesResponse.results != null)
           for(int i = 0 ; i < nearbyPlacesResponse.results!.length; i++)
-            nearbyPlacesWidget(nearbyPlacesResponse.results![i]),
+            nearbyPlacesWidget(nearbyPlacesResponse.results![i].name!),
       ],
     );
   }
