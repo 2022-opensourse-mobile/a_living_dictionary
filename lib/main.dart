@@ -9,6 +9,7 @@ import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
 import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
+// import 'package:a_living_dictionary/UI/Supplementary/TempSearch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -285,11 +286,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                         style: TextStyle(color: themeColor.getColor(), fontWeight: FontWeight.bold),
                       ),
                       elevation: 0.0,
+                      
                       actions: <Widget>[
                         IconButton(
                           icon: new Icon(Icons.search),
                           onPressed: () {
-                            showSearch(context: context, delegate:Search(list));
+                            showSearch(context: context, delegate:Search());
+                            // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(TempSearch());
+                            // Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
                           },
                         )
 
