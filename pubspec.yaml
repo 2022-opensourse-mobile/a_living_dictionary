@@ -12,6 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  smooth_page_indicator: ^1.0.0+2
+
   cupertino_icons: ^1.0.2
   firebase_core: ^2.1.0
   carousel_slider: ^4.1.1
