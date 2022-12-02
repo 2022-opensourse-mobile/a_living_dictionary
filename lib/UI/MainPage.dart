@@ -3,6 +3,7 @@ import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:provider/provider.dart';
 import '../DB/CommunityItem.dart';
 import 'Supplementary/DictionaryCardPage.dart';
 import 'Supplementary/ThemeColor.dart';
@@ -124,7 +125,7 @@ class MainPage extends StatelessWidget {
                               
                               dicItemInfo = DictionaryItemInfo();
                               dicItemInfo.setInfo(documents[0].id, documents[0]['author'], documents[0]['card_num'], documents[0]['date'], documents[0]['hashtag'], documents[0]['scrapnum'], documents[0]['thumbnail'], documents[0]['title']);
-                              // Provider.of<DictionaryItemInfo>(context, listen:false).setInfo(documents[0].id, documents[0]['author'], documents[0]['card_num'], documents[0]['date'], documents[0]['hashtag'], documents[0]['scrapnum'], documents[0]['thumbnail'], documents[0]['title']);
+                              Provider.of<DictionaryItemInfo>(context, listen:false).setInfo(documents[0].id, documents[0]['author'], documents[0]['card_num'], documents[0]['date'], documents[0]['hashtag'], documents[0]['scrapnum'], documents[0]['thumbnail'], documents[0]['title']);
                               
                               PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
                               Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
