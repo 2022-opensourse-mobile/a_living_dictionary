@@ -55,7 +55,6 @@ class MainPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     carouselSlide(),
-                    weatherText(),
                     todayList(), //오늘의 최신 TIP (임시로 한 테스트용)
                     textList('인기글', HOTBOARD),
                     textList('최신글', FREEBOARD),
@@ -150,27 +149,6 @@ class MainPage extends StatelessWidget {
             items: subImg.map((item) => Container(child: Center(child: Image(image: AssetImage(item))))).toList(),
           );
         },
-      ),
-    );
-  }
-  Container weatherText() {
-    return Container(
-      height: 50,
-      alignment: Alignment.center,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Icon(
-            Icons.sunny,
-            color: Colors.orange,
-            size: 20,
-          ),
-          Text(
-            " 오늘은 날씨 맑음! 빨래하기 좋은 날~",
-            style: TextStyle(height: 2.5),
-          ),
-        ],
       ),
     );
   }
