@@ -199,7 +199,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
         child: Row(children: [
           StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection("LikeList").snapshots(),
-              builder: (context, snapshot) {
+              builder: (context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) {
                   return const CircularProgressIndicator();
                 }
@@ -323,7 +323,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id)
             .collection('CommentDB').orderBy('time', descending: true).snapshots(),
-        builder: (context, snapshot) {
+        builder: (context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
           }

@@ -391,6 +391,10 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           if (snapshot.hasError)
             return Center(child: CircularProgressIndicator());
 
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+
           final userDocuments = snapshot.data!.docs;
 
           if (userDocuments.length == 0)
@@ -434,7 +438,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                       }
                     }).toList()));
                   } else {
-                    return Text("작성한 게시글이 없습니다.");
+                    return const Text("작성한 게시글이 없습니다.");
                   }
                 }))
           ],
@@ -446,16 +450,22 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     late Logineduser user = Provider.of<Logineduser>(context, listen: false);
     String userDocID = user.doc_id;
     return Scaffold(
-        appBar: AppBar(title: Text('작성한 댓글'), elevation: 0.0),
+        appBar: AppBar(title: const Text('작성한 댓글'), elevation: 0.0),
         body: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance.collection('userInfo').doc(userDocID).collection("CommentList").snapshots(),
             builder: (context, AsyncSnapshot snap) {
               if (!snap.hasData) {
-                return CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator());
               }
               if(snap.hasError){
-                return CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator());
               }
+
+              if (snap.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+
               final userDocuments = snap.data!.docs;
               return Container(
                   child: ListView.builder(
@@ -523,9 +533,19 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                   return StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").snapshots(),
                       builder: (context, AsyncSnapshot snap) {
+
                         if (!snap.hasData) {
-                          return CircularProgressIndicator();
+                          return const Center(child: CircularProgressIndicator());
                         }
+
+                        if(snap.hasError){
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
                         final userDocuments = snap.data!.docs;
 
                         return Container(
@@ -551,10 +571,8 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                         child: InkWell(
                                           onTap: () {
                                             String clickedId = itemDocuments[0].id; // 지금 클릭한 dictionaryItem의 item_id
-                                            DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
-                                            dicItemInfo.setInfo(clickedId, itemDocuments[0]['author'], itemDocuments[0]['card_num'], itemDocuments[0]['date'], itemDocuments[0]['hashtag'], itemDocuments[0]['scrapnum'], itemDocuments[0]['thumbnail'], itemDocuments[0]['title']);
                                             Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clickedId, itemDocuments[0]['author'], itemDocuments[0]['card_num'], itemDocuments[0]['date'], itemDocuments[0]['hashtag'], itemDocuments[0]['scrapnum'], itemDocuments[0]['thumbnail'], itemDocuments[0]['title']);
-                                            PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
+                                            PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context));
                                             Navigator.push(
                                                 context, pageRouteWithAnimation.slideLeftToRight());
                                           },

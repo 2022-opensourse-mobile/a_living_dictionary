@@ -3,6 +3,7 @@ import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:provider/provider.dart';
 import '../DB/CommunityItem.dart';
 import 'Supplementary/DictionaryCardPage.dart';
 import 'Supplementary/ThemeColor.dart';
@@ -73,10 +74,10 @@ class MainPage extends StatelessWidget {
         stream: FirebaseFirestore.instance.collection('best').snapshots(),
         builder: (context, AsyncSnapshot snap) {
           if (snap.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
           if (snap.hasError) {
-            return Text(snap.error.toString());
+            return Center(child: CircularProgressIndicator());
           }
 
           final double width = MediaQuery.of(context).size.width;
@@ -85,9 +86,6 @@ class MainPage extends StatelessWidget {
           // best가 한 장이라도 있을 때
           if (documents.length != 0) {
             List slideList = documents.toList();
-            if (snap.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            }
 
             return CarouselSlider(
               options: CarouselOptions(
@@ -97,16 +95,17 @@ class MainPage extends StatelessWidget {
                 autoPlayAnimationDuration: Duration(milliseconds: 400),
                 autoPlay: true,
               ),
-              items: slideList.map((item) {
-                // item['item_id']가 id인 dictionary item을 가져와서 img필드 -> Image에 출력
-
-
+              items: slideList.map((item) { // item['item_id']가 id인 dictionary item을 가져와서 img필드 -> Image에 출력
+                
                 return StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance.collection('dictionaryItem').where('__name__', isEqualTo: item['item_id']).snapshots(),
-                  // stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(item['item_id']).snapshots(),
                   builder: (context, snap) {
                     if (snap.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
+                    }
+
+                    if (snap.hasError) {
+                      return Center(child: CircularProgressIndicator());
                     }
 
                     final documents = snap.data!.docs;
@@ -118,15 +117,12 @@ class MainPage extends StatelessWidget {
                           child: Image(image: NetworkImage(documents[0]['thumbnail'])),
                           onTap: (() {
                             String clicked_id = documents[0].id; // 지금 클릭한 dictionaryItem의 도큐먼트 id
-                            DictionaryItemInfo dicItemInfo;
 
                             var doc = FirebaseFirestore.instance.collection('dictionaryItem').doc(documents[0].id).get().then((doc) {
                               
-                              dicItemInfo = DictionaryItemInfo();
-                              dicItemInfo.setInfo(documents[0].id, documents[0]['author'], documents[0]['card_num'], documents[0]['date'], documents[0]['hashtag'], documents[0]['scrapnum'], documents[0]['thumbnail'], documents[0]['title']);
-                              // Provider.of<DictionaryItemInfo>(context, listen:false).setInfo(documents[0].id, documents[0]['author'], documents[0]['card_num'], documents[0]['date'], documents[0]['hashtag'], documents[0]['scrapnum'], documents[0]['thumbnail'], documents[0]['title']);
+                              Provider.of<DictionaryItemInfo>(context, listen:false).setInfo(documents[0].id, documents[0]['author'], documents[0]['card_num'], documents[0]['date'], documents[0]['hashtag'], documents[0]['scrapnum'], documents[0]['thumbnail'], documents[0]['title']);
                               
-                              PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
+                              PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context));
                               Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
                             });
                                   
@@ -214,7 +210,7 @@ class MainPage extends StatelessWidget {
         height: 200, //210
         child: Column(
           children: <Widget>[
-            Divider(thickness: 0.5,),
+            const Divider(thickness: 0.5,),
             Padding(
               padding: EdgeInsets.all(0),
               child: ListView(
@@ -228,9 +224,9 @@ class MainPage extends StatelessWidget {
             StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
                 builder: (context, snap) {
-                  // if (!snap.hasData) {
-                  //   return CircularProgressIndicator();
-                  // }
+                  if (!snap.hasData) {
+                    return const CircularProgressIndicator();
+                  }
 
                   if (snap.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
