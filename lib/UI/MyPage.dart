@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
+import 'package:a_living_dictionary/UI/Supplementary/CheckClick.dart';
+import 'package:a_living_dictionary/UI/Supplementary/DictionaryCardPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -39,6 +41,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   TextEditingController equalPassword = TextEditingController();
   TextEditingController _nickNameController = TextEditingController(); 
   TextEditingController _emailController = TextEditingController(); 
+  final CheckClick clickCheck = CheckClick();
 
   String defaultImgUrl = 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260';
 
@@ -144,40 +147,101 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                 if (userProvider.uid.substring(0,5) == 'kakao' || userProvider.uid.substring(0,5) == 'naver') { // 소셜 로그인 유저
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("소셜 로그인 유저는 비밀번호를 변경할 수 없습니다"),));
                 } else {    // 이메일 로그인 유저
-                  showDialog(
+                  // showDialog(
+                  //   context: context,
+                  //   builder: (context) => AlertDialog(
+                  //     title: Text('비밀번호 변경',
+                  //         style: TextStyle(
+                  //             color: themeColor.getMaterialColor(),
+                  //             fontWeight: FontWeight.bold)),
+
+                  //     content: Column(
+                  //       mainAxisSize: MainAxisSize.min,
+                  //       children: [
+                  //         Form(
+                  //           key: this.formKey,
+                  //           autovalidateMode: AutovalidateMode.always,
+                  //           child: TextFormField(
+                  //             controller: _emailController,
+                  //             onSaved: (email) {myEmail = email!;},
+                  //             keyboardType: TextInputType.emailAddress,
+                  //             validator: (value) => validateEmail(value),
+                  //             cursorColor: themeColor.getMaterialColor(),
+                  //             decoration: InputDecoration(
+                  //               hintText: '이메일 입력',      //  (abcd@naver.com)
+                  //               filled: true,
+                  //               fillColor: Colors.white,
+                  //               enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                  //               focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                  //             ),
+                  //           ),
+                  //         ),
+                  //         SizedBox(height: 10,),
+                  //         Align(
+                  //           alignment: Alignment.centerLeft,
+                  //           child: Text(
+                  //             "- 비밀번호 재설정 메일을 보냅니다" ,
+                  //             style: TextStyle(
+                  //               color: themeColor.getMaterialColor(),
+                  //               fontWeight: FontWeight.normal,
+                  //               fontSize: 12)
+                  //           ),
+                  //         ),
+                  //         Align(
+                  //           alignment: Alignment.centerLeft,
+                  //           child: Text(
+                  //             "- 메일이 오지 않는다면 스팸함을 확인해주세요",
+                  //             style: TextStyle(
+                  //               color: themeColor.getMaterialColor(),
+                  //               fontWeight: FontWeight.normal,
+                  //               fontSize: 12)
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //     actions: [
+                  //       TextButton(child: Text('취소',
+                  //         style: TextStyle(color: themeColor.getMaterialColor(),
+                  //           fontWeight: FontWeight.bold,),),
+                  //           onPressed: () { Navigator.pop(context); }),
+                  //       TextButton(child: Text('확인', //'전송'
+                  //         style: TextStyle(color: themeColor.getMaterialColor(),
+                  //           fontWeight: FontWeight.bold,
+                  //           )
+                  //           ,), onPressed: () {
+                  //         //이메일 형식을 잘 입력했으면
+                  //           if(this.formKey.currentState!.validate()) {
+
+                  //             resetPassword(_emailController.text);
+                  //             _emailController.clear();
+
+                  //             Navigator.pop(context);
+                  //             // snackBar('작성하신 이메일로 비밀번호를 전송했습니다');
+                  //           }
+                  //       })
+                  //     ],
+                  //   ),
+                  // );
+                
+                 showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text('비밀번호 변경',
+                      title: Text('비밀번호 재설정 메일을 보냅니다',
                           style: TextStyle(
-                              color: themeColor.getMaterialColor(),
-                              fontWeight: FontWeight.bold)),
+                            color: Colors.black,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold)
+                              
+                          ),
 
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Form(
-                            key: this.formKey,
-                            autovalidateMode: AutovalidateMode.always,
-                            child: TextFormField(
-                              controller: _emailController,
-                              onSaved: (email) {myEmail = email!;},
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (value) => validateEmail(value),
-                              cursorColor: themeColor.getMaterialColor(),
-                              decoration: InputDecoration(
-                                hintText: '이메일 입력',      //  (abcd@naver.com)
-                                filled: true,
-                                fillColor: Colors.white,
-                                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
-                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
-                              ),
-                            ),
-                          ),
                           SizedBox(height: 10,),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "- 비밀번호 재설정 메일을 보냅니다" ,
+                              "- 계정에 등록된 이메일주소로 메일을 보냅니다" ,
                               style: TextStyle(
                                 color: themeColor.getMaterialColor(),
                                 fontWeight: FontWeight.normal,
@@ -197,28 +261,27 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                         ],
                       ),
                       actions: [
-                        TextButton(child: Text('취소',
-                          style: TextStyle(color: themeColor.getMaterialColor(),
-                            fontWeight: FontWeight.bold,),),
-                            onPressed: () { Navigator.pop(context); }),
                         TextButton(child: Text('확인', //'전송'
                           style: TextStyle(color: themeColor.getMaterialColor(),
                             fontWeight: FontWeight.bold,
                             )
                             ,), onPressed: () {
-                          //이메일 형식을 잘 입력했으면
-                            if(this.formKey.currentState!.validate()) {
 
-                              resetPassword(_emailController.text);
+                              resetPassword(userProvider.email);
                               _emailController.clear();
 
                               Navigator.pop(context);
-                              // snackBar('작성하신 이메일로 비밀번호를 전송했습니다');
                             }
-                        })
+                        ),
+                        TextButton(child: Text('취소',
+                          style: TextStyle(color: themeColor.getMaterialColor(),
+                            fontWeight: FontWeight.bold,),),
+                            onPressed: () { Navigator.pop(context); }),
                       ],
                     ),
                   );
+                
+                
                 }
               }
             ),
@@ -448,149 +511,14 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   }
 
 
-
-  Widget pageView(BuildContext context, DictionaryItemInfo? dicItemInfo) {
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Consumer2<DictionaryItemInfo, Logineduser>(
-          builder: (context, dicProvider, userProvider, child) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(dicProvider.title, style: TextStyle(fontSize: 17)),
-                Expanded(child: SizedBox()),
-                Text(dicProvider.scrapnum.toString(), style: TextStyle(fontSize: 17), textAlign: TextAlign.center,),
-                StreamBuilder(
-                  stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id)
-                            .snapshots(),
-                  builder: (context, snap) {
-                    if (!snap.hasData) {
-                      return CircularProgressIndicator();
-                    }
-                    
-                    if (snap.data!.size != 0) {   // user가 해당 게시글을 스크랩한 기록이 없는 경우
-                      return IconButton(
-                        icon: const Icon(
-                          // if (context.watch<DictionaryItemInfo>)
-                          Icons.bookmark_outlined,
-                          color: Colors.amberAccent,
-                          size: 30,   
-                        ),
-                        onPressed: (){
-                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id).get().then((value) {
-                            value.docs.forEach((element) {
-                              FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList")
-                                .doc(element.id)
-                                .delete();
-                            });
-                          });
-                          dicProvider.subScrapNum(dicProvider.doc_id);
-                        }
-                      );
-                    } else {                          // user가 해당 게시글을 스크랩한 기록이 있는 경우
-                      return IconButton(
-                        icon: const Icon(
-                        // if (context.watch<DictionaryItemInfo>)
-                          Icons.bookmark_outline_rounded,
-                          color: Colors.amberAccent,
-                          size: 30,   
-                        ),
-                        onPressed: (){
-                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").add({'docID' : dicProvider.doc_id});
-                          
-                          dicProvider.addScrapNum(dicProvider.doc_id);
-                        });
-                    }   
-                  },
-                  )
-                  ],
-                );
-          }
-        ),
-         
-        titleSpacing: 0,
-        elevation: 0,
-      ),
-      body: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dicItemInfo!.doc_id).collection('dictionaryCard').orderBy("card_id", descending: false).snapshots(),
-          builder: (context, AsyncSnapshot snap) {
-            List cardDocList;
-            if (snap.hasError) {
-              return Text(snap.error.toString()); 
-            }
-            
-            final documents = snap.data!.docs;
-
-            if (!snap.hasData || snap.data.size == 0) {
-              // return nonExistentCard();
-              return Text("error");
-            }
-            else{
-              cardDocList = documents.toList();
-              if (snap.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              }
-
-              return PageView.builder(
-                controller: PageController(
-                  initialPage: 0,
-                ),
-                itemCount: cardDocList.length,
-                itemBuilder: (context, index) {
-                  return Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(cardDocList[0]['img']),
-                            // 카드 맨 첫 번째 사진으로 배경 설정
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        child: ClipRect(
-                          child: BackdropFilter(
-                            filter:
-                                ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.5)),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Image.network(
-                                cardDocList[index]['img']), // 카드 해당 이미지 출력
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Text(
-                                cardDocList[index]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
-                                style: TextStyle(color: Colors.white,),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              );
-            }
-          }),
-    );
-  }
-
   Widget myScrap () {
     final deviceSize = MediaQuery.of(context).size;
     var width = deviceSize.width; // 세로모드 및 가로모드 높이
 
+    var height = deviceSize.height;
+    var portraitH = deviceSize.height / 3.5; // 세로모드 높이
+    var landscapeH = deviceSize.height / 1.2; // 가로모드 높이
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Scaffold(
       appBar: AppBar(title: Text('백과사전 스크랩 목록'), elevation: 0.0),
       body: ListView(
@@ -622,6 +550,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                       }
                                       final itemDocuments = snap.data!.docs;
 
+                                      DictionaryCardPage card = DictionaryCardPage(width, height, portraitH, landscapeH, isPortrait);
                                       return Container(
                                         margin: EdgeInsets.symmetric(horizontal: 0),
                                         width: width / 2,
@@ -632,7 +561,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                             DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
                                             dicItemInfo.setInfo(clickedId, itemDocuments[0]['author'], itemDocuments[0]['card_num'], itemDocuments[0]['date'], itemDocuments[0]['hashtag'], itemDocuments[0]['scrapnum'], itemDocuments[0]['thumbnail'], itemDocuments[0]['title']);
                                             Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clickedId, itemDocuments[0]['author'], itemDocuments[0]['card_num'], itemDocuments[0]['date'], itemDocuments[0]['hashtag'], itemDocuments[0]['scrapnum'], itemDocuments[0]['thumbnail'], itemDocuments[0]['title']);
-                                            PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context, dicItemInfo));
+                                            PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context, dicItemInfo));
                                             Navigator.push(
                                                 context, pageRouteWithAnimation.slideLeftToRight());
                                           },

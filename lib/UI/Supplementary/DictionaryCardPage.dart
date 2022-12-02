@@ -276,7 +276,6 @@ class DictionaryCardPage {
         });
   }
   Widget pageView(BuildContext context, DictionaryItemInfo? dicItemInfo) {
-
     return Scaffold(
       appBar: AppBar(
         title: Consumer2<DictionaryItemInfo, Logineduser>(
@@ -345,16 +344,17 @@ class DictionaryCardPage {
           stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dicItemInfo!.doc_id).collection('dictionaryCard').orderBy("card_id", descending: false).snapshots(),
           builder: (context, AsyncSnapshot snap) {
             List cardDocList;
+
             if (snap.hasError) {
               return Text(snap.error.toString()); 
             }
             
-            final documents = snap.data!.docs;
-
-            if (!snap.hasData || snap.data.size == 0) {
+            if (!snap.hasData || snap.data == null || snap.data!.size == 0) {
               return nonExistentCard();
             }
             else{
+              final documents = snap.data!.docs;
+
               cardDocList = documents.toList();
               if (snap.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator();
