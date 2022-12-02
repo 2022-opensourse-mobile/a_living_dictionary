@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 
 //https://firebase.google.com/codelabs/firebase-auth-in-flutter-apps#5
@@ -16,7 +17,9 @@ class Authentication extends StatelessWidget {
    Authentication({super.key});
 
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _nickNameController = TextEditingController(); 
+  TextEditingController _nickNameController = TextEditingController();
+
+
   
   
 
@@ -137,67 +140,7 @@ class Authentication extends StatelessWidget {
               return Container(color: Colors.white,);
             }
 
-            return Container(
-              color: Colors.white,
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(height: 50),
-                  Text("사용 Tip", style: TextStyle( fontSize: 25, color: Colors.black, fontWeight: FontWeight.bold)),
-                  Text("자취 백과사전 환영합니다!", style: TextStyle(fontSize: 25, color: Colors.black, fontWeight: FontWeight.normal)),
-                  Row(
-                    children: [
-                      Expanded(child: SizedBox()),
-                      TextButton(
-                        onPressed: () async {
-                          // await viewModel.logout();
-                          // setState((){}); // 화면 갱신만 하는 것
-        
-                          // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
-                          String user_id = FirebaseAuth.instance.currentUser!.uid;
-        
-                          // 금방 로그인한 유저에 대한 정보
-                          // 데이터베이스에 유저가 저장되어있는지 확인
-                          await FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-                            String doc_id = '';
-        
-                            if (snap.size == 0) { // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                              FirebaseFirestore.instance.collection('userInfo').add({
-                                'uid': user_id, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260'
-                              }).then((value) {
-                                doc_id =  value.id.toString();
-                                FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
-                                  'docID': doc_id
-                                });
-                              });
-                              
-                            }
-        
-        
-        
-                            // snap.docs.forEach((doc) {
-                            //   loginedUser.nickName = doc['nickName'];
-                            //   loginedUser.email = doc['email'];
-                            //   loginedUser.doc_id = doc.id;
-                            // });
-                            }
-                          );
-        
-                          
-        
-                          Navigator.pop(context);
-        
-                        }, 
-                        child:  Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-                          child: Text('skip',  style: TextStyle(fontSize: 20, color: Colors.black),))
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            );
+            return onboardingScreen();
           }
         );
         
@@ -310,5 +253,176 @@ class Authentication extends StatelessWidget {
   
         
 
+  }
+}
+
+
+
+//TODO: 이미지 가로버전에서 오버플로우 되는 거 고치기
+class onboardingScreen extends StatefulWidget {
+  const onboardingScreen({Key? key}) : super(key: key);
+
+  @override
+  State<onboardingScreen> createState() => _onboardingScreenState();
+}
+
+class _onboardingScreenState extends State<onboardingScreen> {
+  final controller = PageController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.only(bottom: 80),
+            child: PageView(
+              controller: controller,
+              children: [
+
+                buildPage(
+                    context: context,
+                    urlImage: 'assets/page1.png',
+                    title: '백과사전',
+                    subtitle: '자취에 대한 정보들을 한번에!'
+                ),
+
+                buildPage(
+                    context: context,
+                    urlImage: 'assets/page1.png',
+                    title: '커뮤니티',
+                    subtitle: '자유롭게 소통할 수 있어요'
+                ),
+
+                buildPage(
+                    context: context,
+                    urlImage: 'assets/page1.png',
+                    title: '맛집지도',
+                    subtitle: '내 주변 맛집들을 찾아보세요'
+                ),
+
+              ],
+            ),
+          ),
+        ),
+        bottomSheet: Container(
+          height: 70,
+          color: Colors.white,
+          child: Column(
+            children: [
+                  Center(
+                    child: SmoothPageIndicator(controller: controller, count: 3,
+                      effect: SlideEffect(
+                        dotHeight: 7,
+                        dotWidth: 7,
+                        dotColor: Colors.black12,
+                        activeDotColor: themeColor.getColor(),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                                    onPressed: () async {
+                                      // await viewModel.logout();
+                                      // setState((){}); // 화면 갱신만 하는 것
+
+                                      // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
+                                      String user_id = FirebaseAuth.instance.currentUser!.uid;
+
+                                      // 금방 로그인한 유저에 대한 정보
+                                      // 데이터베이스에 유저가 저장되어있는지 확인
+                                      await FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
+                                        String doc_id = '';
+
+                                        if (snap.size == 0) { // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                                          FirebaseFirestore.instance.collection('userInfo').add({
+                                            'uid': user_id, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260'
+                                          }).then((value) {
+                                            doc_id =  value.id.toString();
+                                            FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                                              'docID': doc_id
+                                            });
+                                          });
+
+                                        }
+
+
+
+                                        // snap.docs.forEach((doc) {
+                                        //   loginedUser.nickName = doc['nickName'];
+                                        //   loginedUser.email = doc['email'];
+                                        //   loginedUser.doc_id = doc.id;
+                                        // });
+                                        }
+                                      );
+
+
+
+                                      Navigator.pop(context);
+
+                                    },
+                                    child:  Container(
+                                      padding: EdgeInsets.all(5),
+                                      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+                                      child: Text('Skip',  style: TextStyle(fontSize: 20, color: Colors.black),))
+                                    ),
+                    ],
+                  ),
+            ],
+          ),
+        )
+    );
+  }
+
+  Widget buildPage({
+    required String urlImage,
+    required String title,
+    required String subtitle,
+    required BuildContext context,
+  }) {
+    return
+        Container(
+          color: Colors.red,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 60),
+              Text(title,
+                  style: TextStyle(
+                      color: themeColor.getColor(),
+                      fontWeight: FontWeight.bold),
+                  textScaleFactor: 1.8),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                child: Text(subtitle,
+                    style: TextStyle(color: Colors.black38),
+                    textScaleFactor: 1.4),
+              ),
+              SizedBox(height: 60),
+              Container(
+                width: double.infinity,
+                color: Colors.blue,
+                child:
+                    //TODO: 이미지 출력
+                    Image.asset(
+                      urlImage,
+                      fit: BoxFit.fill,
+                      // width: double.infinity,
+                      //height: MediaQuery.of(context).size.height * 0.3,
+                    ),
+              )
+            ],
+          ),
+        );
   }
 }
