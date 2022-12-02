@@ -287,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       ),
                       elevation: 0.0,
                       
-                      actions: <Widget>[
+                       actions: <Widget>[
                         _curIndex != 3 && _curIndex != 4
                           ? IconButton(
                               icon: new Icon(Icons.search),
