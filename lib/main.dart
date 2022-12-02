@@ -291,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                         IconButton(
                           icon: new Icon(Icons.search),
                           onPressed: () {
-                            showSearch(context: context, delegate:Search());
+                            showSearch(context: context, delegate:Search(list));
                             // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(TempSearch());
                             // Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
                           },

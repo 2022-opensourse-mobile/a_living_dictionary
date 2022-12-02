@@ -351,7 +351,7 @@ class DictionaryCardPage {
             
             final documents = snap.data!.docs;
 
-            if (!snap.hasData || snap.data.size == 0) {
+            if (!snap.hasData || snap.data!.size == 0) {
               return nonExistentCard();
             }
             else{

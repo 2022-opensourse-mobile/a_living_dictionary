@@ -26,7 +26,7 @@ class MainPage extends StatelessWidget {
   late List<String> items;
   late TabController tabController;
   var width, height, portraitH, landscapeH;
-  var isPortrait;
+  var isPortrait;            
 
   static const FREEBOARD = 0;
   static const HOTBOARD = 1;
@@ -67,6 +67,7 @@ class MainPage extends StatelessWidget {
           },
         ));
   }
+
   Widget carouselSlide() {
     return Container(
       child: StreamBuilder(
@@ -133,9 +134,6 @@ class MainPage extends StatelessWidget {
                       })))
                     );
                   });
-
-
-                    
               }).toList(),
             );
           }
