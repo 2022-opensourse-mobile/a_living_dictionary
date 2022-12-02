@@ -111,14 +111,22 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
       Container(
         width: (width > 750) ? (750) : (width),
         alignment: Alignment.centerLeft,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(15, 10, 0, 10),
-              child: Text(title, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
+            Padding(padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+              child: Text(item.hashTag, style: TextStyle(color: themeColor.getColor()), textScaleFactor: 1.0)
             ),
-            getModifyBtn(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 10, 0, 10),
+                  child: Text(title, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
+                ),
+                getModifyBtn(),
+              ],
+            ),
           ],
         ),
       ),

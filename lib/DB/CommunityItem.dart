@@ -15,7 +15,6 @@ class CommunityItem{
   DateTime? time;
   int boardType = 0;
   String hashTag = '';
-  int commentNum = 0;
   String profileImage;
 
 
@@ -25,16 +24,14 @@ class CommunityItem{
     this.body = '',
     this.like = 0,
     this.boardType = 0,
-    this.hashTag = '',
+    this.hashTag = "#잡담",
     this.doc_id = '',
     this.writerNickname = '',
     this.time,
-    this.commentNum = 0,
     this.profileImage = ''
   });
 
 
-//
   void add() {
     Timestamp stamp = Timestamp.fromDate(time!);
     FirebaseFirestore.instance.collection('CommunityDB').add({
@@ -46,7 +43,6 @@ class CommunityItem{
       'boardType':boardType,
       'hashTag':hashTag,
       'writer_nickname':writerNickname,
-      'commentNum' : commentNum,
       'profileImage' : profileImage
     }).then((value) => FirebaseFirestore.instance.collection('CommunityDB').doc(value.id).update({'doc_id':value.id}));
 
@@ -73,7 +69,6 @@ class CommunityItem{
         time : stamp.toDate(),
         boardType : doc['boardType'],
         hashTag : doc['hashTag'],
-        commentNum: doc['commentNum']
     );
     if(item.like >= 10 && item.boardType == 0){
       item.boardType = 1;
@@ -138,7 +133,18 @@ class CommunityItem{
       child: Column(
         children: [
           ListTile(
-            title: Text(title.toString()),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
+                    child: Text(hashTag, style: TextStyle(color: themeColor.getColor()), textScaleFactor: 0.8)
+                ),
+                Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 2),
+                    child: Text(title.toString()),
+                ),
+              ],
+            ),
+
             subtitle: Text(omittedBody),
             shape: const RoundedRectangleBorder(
                 side: BorderSide(style: BorderStyle.none)
