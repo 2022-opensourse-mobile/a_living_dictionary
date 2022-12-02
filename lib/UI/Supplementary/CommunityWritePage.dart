@@ -12,7 +12,7 @@ ThemeColor themeColor = ThemeColor();
 class CommunityWritePage extends StatelessWidget {
   final BuildContext context2;
   late CommunityItem? item;
-  late final width;
+  var width;
   late final isNull;
   final TextEditingController titleController = TextEditingController();
   final TextEditingController bodyController = TextEditingController();
@@ -24,7 +24,6 @@ class CommunityWritePage extends StatelessWidget {
       isNull = true;
     }
     else {
-      print("here!!");
       isNull = false;
       titleController.text = item!.title;
       bodyController.text = item!.body;
@@ -132,7 +131,7 @@ class CommunityWritePage extends StatelessWidget {
   }
   Widget getBodyWidget(){
     return SizedBox(
-      width: double.infinity,
+      width: width,
       height: 430,
       child: TextFormField(
         cursorColor: themeColor.getMaterialColor(),
