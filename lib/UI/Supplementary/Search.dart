@@ -185,14 +185,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: InkWell(
                   onTap: () {
                     String clicked_id = searchResults[index].id;
-                    DictionaryItemInfo dicItemInfo = DictionaryItemInfo();
-                    dicItemInfo.setInfo(clicked_id, searchResults[index]['author'], searchResults[index]['card_num'], searchResults[index]['date'],
-                        searchResults[index]['hashtag'], searchResults[index]['scrapnum'], searchResults[index]['thumbnail'], searchResults[index]['title']);
                     Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, searchResults[index]['author'], searchResults[index]['card_num'], searchResults[index]['date'],
                         searchResults[index]['hashtag'], searchResults[index]['scrapnum'], searchResults[index]['thumbnail'], searchResults[index]['title']);
 
                     PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(
-                        dicCard.DictionaryCardPage(w, h, portraitH, landscapeH, isPortrait).pageView(context, dicItemInfo));
+                        dicCard.DictionaryCardPage(w, h, portraitH, landscapeH, isPortrait).pageView(context));
                     Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
                   },
                   child: Card(
