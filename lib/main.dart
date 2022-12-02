@@ -287,16 +287,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       ),
                       elevation: 0.0,
                       
-                      actions: <Widget>[
-                        IconButton(
-                          icon: new Icon(Icons.search),
-                          onPressed: () {
-                            showSearch(context: context, delegate:Search(list));
-                            // PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(TempSearch());
-                            // Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
-                          },
-                        )
-
+                       actions: <Widget>[
+                        _curIndex != 3 && _curIndex != 4
+                          ? IconButton(
+                              icon: new Icon(Icons.search),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(_curIndex)));
+                              },
+                            ) : Expanded(child: Container(), flex: 0,),
                       ]
                   ),
                   body: TabBarView(

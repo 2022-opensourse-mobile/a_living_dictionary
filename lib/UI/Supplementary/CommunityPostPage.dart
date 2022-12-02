@@ -288,6 +288,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                         if(commentController.text == '') return;
                         final it = CommentItem(writerID: user.uid,
                             writerNickname: user.nickName,
+                            profileImage: user.profileImageUrl,
                             body: commentController.text,
                             time:DateTime.now(),
                             change: false
@@ -352,7 +353,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                   (TextFormField(controller: commentModifyController)):
                   (Text(commentItem.body, style: TextStyle(fontSize: 14, color: charColor))),
                 leading: CircleAvatar(
-                  backgroundImage: NetworkImage(item.profileImage), //프로필 사진
+                  backgroundImage: NetworkImage(commentItem.profileImage), //프로필 사진
                 ),
                 minVerticalPadding: 0,
               ),
