@@ -443,7 +443,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           final userDocuments = snapshot.data!.docs;
 
           if (userDocuments.length == 0)
-            return Center(child: Text("좋아요 목록이 없습니다", textScaleFactor: 1.2,));
+            return Center(child: Text("좋아요 목록이 없습니다", textScaleFactor: 1.0,));
 
           return SingleChildScrollView(
             child:Column(
