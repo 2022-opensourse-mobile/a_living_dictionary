@@ -125,7 +125,12 @@ class CommunityItem{
 
 
   Widget build(BuildContext context, {String? commentItemID}) {
-    String timeText = '${time!.hour.toString()}:${time!.minute.toString()}';
+    int hour = time!.hour;
+    int minute = time!.minute;
+    String hourText = (hour < 10)?("0$hour"):("$hour");
+    String minuteText = (minute < 10)?("0$minute"):("$minute");
+
+    String timeText = "$hourText:$minuteText";
     String omittedBody = getOmittedBody();
 
     return Padding(
@@ -139,7 +144,7 @@ class CommunityItem{
                 Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
                     child: Text(hashTag, style: TextStyle(color: themeColor.getColor()), textScaleFactor: 0.8)
                 ),
-                Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 2),
+                Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
                     child: Text(title.toString()),
                 ),
               ],
@@ -159,7 +164,7 @@ class CommunityItem{
               Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
             },
           ),
-          const Divider(thickness: 1.0)
+          const Divider(thickness: 0.5)
         ],
       ),
     );
@@ -185,10 +190,8 @@ class CommunityItem{
           trailing: Text(t),
           onTap: (){
             String tabName = getTabName(boardType);
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CommunityPostPage(tabName, this))
-            );
+            PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityPostPage(tabName, this));
+            Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
           },
         ));
   }

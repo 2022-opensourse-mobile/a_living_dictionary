@@ -11,13 +11,12 @@ import 'Supplementary/PageRouteWithAnimation.dart';
 
 ThemeColor themeColor = ThemeColor();
 
-
 List<String> subImg = [
-  'assets/1.png',
-  'assets/2.png',
-  'assets/3.png',
-  'assets/4.png',
-  'assets/5.png',
+  'assets/1.jpg',
+  'assets/2.jpg',
+  'assets/3.jpg',
+  'assets/4.jpg',
+  'assets/5.jpg',
 ];
 
 // w=1951&q=80
@@ -59,7 +58,6 @@ class MainPage extends StatelessWidget {
                     todayList(), //오늘의 최신 TIP (임시로 한 테스트용)
                     textList('인기글', HOTBOARD),
                     textList('최신글', FREEBOARD),
-                    const Divider(thickness: 0.5),
                   ],
                 ),
               ),
@@ -150,13 +148,13 @@ class MainPage extends StatelessWidget {
   }
   Widget textPrint(String text, int i) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+      padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             '$text',
-            textScaleFactor: 1.22,
+            textScaleFactor: 1.3,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           Container(
@@ -194,10 +192,6 @@ class MainPage extends StatelessWidget {
               ),
               textPrint('오늘의 최신 TIP', 1),
               card.mainPostList(context, 2),
-              // textPrint('인기글'),
-              // Divider(thickness: 0.5,),
-              // textPrint('최신글'),
-              // Divider(thickness: 0.5,),
             ],
           );
         },
@@ -207,7 +201,7 @@ class MainPage extends StatelessWidget {
   Container textList(String communityTitle, int boardType) {
     CommunityItem p = CommunityItem();
     return Container(
-        height: 200, //210
+        height: 230, //230
         child: Column(
           children: <Widget>[
             const Divider(thickness: 0.5,),

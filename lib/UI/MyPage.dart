@@ -54,7 +54,9 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
         children: [
 
           appID(),
+          appDictionary(),
           appCommunity(),
+          appMap(),
           appAccount(),
           appGuide(),
           appLogout(),
@@ -72,7 +74,12 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: NetworkImage(userProvider.profileImageUrl), //프로필 사진
+                  radius: 20,
+                  backgroundColor: Color(0xffe0e0e0),
+                  child: CircleAvatar(
+                    radius: 19.5,
+                    backgroundImage: NetworkImage(userProvider.profileImageUrl), //프로필 사진
+                ),
                 ),
                 title: Text(userProvider.nickName, style: TextStyle(fontWeight: FontWeight.bold),), //닉네임 출력
               ),
@@ -83,34 +90,62 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     );
   }
 
-  Widget appCommunity() { //커뮤니티 설정
+  Widget appDictionary() { //백과사전 설정
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ListTile(title: Text('사전 & 커뮤니티 & 맛집지도',
+        ListTile(title: Text('백과사전',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: themeColor.getColor(),
               leadingDistribution: TextLeadingDistribution.even,
             ),
             textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
-        ListTile(title: const Text('사전 스크랩 목록'), onTap: (){
+        ListTile(title: const Text('백과사전 스크랩 목록'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myScrap());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
+        Divider(thickness: 0.5,),
+      ],
+    );
+  }
+
+  Widget appCommunity() { //커뮤니티 설정
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(title: Text('커뮤니티',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: themeColor.getColor(),
+              leadingDistribution: TextLeadingDistribution.even,
+            ),
+            textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
         ListTile(title: const Text('작성한 게시물'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myPosting());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
-          // Navigator.push(
-          //     context,
-          //     MaterialPageRoute(builder: (context) => myPosting())
-          // );
         }),
-        ListTile(title: const Text('작성한 댓글'), onTap: (){
+        ListTile(title: const Text('댓글 단 게시물'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myComment());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
-        ListTile(title: Text('맛집지도 좋아요 목록'), onTap: (){
+        Divider(thickness: 0.5,),
+      ],
+    );
+  }
+
+  Widget appMap() { //맛집지도 설정
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(title: Text('맛집지도',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: themeColor.getColor(),
+              leadingDistribution: TextLeadingDistribution.even,
+            ),
+            textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
+        ListTile(title: Text('맛집 좋아요 목록'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myLike());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
@@ -126,7 +161,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
       await FirebaseAuth.instance.sendPasswordResetEmail(email:email);
       snackBar('작성하신 이메일로 비밀번호를 전송했습니다');
     } on FirebaseAuthException catch(e)  {
-      snackBar('잘못된 이메일 입니다.');
+      snackBar('잘못된 이메일입니다');
     }
 
     
@@ -231,57 +266,52 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                  showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text('비밀번호 재설정 메일을 보냅니다',
+                      title: Text('비밀번호 재설정 메일을 보냅니다',
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold)
-                              
-                          ),
+                              color: themeColor.getMaterialColor(),
+                              fontWeight: FontWeight.bold)),
 
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SizedBox(height: 10,),
+                          //SizedBox(height: 10,),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "- 계정에 등록된 이메일주소로 메일을 보냅니다" ,
+                              "※ 계정에 등록된 이메일 주소로 메일을 보냅니다" ,
                               style: TextStyle(
-                                color: themeColor.getMaterialColor(),
-                                fontWeight: FontWeight.normal,
-                                fontSize: 12)
+                                color: Colors.black,
+                                fontWeight: FontWeight.normal,), textScaleFactor: 0.8
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "- 메일이 오지 않는다면 스팸함을 확인해주세요",
+                              "※ 메일이 오지 않는다면 스팸함을 확인해주세요",
                               style: TextStyle(
-                                color: themeColor.getMaterialColor(),
-                                fontWeight: FontWeight.normal,
-                                fontSize: 12)
+                                color: Colors.black,
+                                fontWeight: FontWeight.normal,), textScaleFactor: 0.8
                             ),
                           ),
                         ],
                       ),
                       actions: [
-                        TextButton(child: Text('확인', //'전송'
-                          style: TextStyle(color: themeColor.getMaterialColor(),
-                            fontWeight: FontWeight.bold,
-                            )
-                            ,), onPressed: () {
-
-                              resetPassword(userProvider.email);
-                              // _emailController.clear();
-
-                              Navigator.pop(context);
-                            }
-                        ),
                         TextButton(child: Text('취소',
                           style: TextStyle(color: themeColor.getMaterialColor(),
                             fontWeight: FontWeight.bold,),),
                             onPressed: () { Navigator.pop(context); }),
+                        TextButton(child: Text('확인', //'전송'
+                          style: TextStyle(color: themeColor.getMaterialColor(),
+                            fontWeight: FontWeight.bold,
+                          )
+                          ,), onPressed: () {
+
+                          resetPassword(userProvider.email);
+                          // _emailController.clear();
+
+                          Navigator.pop(context);
+                        }
+                        ),
                       ],
                     ),
                   );
@@ -315,11 +345,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               leadingDistribution: TextLeadingDistribution.even,
             ),
             textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
-        ListTile(title: const Text('공지 사항'), onTap: (){
-          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myNotice());
-          Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
-        }),
-        ListTile(title: const Text('앱 이용 규칙'), onTap: (){
+        ListTile(title: const Text('앱 이용규칙'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myAppRule());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
@@ -379,7 +405,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     String userDocID = user.doc_id;
     return Scaffold(
       appBar: AppBar(
-        title: Text('맛집지도 좋아요 목록'),
+        title: Text('맛집 좋아요 목록'),
         elevation: 0.0,
       ),
       body: StreamBuilder(
@@ -438,7 +464,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                       }
                     }).toList()));
                   } else {
-                    return const Text("작성한 게시글이 없습니다.");
+                    return const Text("작성한 게시글이 없습니다");
                   }
                 }))
           ],
@@ -450,7 +476,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     late Logineduser user = Provider.of<Logineduser>(context, listen: false);
     String userDocID = user.doc_id;
     return Scaffold(
-        appBar: AppBar(title: const Text('작성한 댓글'), elevation: 0.0),
+        appBar: AppBar(title: const Text('댓글 단 게시물'), elevation: 0.0),
         body: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance.collection('userInfo').doc(userDocID).collection("CommentList").snapshots(),
             builder: (context, AsyncSnapshot snap) {
@@ -805,10 +831,15 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               padding: EdgeInsets.all(10),
               child: Center(
                 child: CircleAvatar(
-                  backgroundImage: NetworkImage(userProvider.profileImageUrl), //TODO: 프로필 이미지
-                  minRadius: 80,
-                  maxRadius: 120,
-                ),
+                  minRadius: 80.5,
+                  maxRadius: 120.5,
+                  backgroundColor: Color(0xffe0e0e0),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(userProvider.profileImageUrl), //TODO: 프로필 이미지
+                    minRadius: 80,
+                    maxRadius: 120,
+                  ),
+                )
               ),),
               
               TextButton(
@@ -870,7 +901,6 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                         ],
                                       ),
                                     );
-                                
                                 Navigator.pop(context);
                               },
                             ),
@@ -892,26 +922,15 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     );
   }
 
-  Widget myNotice() {
-    return Scaffold(
-      appBar: AppBar(title: Text('공지 사항'), elevation: 0.0),
-      body: ListView(
-        children: [
-          Text('공지 사항 페이지', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
-        ],
-      ),
-    );
-  }
-
   Widget myAppRule() {
     return Scaffold(
-      appBar: AppBar(title: Text('앱 이용 규칙'), elevation: 0.0),
+      appBar: AppBar(title: Text('앱 이용규칙'), elevation: 0.0),
       body: ListView(
         children: [
-          LiteraryWorld('앱 이용 규칙', appRuleText),
-          LiteraryWorld('백과사전 이용 규칙', dontDoingText),
-          LiteraryWorld('커뮤니티 이용 규칙', communityRuleText),
-          LiteraryWorld('혼밥맵 이용 규칙', dontDoingText),
+          LiteraryWorld('앱 이용규칙', appRuleText),
+          LiteraryWorld('백과사전 이용규칙', dictionaryRuleText),
+          LiteraryWorld('커뮤니티 이용규칙', communityRuleText),
+          LiteraryWorld('맛집지도 이용규칙', mapRuleText),
           LiteraryWorld('금지사항', dontDoingText),
           LiteraryWorld('기타', otherRuleText)
         ],
@@ -921,17 +940,15 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
   Widget LiteraryWorld(String subTitle, String content) {
     return Padding(
-      padding: EdgeInsets.all(10.0),
+      padding: EdgeInsets.all(15.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              subTitle,  
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20
-            ), 
-            textScaleFactor: 1.0 
-          )),
+          Text(
+              subTitle,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textScaleFactor: 1.3
+          ),
           SizedBox(height: 10,),
           Text(content)
         ],
@@ -1147,57 +1164,56 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   }
 
   String appRuleText = '''
-  커뮤니티 이용규칙은 쾌적한 서비스 운영을 위해 주기적으로 업데이트 됩니다.
-  회사는 이용자가 커뮤니티 운영 시스템, 금지 행위, 게시물 작성`수정`삭제 규칙 등 커뮤니티 이용규칙을 숙지하지 않아 발생하는 피해에 대하여 회사의 고의 또는 중대한 과실이 없는 한 어떠한 책임도 지지 않습니다.
-  
-  이 커뮤니티 이용규칙은 2022년 11월 25일에 개정되었습니다. 
-  ''';
+자취 백과사전 이용규칙은 쾌적한 서비스 운영을 위해 주기적으로 업데이트됩니다.
+회사는 이용자가 커뮤니티 운영 시스템, 금지 행위, 게시물 작성 · 수정 · 삭제 규칙 등 커뮤니티 이용규칙을 숙지하지 않아 발생하는 피해에 대하여 회사의 고의 또는 중대한 과실이 없는 한 어떠한 책임도 지지 않습니다.
+
+이 커뮤니티 이용규칙은 2022년 11월 25일에 개정되었습니다.
+''';
+
   String dictionaryRuleText = '''
+백과사전 이용규칙은 자취 생활에 대한 정보를 쾌적하게 얻을 수 있도록 하기 위해 제정되었습니다.
+서비스 내 모든 정보는 백과사전 이용규칙에 의해 운영되므로, 이용자는 백과사전 이용 전 반드시 모든 내용을 숙지하여야 합니다.
 
-  ''';
+모든 정보는 관리자가 직접 내용을 선별하여 업로드하는 형식입니다.
+정보를 타 사이트로 이동할 시 '자취 백과사전'이라는 출처를 반드시 명시해주시기 바랍니다.
+''';
+
   String communityRuleText = '''
-커뮤니티 이용 규칙은 누구나 기분 좋게 참여할 수 있는 커뮤니티를 만들기 위해 제정되었습니다. 서비스 내 모든 커뮤니티는 커뮤니티 이용규칙에 의해 운영되므로, 이용자는 커뮤니티 이용 전 반드시 모든 내용을 숙지하여야 합니다.
-방송통신심의위원회의 정보통신에 관한 심의규정, 현행 법률, 서비스 이용약관 및 커뮤니티 이용규칙을 위반하거나, 사회 통념 및 관련 법령을 기준으로 타 이용자에게 악영향을 끼치는 경우, 게시물이 삭제되고 서비스 이용이 일정 기간 제한될 수 있습니다.
+커뮤니티 이용규칙은 누구나 기분 좋게 참여할 수 있는 커뮤니티를 만들기 위해 제정되었습니다.
+서비스 내 모든 커뮤니티는 커뮤니티 이용규칙에 의해 운영되므로, 이용자는 커뮤니티 이용 전 반드시 모든 내용을 숙지하여야 합니다.
 
-커뮤니티 이용규칙은 불법 행위, 각정 차별 및 혐오, 사회적 갈등 조장, 타인의 권리 침해, 다른 이용자에게 불쾌감을 주는 행위, 커뮤니티 유출 행위, 시스템 장애를 유발하는 비정상 행위 등 커뮤니티 분위기 형성과 운영에 악영향을 미치는 행위들을 제한하기 위해 지속적으로 개정됩니다. 중대한 변경 사항이 있는 경우에는 공지사항을 통해 고지하므로 반드시 확인해주시기 바랍니다.
+방송통신심의위원회의 정보통신에 관한 심의규정, 현행 법률, 서비스 이용약관 및 커뮤니티 이용규칙을 위반하거나 사회 통념 및 관련 법령을 기준으로 타 이용자에게 악영향을 끼치는 경우, 게시물이 삭제되고 서비스 이용이 일정 기간 제한될 수 있습니다.
 
-커뮤니티 이용규칙에서 사용된 용어의 정의는 서비스 이용 약관을 따릅니다.
-  ''';
+커뮤니티 이용규칙은 불법 행위, 각정 차별 및 혐오, 사회적 갈등 조장, 타인의 권리 침해, 다른 이용자에게 불쾌감을 주는 행위, 커뮤니티 유출 행위, 시스템 장애를 유발하는 비정상 행위 등 커뮤니티 분위기 형성과 운영에 악영향을 미치는 행위들을 제한하기 위해 지속적으로 개정됩니다.
+
+중대한 변경 사항이 있는 경우에는 공지사항을 통해 고지하므로 반드시 확인해주시기 바랍니다.
+''';
+
   String mapRuleText = '''
-혼밥 맵 이용 규칙은 주변 맛집에 대한 정보를 쾌적하게 얻을 수 있도록 하기 위해 제정되었습니다. 서비스 내 모든 후기는 혼밥맵 이용규칙에 의해 운영되므로, 이용자는 혼밥맵 이용 전 반드시 모든 내용을 숙지하여야 합니다.
+맛집지도 이용규칙은 주변 맛집에 대한 정보를 쾌적하게 얻을 수 있도록 하기 위해 제정되었습니다.
+서비스 내 모든 후기는 맛집지도 이용규칙에 의해 운영되므로, 이용자는 맛집지도 이용 전 반드시 모든 내용을 숙지하여야 합니다.
 
-허위정보로 후기를 작성하는 경우, 통지없이 후기글이 삭제되고 서비스 이용이 일정 기간 제한될 수 있습니다. 
+허위정보로 후기를 작성하는 경우, 별도의 통지 없이 후기글이 삭제되고 서비스 이용이 일정 기간 제한될 수 있습니다.
+''';
 
-  ''';
   String dontDoingText = '''
-
-  ''';
-  String otherRuleText = ''' 
-  커뮤니티 이용규칙은 쾌적한 서비스 운영을 위해 주기적으로 업데이트 됩니다.
-  회사는 이용자가 커뮤니티 운영 시스템, 금지 행위, 게시물 작성`수정`삭제 규칙 등 커뮤니티 이용규칙을 숙지하지 않아 발생하는 피해에 대하여 회사의 고의 또는 중대한 과실이 없는 한 어떠한 책임도 지지 않습니다.
+밑의 사항은 반드시 숙지하시기 바랍니다.
+준수하지 않을 경우, 별도의 통지 없이 서비스 이용이 일정 기간 제한될 수 있습니다.
   
+① 욕설, 비하, 차별, 혐오, 폭력이 관련된 내용 금지
+② 음란물, 성적 수치심을 유발하는 내용 금지
+③ 공포 사진, 고어 사진, 더러운 사진 등 눈살 찌푸려지는 내용 금지
+④ 영화, 드라마, 도서 등 내용 스포일러 하기 금지 (단, 스포일러가 포함됐다는 내용을 미리 알렸을 경우 무시)
+⑤ 정치, 사회 관련 내용 금지
+⑥ 홍보, 판매 관련 내용 금지
+⑦ 불법 촬영물 유통 금지
+''';
 
-  이 커뮤니티 이용규칙은 2022년 11월 25일에 개정되었습니다. 
-  ''';
+  String otherRuleText = ''' 
+자취 백과사전 이용규칙은 쾌적한 서비스 운영을 위해 주기적으로 업데이트 됩니다.
+회사는 이용자가 커뮤니티 운영 시스템, 금지 행위, 게시물 작성, 수정, 삭제 규칙 등 커뮤니티 이용규칙을 숙지하지 않아 발생하는 피해에 대하여 회사의 고의 또는 중대한 과실이 없는 한 어떠한 책임도 지지 않습니다.
+
+이 커뮤니티 이용규칙은 2022년 11월 25일에 개정되었습니다.
+''';
   
 }
-
-// class temp extends StatelessWidget {
-//   const temp({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Settings();
-//     //   MaterialApp(
-//     //   builder: (context,child) {
-//     //     return MediaQuery(
-//     //         data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);
-//     //   },
-//     //   theme: ThemeData(
-//     //     primarySwatch: themeColor.getMaterialColor(),
-//     //   ),
-//     //   home: Settings(),
-//     // );
-//   }
-// }
-

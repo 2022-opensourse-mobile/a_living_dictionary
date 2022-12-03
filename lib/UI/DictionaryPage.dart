@@ -102,7 +102,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                 padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
                 child: card.otherPostList(context, tabName)
             ),
-            Divider(thickness: 0.5,),
+
           ],
         )
     );
@@ -124,8 +124,8 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   // 텍스트 출력
   Widget textBox(BuildContext context, String str) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10, 12, 0, 11),
-      child: Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.22),
+      padding: EdgeInsets.fromLTRB(15, 12, 0, 11),
+      child: Text(str, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.3),
     );
   }
 

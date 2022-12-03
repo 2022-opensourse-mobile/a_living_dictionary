@@ -16,6 +16,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'package:a_living_dictionary/nearby_response.dart';
 import 'Supplementary/CheckClick.dart';
+import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 
 ThemeColor themeColor = ThemeColor();
 CheckClick checkClick = CheckClick();
@@ -189,7 +190,7 @@ class restaurantMapState extends State<restaurantMap> {
           return IconButton(
             icon: Icon(
               Icons.favorite_border,
-              color: Colors.grey,
+              color: Color(0xffD83064),
               size: 30,
             ),
             onPressed: () {
@@ -247,7 +248,7 @@ class restaurantMapState extends State<restaurantMap> {
                     ),
                     Divider(thickness: 0.5),
                     Padding(
-                        padding: EdgeInsets.all(15),
+                        padding: EdgeInsets.fromLTRB(15,15,15,15),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -256,7 +257,7 @@ class restaurantMapState extends State<restaurantMap> {
                         )
                     ),
                     Padding(
-                      padding: EdgeInsets.all(15),
+                      padding: EdgeInsets.all(0),
                       child: StreamBuilder(
                           stream: FirebaseFirestore.instance.collection(
                               'MapDB').doc(id)
@@ -275,6 +276,7 @@ class restaurantMapState extends State<restaurantMap> {
                               itemCount: reviewDocuments.length,
                               itemBuilder: (context, index) {
                                 return ListTile(
+                                  leading: Icon(Icons.chevron_right_rounded),
                                   title: Text(
                                       reviewDocuments[index]['content']
                                           .toString()),
@@ -307,7 +309,7 @@ class restaurantMapState extends State<restaurantMap> {
         ),
         child: FloatingActionButton(
             tooltip: "후기 작성하기",
-            child: Icon(Icons.edit),
+            child: Icon(Icons.edit, color: Colors.black,),
             focusColor: Colors.white54,
             backgroundColor: Colors.white,
             elevation: 0,
@@ -403,7 +405,8 @@ class restaurantMapState extends State<restaurantMap> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text("$store", textScaleFactor: 1.2,),
+                                    Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
+                                    child: Text("$store", textScaleFactor: 1.2,),),
                                     Text("${documents[0]['address']}",
                                       textScaleFactor: 1.0,
                                       overflow: TextOverflow.ellipsis,
@@ -421,7 +424,7 @@ class restaurantMapState extends State<restaurantMap> {
                               child: Container(
                                 child: Column(
                                   children: [
-                                    Icon(Icons.favorite_outlined, size: 30, color: themeColor.getColor(),),
+                                    Icon(Icons.favorite_outlined, size: 30, color: Color(0xffD83064),),
                                     Text("${documents[0]['like'].toString()}", textScaleFactor: 1.0,),
                                   ],
                                 ),
@@ -435,12 +438,12 @@ class restaurantMapState extends State<restaurantMap> {
                       m_id = documents[0].id;
                       mapInfo.setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'], documents[0]['like']);
                       Provider.of<MapInfo>(context, listen: false).setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'], documents[0]['like']);
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => detailPage(context, store, m_id),
-                      ));
+                      PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(detailPage(context, store, m_id));
+                      Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
+
                     },
                   ),
-                  Divider(),
+                  Divider(thickness: 0.5,),
                 ],
               );
             }
@@ -639,7 +642,7 @@ Widget upButton() {
                       duration: Duration(milliseconds: 500),
                       curve: Curves.easeInOut);
                 },
-                child: Icon(Icons.arrow_upward_rounded),
+                child: Icon(Icons.arrow_upward_rounded, color: Colors.black,),
                 focusColor: Colors.white54,
                 backgroundColor: Colors.white,
                 elevation: 0,

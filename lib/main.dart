@@ -78,7 +78,7 @@ class MyApp extends StatelessWidget {
               cursorColor: themeColor.getMaterialColor(), //커서 색상
               selectionColor: Color(0xffEAEAEA), //드래그 색상
               selectionHandleColor: themeColor.getMaterialColor() //water drop 색상
-          ), //water drop
+          ),
         // splashColor: Colors.transparent, //물결효과 적용
         // highlightColor: Colors.transparent,
       ),
@@ -186,8 +186,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       backgroundColor: Colors.white,
                       body: SafeArea(
                         child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: ListView(
+                            shrinkWrap: true,
                             children: [
                               welcomeText(),
                               SizedBox(height: 15),
@@ -283,7 +283,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 ],
                               ),
                               SizedBox(height: 30),
-                              Text('Or'),
+                              Text('Or', textAlign: TextAlign.center,),
                               SizedBox(height: 20),
 
                               ElevatedButton(
