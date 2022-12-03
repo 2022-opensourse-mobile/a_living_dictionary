@@ -221,6 +221,7 @@ class DictionaryCardPage {
           );
         });
   }
+  
   Widget pageView(BuildContext context) {
     return Consumer2<DictionaryItemInfo, Logineduser>(
       builder: (context, dicProvider, userProvider, child) {
@@ -333,23 +334,25 @@ class DictionaryCardPage {
                               ),
                             ),
                           ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: Image.network(cardDocList[index]['img']),    // 카드 해당 이미지 출력
-                              ),
-                              SizedBox(
-                                width: double.infinity,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Text(
-                                    cardDocList[index]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
-                                    style: const TextStyle(color: Colors.white,),
+                          Center(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.network(cardDocList[index]['img']),    // 카드 해당 이미지 출력
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Text(
+                                            cardDocList[index]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
+                                            style: const TextStyle(color: Colors.white,),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       );
