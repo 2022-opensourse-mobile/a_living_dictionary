@@ -287,28 +287,24 @@ class _onboardingScreenState extends State<onboardingScreen> {
             child: PageView(
               controller: controller,
               children: [
-
                 buildPage(
                     context: context,
                     urlImage: 'assets/page1.png',
                     title: '백과사전',
                     subtitle: '자취에 대한 정보들을 한번에!'
                 ),
-
                 buildPage(
                     context: context,
                     urlImage: 'assets/page1.png',
                     title: '커뮤니티',
                     subtitle: '자유롭게 소통할 수 있어요'
                 ),
-
                 buildPage(
                     context: context,
                     urlImage: 'assets/page1.png',
                     title: '맛집지도',
                     subtitle: '내 주변 맛집들을 찾아보세요'
                 ),
-
               ],
             ),
           ),
@@ -390,7 +386,7 @@ class _onboardingScreenState extends State<onboardingScreen> {
     required String subtitle,
     required BuildContext context,
   }) {
-    return
+    return SingleChildScrollView( child:
         Container(
           color: Colors.red,
           child: Column(
@@ -423,6 +419,6 @@ class _onboardingScreenState extends State<onboardingScreen> {
               )
             ],
           ),
-        );
+        ));
   }
 }
