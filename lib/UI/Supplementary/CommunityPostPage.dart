@@ -114,7 +114,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+            Padding(padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
               child: Text(item.hashTag, style: TextStyle(color: themeColor.getColor()), textScaleFactor: 1.0)
             ),
             Row(
@@ -122,7 +122,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(15, 10, 0, 10),
-                  child: Text(title, style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
+                  child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
                 ),
                 getModifyBtn(),
               ],
@@ -331,10 +331,9 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
             return const Text("has error");
           }
 
-          final doc = snapshot.data!.docs;
-
+          final documents = snapshot.data!.docs;
           return Column(
-            children: doc.map((e) => (getCommentItem(e))).toList(),
+            children: documents.map<Widget>((doc) => (getCommentItem(doc))).toList(),
           );
         });
   }
@@ -413,7 +412,6 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
           maximumSize: MaterialStateProperty.all(const Size(40, 40))),
       onPressed: () {
         setState(() {
-          //버튼을 눌렀을 때
           if (commentItem.doc_id == changedDocID) {
             isOnGoing = !isOnGoing;
             FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id).collection('CommentDB')
