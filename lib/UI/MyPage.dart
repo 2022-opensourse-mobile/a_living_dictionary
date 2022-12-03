@@ -106,7 +106,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           //     MaterialPageRoute(builder: (context) => myPosting())
           // );
         }),
-        ListTile(title: const Text('작성한 댓글'), onTap: (){
+        ListTile(title: const Text('댓글 단 게시물'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myComment());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
@@ -315,10 +315,6 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               leadingDistribution: TextLeadingDistribution.even,
             ),
             textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
-        ListTile(title: const Text('공지 사항'), onTap: (){
-          PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myNotice());
-          Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
-        }),
         ListTile(title: const Text('앱 이용 규칙'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myAppRule());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
@@ -450,7 +446,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     late Logineduser user = Provider.of<Logineduser>(context, listen: false);
     String userDocID = user.doc_id;
     return Scaffold(
-        appBar: AppBar(title: const Text('작성한 댓글'), elevation: 0.0),
+        appBar: AppBar(title: const Text('댓글 단 게시물'), elevation: 0.0),
         body: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance.collection('userInfo').doc(userDocID).collection("CommentList").snapshots(),
             builder: (context, AsyncSnapshot snap) {
@@ -523,7 +519,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     var landscapeH = deviceSize.height / 1.2; // 가로모드 높이
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Scaffold(
-      appBar: AppBar(title: Text('백과사전 스크랩 목록'), elevation: 0.0),
+      appBar: AppBar(title: Text('사전 스크랩 목록'), elevation: 0.0),
       body: ListView(
         children: [
           Material(
@@ -889,17 +885,6 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           );
         }
       )
-    );
-  }
-
-  Widget myNotice() {
-    return Scaffold(
-      appBar: AppBar(title: Text('공지 사항'), elevation: 0.0),
-      body: ListView(
-        children: [
-          Text('공지 사항 페이지', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.0),
-        ],
-      ),
     );
   }
 

@@ -188,8 +188,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       backgroundColor: Colors.white,
                       body: SafeArea(
                         child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: ListView(
+                            shrinkWrap: true,
                             children: [
                               welcomeText(),
                               SizedBox(height: 15),
@@ -285,7 +285,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 ],
                               ),
                               SizedBox(height: 30),
-                              Text('Or'),
+                              Text('Or', textAlign: TextAlign.center,),
                               SizedBox(height: 20),
 
                               ElevatedButton(

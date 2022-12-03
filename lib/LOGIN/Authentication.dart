@@ -32,7 +32,7 @@ class Authentication extends StatelessWidget {
 
         if (!snapshot.hasData) {// 인증을 받지 않았으면 로그인화면
           return MaterialApp(
-            
+            debugShowCheckedModeBanner: false,
             theme: ThemeData(
               primarySwatch: themeColor.getMaterialColor(),
               scaffoldBackgroundColor: Colors.white,
@@ -56,7 +56,7 @@ class Authentication extends StatelessWidget {
                       child: AspectRatio(
                         aspectRatio: 1, //  child 위젯의 넓이가 높이의 1배
                         child: Image(
-                          image: AssetImage('assets/recommend1.png')
+                            image: AssetImage('assets/app_icon.png')
                         ),
                       ),
                     );
@@ -71,8 +71,8 @@ class Authentication extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: action == AuthAction.signIn
-                        ? const Text('자취백과사전입니다. 로그인 ㄱㄱ')
-                        : const Text('자취백과사전입니다. 회원가입 ㄱㄱ'),
+                        ? const Text('로그인을 진행하세요.\n회원가입을 원하시는 분은 Register를 눌러주세요.')
+                        : const Text('회원가입을 진행하세요.'),
                   );
                 },
                         
@@ -91,7 +91,7 @@ class Authentication extends StatelessWidget {
                      padding: const EdgeInsets.all(20),
                      child: AspectRatio(
                        aspectRatio: 1,
-                       child: Image.asset('assets/recommend1.png'),
+                       child: Image.asset('assets/app_icon.png'),
                      ),
                    );
                  },
