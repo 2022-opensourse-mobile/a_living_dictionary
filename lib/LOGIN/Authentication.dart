@@ -10,18 +10,11 @@ import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 
-//https://firebase.google.com/codelabs/firebase-auth-in-flutter-apps#5
-
-// 이메일 로그인 구현중
 class Authentication extends StatelessWidget {
    Authentication({super.key});
 
   final _formKey = GlobalKey<FormState>();
   TextEditingController _nickNameController = TextEditingController();
-
-
-  
-  
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +49,7 @@ class Authentication extends StatelessWidget {
                       child: AspectRatio(
                         aspectRatio: 1, //  child 위젯의 넓이가 높이의 1배
                         child: Image(
-                          image: AssetImage('assets/recommend1.png')
+                          image: AssetImage('assets/appIcon.png')
                         ),
                       ),
                     );
@@ -66,25 +59,14 @@ class Authentication extends StatelessWidget {
                     EmailProviderConfiguration(),  // 이메일 인증 가능하게 해주는 기능
                   ],
                         
-                        
                 subtitleBuilder: (context, action) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: action == AuthAction.signIn
-                        ? const Text('자취백과사전입니다. 로그인 ㄱㄱ')
-                        : const Text('자취백과사전입니다. 회원가입 ㄱㄱ'),
+                        ? const Text('자취백과사전 이메일로 로그인')
+                        : const Text('자취백과사전 이메일로 회원가입'),
                   );
                 },
-                        
-                // footerBuilder: (context, action) {
-                //    return const Padding(
-                //      padding: EdgeInsets.only(top: 16),
-                //      child: Text(
-                //        'By signing in, you agree to our terms and conditions.',
-                //        style: TextStyle(color: Colors.grey),
-                //      ),
-                //    );
-                //  },
                         
                  sideBuilder: (context, shrinkOffset) {   // 화면 늘렸을 때 나오는 사진
                    return Padding(
@@ -103,9 +85,6 @@ class Authentication extends StatelessWidget {
           );
         } 
 
-
-
-
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid).snapshots(),
           builder: (context, snapshot) {
@@ -115,13 +94,6 @@ class Authentication extends StatelessWidget {
             }
 
             if (snapshot.data!.size == 0) {   // 사용자 해당 정보가 디비에 없을 때
-            //void setInfo(uid, nickName, email, profileImageUrl)
-              // Logineduser logineduser = new Logineduser();
-              // logineduser.setInfo(FirebaseAuth.instance.currentUser!.uid, '',FirebaseAuth.instance.currentUser!.email ?? '', 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260');
-              // logineduser.setDocID('');
-              
-
-
               FirebaseFirestore.instance.collection('userInfo').add({
                 'uid': FirebaseAuth.instance.currentUser!.uid, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260'
               }).then((value) {
@@ -143,121 +115,97 @@ class Authentication extends StatelessWidget {
             return onboardingScreen();
           }
         );
-        
       }
       // Signin 위젯이 있다. flutterfire_ui 깔기
       );
   }
 
   void nickNameAlert(BuildContext context) {
-    
     showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (context) => SingleChildScrollView(
-        child: AlertDialog(
-          title: Text('사용할 닉네임 입력',
-            style: TextStyle(
-              color: themeColor.getMaterialColor(),
-              fontWeight: FontWeight.bold
-            )
-          ),
-          content: Form(
-            key: _formKey,
-            autovalidateMode: AutovalidateMode.always,
-            child: Stack(
-              children: [
-                   //           Positioned(
-          //             right: -40.0,
-          //             top: -40.0,
-          //             child: InkResponse(
-          //               onTap: () {
-          //                 Navigator.of(context).pop();
-                      
-          //               },
-          //               child: CircleAvatar(
-          //                 child: Icon(Icons.close),
-          //                 backgroundColor: Colors.red,
-          //               ),
-          //             ),
-          //           ),
-                TextFormField(
-                  controller: _nickNameController,
-                  // onSaved: (name) {myNickname = name!;},
-                  validator: (value) {
-                    if(value!.isEmpty) return '닉네임을 입력하세요';
-                  },
-                  cursorColor: themeColor.getMaterialColor(),
-                  decoration: InputDecoration(
-                    hintText: '닉네임',
-                    filled: true,
-                    fillColor: Colors.white,
-                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                    ),
-                    border: const UnderlineInputBorder(),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                    ),),
-                ),
-              ],
+      builder: (context) => Align(
+        alignment: Alignment.center,
+        child: SingleChildScrollView(
+          
+          child: AlertDialog(
+            title: Text('사용할 닉네임 입력',
+              style: TextStyle(
+                color: themeColor.getMaterialColor(),
+                fontWeight: FontWeight.bold
+              )
             ),
-          ),
-          actions: [
-            Consumer<Logineduser>(
-              builder: (context, userProvider, child) {
-                return TextButton(child: Text('확인',
-                  style: TextStyle(color: themeColor.getMaterialColor(),
-                    fontWeight: FontWeight.bold,),),
-                    onPressed: () {
-                      if(_formKey.currentState!.validate()) {
-                        /*  TODO: ↓ 닉네임 입력 완료버튼 누르면 실행되어야 할 부분 ↓ */
-                        // TODO: 여기에 작성
-      
-                        if (_nickNameController.text.length < 2) {
-                          // SnackBar(
-                          //   content: Text('닉네임을 두 글자 이상 입력해주세요!'), //내용
-                          //   duration: Duration(seconds: 2), //올라와 있는 시간
-                          // );
-      
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text('잘못된 입력',
-                                  style: TextStyle(
-                                      color: themeColor.getMaterialColor(),
-                                      fontWeight: FontWeight.bold)),
-                              content: Text('닉네임을 두 글자 이상 입력해주세요!'),
-                              actions: [
-                                TextButton(child: Text('확인',
-                                  style: TextStyle(color: themeColor.getMaterialColor(),
-                                    fontWeight: FontWeight.bold,),),
-                                    onPressed: () { Navigator.pop(context); }),
-                              ],
-                            ),
-                          );
-                        } else {
-                          Provider.of<Logineduser>(context, listen: false).setNickName(_nickNameController.text);
-                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': _nickNameController.text});
-                          Navigator.pop(context);
-                          SnackBar(
-                            content: Text('닉네임 설정이 완료되었습니다'), //내용
-                            duration: Duration(seconds: 2), //올라와 있는 시간
-                          );
+            content: Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.always,
+              child: Stack(
+                children: [
+                  TextFormField(
+                    controller: _nickNameController,
+                    // onSaved: (name) {myNickname = name!;},
+                    validator: (value) {
+                      if(value!.isEmpty) return '닉네임을 입력하세요';
+                    },
+                    cursorColor: themeColor.getMaterialColor(),
+                    decoration: InputDecoration(
+                      hintText: '닉네임',
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
+                      ),
+                      border: const UnderlineInputBorder(),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: themeColor.getMaterialColor()),
+                      ),),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              Consumer<Logineduser>(
+                builder: (context, userProvider, child) {
+                  return TextButton(child: Text('확인',
+                    style: TextStyle(color: themeColor.getMaterialColor(),
+                      fontWeight: FontWeight.bold,),),
+                      onPressed: () {
+                        if(_formKey.currentState!.validate()) {
+                          if (_nickNameController.text.length < 2) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('잘못된 입력',
+                                    style: TextStyle(
+                                        color: themeColor.getMaterialColor(),
+                                        fontWeight: FontWeight.bold)),
+                                content: Text('닉네임을 두 글자 이상 입력해주세요!'),
+                                actions: [
+                                  TextButton(child: Text('확인',
+                                    style: TextStyle(color: themeColor.getMaterialColor(),
+                                      fontWeight: FontWeight.bold,),),
+                                      onPressed: () { Navigator.pop(context); }),
+                                ],
+                              ),
+                            );
+                          } else {
+                            Provider.of<Logineduser>(context, listen: false).setNickName(_nickNameController.text);
+                            FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': _nickNameController.text});
+                            Navigator.pop(context);
+                            SnackBar(
+                              content: Text('닉네임 설정이 완료되었습니다'), //내용
+                              duration: Duration(seconds: 2), //올라와 있는 시간
+                            );
+                          }
                         }
-                      }
-                });
-              }
-            ),
-          ],
+                  });
+                }
+              ),
+            ],
+          ),
         ),
       ),
     );
-  
-        
-
   }
 }
-
 
 
 //TODO: 이미지 가로버전에서 오버플로우 되는 거 고치기
@@ -331,9 +279,6 @@ class _onboardingScreenState extends State<onboardingScreen> {
                     children: [
                       TextButton(
                         onPressed: () async {
-                          // await viewModel.logout();
-                          // setState((){}); // 화면 갱신만 하는 것
-
                           // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
                           String user_id = FirebaseAuth.instance.currentUser!.uid;
 
@@ -351,23 +296,11 @@ class _onboardingScreenState extends State<onboardingScreen> {
                                   'docID': doc_id
                                 });
                               });
-
                             }
-
-
-
-                            // snap.docs.forEach((doc) {
-                            //   loginedUser.nickName = doc['nickName'];
-                            //   loginedUser.email = doc['email'];
-                            //   loginedUser.doc_id = doc.id;
-                            // });
                             }
                           );
 
-
-
                           Navigator.pop(context);
-
                         },
                         child:  Container(
                           padding: EdgeInsets.all(5),
@@ -388,37 +321,37 @@ class _onboardingScreenState extends State<onboardingScreen> {
     required String subtitle,
     required BuildContext context,
   }) {
-    return SingleChildScrollView( child:
-        Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: 60),
-              Text(title,
-                  style: TextStyle(
-                      color: themeColor.getColor(),
-                      fontWeight: FontWeight.bold),
-                  textScaleFactor: 1.8),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                child: Text(subtitle,
-                    style: TextStyle(color: Colors.black38),
-                    textScaleFactor: 1.4),
-              ),
-              SizedBox(height: 60),
-              Container(
-                width: double.infinity,
-                child:
-                    //TODO: 이미지 출력
-                    Image.asset(
-                      urlImage,
-                      fit: BoxFit.fill,
-                      // width: double.infinity,
-                      //height: MediaQuery.of(context).size.height * 0.3,
-                    ),
-              )
-            ],
-          ),
-        ));
+    return SingleChildScrollView( 
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 60),
+            Text(title,
+                style: TextStyle(
+                    color: themeColor.getColor(),
+                    fontWeight: FontWeight.bold),
+                textScaleFactor: 1.8),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: Text(subtitle,
+                  style: TextStyle(color: Colors.black38),
+                  textScaleFactor: 1.4),
+            ),
+            SizedBox(height: 60),
+            Container(
+              width: double.infinity,
+              child:
+                  //TODO: 이미지 출력
+                  Image.asset(
+                    urlImage,
+                    fit: BoxFit.fill,
+                    // width: double.infinity,
+                    //height: MediaQuery.of(context).size.height * 0.3,
+                  ),
+            )
+          ],
+        ),
+      ));
   }
 }
