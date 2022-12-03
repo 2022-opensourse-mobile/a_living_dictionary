@@ -34,7 +34,6 @@ class DictionaryCardPage {
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 10/9, // 가로 세로 비율
-          //childAspectRatio: (width / 2) / (isPortrait?(height < 750 ? 250 : portraitH):landscapeH), // 가로 세로 비율
         ),
       ),
     );
@@ -58,80 +57,6 @@ class DictionaryCardPage {
 
           return Container(
             child: gridViewList(context, documents, "추천"),
-            // child: GridView.builder(
-            //   physics: ScrollPhysics(),
-            //   shrinkWrap: true,
-            //   padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
-            //   itemCount: 4, //몇 개 출력할 건지
-            //   itemBuilder: (context, index) {
-            //     return Container(
-            //       margin: EdgeInsets.symmetric(horizontal: 0),
-            //       width: width / 2,
-            //       height: width*(9/20),
-            //       child: InkWell(
-            //         onTap: () {
-            //           String clicked_id = documents[index]['item_id'];
-            //           Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
-            //
-            //           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
-            //           Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
-            //         },
-            //         child: Card(
-            //             shape: RoundedRectangleBorder(
-            //               borderRadius: BorderRadius.circular(10),
-            //             ),
-            //             elevation: 0,
-            //             child: StreamBuilder<QuerySnapshot>(
-            //                 stream: FirebaseFirestore.instance.collection('dictionaryItem').where('__name__', isEqualTo: documents[index]['item_id']).snapshots(),
-            //                 builder: (context, snap) {
-            //
-            //                   if (!snap.hasData)
-            //                     return Center(child: CircularProgressIndicator());
-            //
-            //                   if (snap.hasError)
-            //                     return Center(child: CircularProgressIndicator());
-            //
-            //                   if (snap.connectionState == ConnectionState.waiting) {
-            //                     return const CircularProgressIndicator();
-            //                   }
-            //
-            //
-            //                   return Column(
-            //                     crossAxisAlignment: CrossAxisAlignment.start,
-            //                     children: [
-            //                       ClipRRect(
-            //                         borderRadius: BorderRadius.circular(10.0),
-            //                         child: Image.network(documents[0]['thumbnail']),
-            //                       ),
-            //                       Padding(
-            //                         padding: const EdgeInsets.fromLTRB(8, 5, 8, 0), // 게시글 제목 여백
-            //                         child: Column(
-            //                           crossAxisAlignment:
-            //                               CrossAxisAlignment.start,
-            //                           children: [
-            //                             Padding(
-            //                               padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
-            //                               child: Text(
-            //                                 "#추천",
-            //                                 style: TextStyle(color: themeColor.getColor(),),
-            //                                 textScaleFactor: 1,
-            //                               ),
-            //                             ),
-            //                             Text(documents[0]['title'])
-            //                           ],
-            //                         ),
-            //                       ),
-            //                     ],
-            //                   );
-            //                 })),
-            //       ),
-            //     );
-            //   },
-            //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            //     crossAxisCount: 2,
-            //     childAspectRatio: 10/9
-            //   ),
-            // ),
           );
         });
   }
