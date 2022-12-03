@@ -125,12 +125,7 @@ class CommunityItem{
 
 
   Widget build(BuildContext context, {String? commentItemID}) {
-    int hour = time!.hour;
-    int minute = time!.minute;
-    String hourText = (hour < 10)?("0$hour"):("$hour");
-    String minuteText = (minute < 10)?("0$minute"):("$minute");
-
-    String timeText = "$hourText:$minuteText";
+    String timeText = getTime();
     String omittedBody = getOmittedBody();
 
     return Padding(
@@ -178,16 +173,23 @@ class CommunityItem{
     if(n == 10) omittedBody += "...";
     return omittedBody;
   }
+  String getTime(){
+    int hour = time!.hour;
+    int minute = time!.minute;
+    String hourText = (hour < 10)?("0$hour"):("$hour");
+    String minuteText = (minute < 10)?("0$minute"):("$minute");
+    return "$hourText:$minuteText";
+  }
 
   Widget buildMain(BuildContext context) {
-    String t = '${time!.hour.toString()}:${time!.minute.toString()}';
+    String timeText = getTime();
     return Padding(
         padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: ListTile(
           title: Text(title, style: const TextStyle(fontSize: 15.8)),
           visualDensity: const VisualDensity(vertical: -4),
           dense: true,
-          trailing: Text(t),
+          trailing: Text(timeText),
           onTap: (){
             String tabName = getTabName(boardType);
             Navigator.push(
