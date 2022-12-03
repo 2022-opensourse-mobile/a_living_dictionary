@@ -109,6 +109,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   Widget getTitleWidget(String title, String writer) {
     return Column(children: [
       Container(
+        //(width > 750) ? (750) : (width)
         width: (width > 750) ? (750) : (width),
         alignment: Alignment.centerLeft,
         child: Column(
@@ -120,9 +121,12 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 10, 0, 10),
-                  child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
+                SizedBox(
+                  width: (user.uid == item.writerID)?((width > 650) ? (500) : (width-150)):(width),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 10, 0, 10),
+                    child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
+                  ),
                 ),
                 getModifyBtn(),
               ],
