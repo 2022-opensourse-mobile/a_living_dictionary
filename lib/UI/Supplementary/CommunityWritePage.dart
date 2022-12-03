@@ -43,6 +43,11 @@ class CommunityWritePage extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: themeColor.getWhiteMaterialColor(),
           scaffoldBackgroundColor: Colors.white,
+          textSelectionTheme: TextSelectionThemeData(
+              cursorColor: themeColor.getMaterialColor(), //커서 색상
+              selectionColor: Color(0xffEAEAEA), //드래그 색상
+              selectionHandleColor: themeColor.getMaterialColor() //water drop 색상
+          ),
         ),
         home: writePost()
     );
@@ -149,7 +154,6 @@ class CommunityWritePage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10,10,10,0),
       child: Container(
-        height: 220, //210 이상으로만 설정하기 (글자 출력되는 부분 크기)
         child: const Text(
           '자취 백과사전은 깨끗한 커뮤니티를 만들기 위해 커뮤니티 이용규칙을 제정하여 운영하고 있습니다. '
               '위반 시 게시물이 삭제되고 서비스 이용이 제한되오니 반드시 숙지하시길 바랍니다.\n\n'

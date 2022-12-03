@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
               cursorColor: themeColor.getMaterialColor(), //커서 색상
               selectionColor: Color(0xffEAEAEA), //드래그 색상
               selectionHandleColor: themeColor.getMaterialColor() //water drop 색상
-          ), //water drop
+          ),
         // splashColor: Colors.transparent, //물결효과 적용
         // highlightColor: Colors.transparent,
       ),
