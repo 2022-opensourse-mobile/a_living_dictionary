@@ -154,100 +154,102 @@ class Authentication extends StatelessWidget {
     showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('사용할 닉네임 입력',
-          style: TextStyle(
-            color: themeColor.getMaterialColor(),
-            fontWeight: FontWeight.bold
-          )
-        ),
-        content: Form(
-          key: _formKey,
-          autovalidateMode: AutovalidateMode.always,
-          child: Stack(
-            children: [
-                 //           Positioned(
-    //             right: -40.0,
-    //             top: -40.0,
-    //             child: InkResponse(
-    //               onTap: () {
-    //                 Navigator.of(context).pop();
-                    
-    //               },
-    //               child: CircleAvatar(
-    //                 child: Icon(Icons.close),
-    //                 backgroundColor: Colors.red,
-    //               ),
-    //             ),
-    //           ),
-              TextFormField(
-                controller: _nickNameController,
-                // onSaved: (name) {myNickname = name!;},
-                validator: (value) {
-                  if(value!.isEmpty) return '닉네임을 입력하세요';
-                },
-                cursorColor: themeColor.getMaterialColor(),
-                decoration: InputDecoration(
-                  hintText: '닉네임',
-                  filled: true,
-                  fillColor: Colors.white,
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                  ),
-                  border: const UnderlineInputBorder(),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: themeColor.getMaterialColor()),
-                  ),),
-              ),
-            ],
+      builder: (context) => SingleChildScrollView(
+        child: AlertDialog(
+          title: Text('사용할 닉네임 입력',
+            style: TextStyle(
+              color: themeColor.getMaterialColor(),
+              fontWeight: FontWeight.bold
+            )
           ),
-        ),
-        actions: [
-          Consumer<Logineduser>(
-            builder: (context, userProvider, child) {
-              return TextButton(child: Text('확인',
-                style: TextStyle(color: themeColor.getMaterialColor(),
-                  fontWeight: FontWeight.bold,),),
-                  onPressed: () {
-                    if(_formKey.currentState!.validate()) {
-                      /*  TODO: ↓ 닉네임 입력 완료버튼 누르면 실행되어야 할 부분 ↓ */
-                      // TODO: 여기에 작성
-
-                      if (_nickNameController.text.length < 2) {
-                        // SnackBar(
-                        //   content: Text('닉네임을 두 글자 이상 입력해주세요!'), //내용
-                        //   duration: Duration(seconds: 2), //올라와 있는 시간
-                        // );
-
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('잘못된 입력',
-                                style: TextStyle(
-                                    color: themeColor.getMaterialColor(),
-                                    fontWeight: FontWeight.bold)),
-                            content: Text('닉네임을 두 글자 이상 입력해주세요!'),
-                            actions: [
-                              TextButton(child: Text('확인',
-                                style: TextStyle(color: themeColor.getMaterialColor(),
-                                  fontWeight: FontWeight.bold,),),
-                                  onPressed: () { Navigator.pop(context); }),
-                            ],
-                          ),
-                        );
-                      } else {
-                        Provider.of<Logineduser>(context, listen: false).setNickName(_nickNameController.text);
-                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': _nickNameController.text});
-                        Navigator.pop(context);
-                        SnackBar(
-                          content: Text('닉네임 설정이 완료되었습니다'), //내용
-                          duration: Duration(seconds: 2), //올라와 있는 시간
-                        );
+          content: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.always,
+            child: Stack(
+              children: [
+                   //           Positioned(
+          //             right: -40.0,
+          //             top: -40.0,
+          //             child: InkResponse(
+          //               onTap: () {
+          //                 Navigator.of(context).pop();
+                      
+          //               },
+          //               child: CircleAvatar(
+          //                 child: Icon(Icons.close),
+          //                 backgroundColor: Colors.red,
+          //               ),
+          //             ),
+          //           ),
+                TextFormField(
+                  controller: _nickNameController,
+                  // onSaved: (name) {myNickname = name!;},
+                  validator: (value) {
+                    if(value!.isEmpty) return '닉네임을 입력하세요';
+                  },
+                  cursorColor: themeColor.getMaterialColor(),
+                  decoration: InputDecoration(
+                    hintText: '닉네임',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor()),
+                    ),
+                    border: const UnderlineInputBorder(),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: themeColor.getMaterialColor()),
+                    ),),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            Consumer<Logineduser>(
+              builder: (context, userProvider, child) {
+                return TextButton(child: Text('확인',
+                  style: TextStyle(color: themeColor.getMaterialColor(),
+                    fontWeight: FontWeight.bold,),),
+                    onPressed: () {
+                      if(_formKey.currentState!.validate()) {
+                        /*  TODO: ↓ 닉네임 입력 완료버튼 누르면 실행되어야 할 부분 ↓ */
+                        // TODO: 여기에 작성
+      
+                        if (_nickNameController.text.length < 2) {
+                          // SnackBar(
+                          //   content: Text('닉네임을 두 글자 이상 입력해주세요!'), //내용
+                          //   duration: Duration(seconds: 2), //올라와 있는 시간
+                          // );
+      
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('잘못된 입력',
+                                  style: TextStyle(
+                                      color: themeColor.getMaterialColor(),
+                                      fontWeight: FontWeight.bold)),
+                              content: Text('닉네임을 두 글자 이상 입력해주세요!'),
+                              actions: [
+                                TextButton(child: Text('확인',
+                                  style: TextStyle(color: themeColor.getMaterialColor(),
+                                    fontWeight: FontWeight.bold,),),
+                                    onPressed: () { Navigator.pop(context); }),
+                              ],
+                            ),
+                          );
+                        } else {
+                          Provider.of<Logineduser>(context, listen: false).setNickName(_nickNameController.text);
+                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': _nickNameController.text});
+                          Navigator.pop(context);
+                          SnackBar(
+                            content: Text('닉네임 설정이 완료되었습니다'), //내용
+                            duration: Duration(seconds: 2), //올라와 있는 시간
+                          );
+                        }
                       }
-                    }
-              });
-            }
-          ),
-        ],
+                });
+              }
+            ),
+          ],
+        ),
       ),
     );
   
@@ -328,50 +330,50 @@ class _onboardingScreenState extends State<onboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                                    onPressed: () async {
-                                      // await viewModel.logout();
-                                      // setState((){}); // 화면 갱신만 하는 것
+                        onPressed: () async {
+                          // await viewModel.logout();
+                          // setState((){}); // 화면 갱신만 하는 것
 
-                                      // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
-                                      String user_id = FirebaseAuth.instance.currentUser!.uid;
+                          // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
+                          String user_id = FirebaseAuth.instance.currentUser!.uid;
 
-                                      // 금방 로그인한 유저에 대한 정보
-                                      // 데이터베이스에 유저가 저장되어있는지 확인
-                                      await FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
-                                        String doc_id = '';
+                          // 금방 로그인한 유저에 대한 정보
+                          // 데이터베이스에 유저가 저장되어있는지 확인
+                          await FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_id).get().then( (QuerySnapshot snap) {
+                            String doc_id = '';
 
-                                        if (snap.size == 0) { // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                                          FirebaseFirestore.instance.collection('userInfo').add({
-                                            'uid': user_id, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260'
-                                          }).then((value) {
-                                            doc_id =  value.id.toString();
-                                            FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
-                                              'docID': doc_id
-                                            });
-                                          });
+                            if (snap.size == 0) { // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                              FirebaseFirestore.instance.collection('userInfo').add({
+                                'uid': user_id, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260'
+                              }).then((value) {
+                                doc_id =  value.id.toString();
+                                FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                                  'docID': doc_id
+                                });
+                              });
 
-                                        }
-
-
-
-                                        // snap.docs.forEach((doc) {
-                                        //   loginedUser.nickName = doc['nickName'];
-                                        //   loginedUser.email = doc['email'];
-                                        //   loginedUser.doc_id = doc.id;
-                                        // });
-                                        }
-                                      );
+                            }
 
 
 
-                                      Navigator.pop(context);
+                            // snap.docs.forEach((doc) {
+                            //   loginedUser.nickName = doc['nickName'];
+                            //   loginedUser.email = doc['email'];
+                            //   loginedUser.doc_id = doc.id;
+                            // });
+                            }
+                          );
 
-                                    },
-                                    child:  Container(
-                                      padding: EdgeInsets.all(5),
-                                      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-                                      child: Text('Skip',  style: TextStyle(fontSize: 20, color: Colors.black),))
-                                    ),
+
+
+                          Navigator.pop(context);
+
+                        },
+                        child:  Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+                          child: Text('Skip',  style: TextStyle(fontSize: 20, color: Colors.black),))
+                        ),
                     ],
                   ),
             ],
