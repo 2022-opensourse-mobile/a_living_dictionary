@@ -350,7 +350,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                               Tab(icon: _curIndex == 0? Icon(Icons.home, size: 26,) : Icon(Icons.home_outlined, size: 26,),
                                 child: Text('홈', textScaleFactor: 0.8,), ),
                               Tab(icon: _curIndex == 1? Icon(Icons.book, size: 26,) : Icon(Icons.book_outlined, size: 26,),
-                                child: Text('사전', textScaleFactor: 0.8,), ),
+                                child: Text('백과사전', textScaleFactor: 0.8,), ),
                               Tab(icon: _curIndex == 2? Icon(Icons.people_alt, size: 26,) : Icon(Icons.people_alt_outlined, size: 26,),
                                 child: Text('커뮤니티', textScaleFactor: 0.8,), ),
                               Tab(icon: _curIndex == 3? Icon(Icons.map, size: 26,) : Icon(Icons.map_outlined, size: 26,),
