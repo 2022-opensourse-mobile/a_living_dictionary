@@ -176,166 +176,262 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
 
 
+
     return Consumer<Logineduser>(
         builder: (context, userProvider, child) {
-        return StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges() , // 로그인 되고 안될때마다 새로운 스트림이 들어옴
-          builder: (BuildContext context, snapshot) {
-            
-            
-            if(!snapshot.hasData) { // 로그인이 안 된 상태 - 로그인 화면
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    child: Image.asset('assets/kakao_login.png', fit: BoxFit.fill, width: 150, height: 40,),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.all(0)
-                    ),
-                    onPressed: () async {
-                      viewModel = new MainViewModel(KakaoLogin());
-                      await viewModel.login();
-                      setState((){}); // 화면 갱신만 하는 것 
+          return StreamBuilder<User?>(
+              stream: FirebaseAuth.instance.authStateChanges() , // 로그인 되고 안될때마다 새로운 스트림이 들어옴
+              builder: (BuildContext context, snapshot) {
 
-                      // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
-                      if (FirebaseAuth.instance.currentUser != null) {
-                        user_uid = FirebaseAuth.instance.currentUser!.uid;
-                        user_nickName = viewModel.user?.kakaoAccount?.profile?.nickname ?? '';
-                        user_email = viewModel.user?.kakaoAccount?.email  ?? '';
-                        user_profileImageUrl = viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? '';
-                      }
+                if(!snapshot.hasData) { // 로그인이 안 된 상태 - 로그인 화면
+                  return Scaffold(
+                      backgroundColor: Colors.white,
+                      body: SafeArea(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              welcomeText(),
+                              SizedBox(height: 15),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                    child: Image.asset('assets/kakao_icon.png', fit: BoxFit.contain, width:55, height: 55,),
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 0.0,
+                                      shadowColor: Colors.transparent,
+                                      padding: EdgeInsets.all(0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(100),
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      viewModel = new MainViewModel(KakaoLogin());
+                                      await viewModel.login();
+                                      setState((){}); // 화면 갱신만 하는 것
 
-                      // 금방 로그인한 유저에 대한 정보
-                      // 데이터베이스에 유저가 저장되어있는지 확인
-                      FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
-                        String doc_id = '';
+                                      // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
+                                      if (FirebaseAuth.instance.currentUser != null) {
+                                        user_uid = FirebaseAuth.instance.currentUser!.uid;
+                                        user_nickName = viewModel.user?.kakaoAccount?.profile?.nickname ?? '';
+                                        user_email = viewModel.user?.kakaoAccount?.email  ?? '';
+                                        user_profileImageUrl = viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? '';
+                                      }
 
-                        if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                          FirebaseFirestore.instance.collection('userInfo').add({
-                            'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': ''
-                          }).then((value) {
-                            doc_id =  value.id.toString();
+                                      // 금방 로그인한 유저에 대한 정보
+                                      // 데이터베이스에 유저가 저장되어있는지 확인
+                                      FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
+                                        String doc_id = '';
 
-                            FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
-                              'docID': doc_id
-                            });
-                          });
-                        }
-                      }
+                                        if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                                          FirebaseFirestore.instance.collection('userInfo').add({
+                                            'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': ''
+                                          }).then((value) {
+                                            doc_id =  value.id.toString();
+
+                                            FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                                              'docID': doc_id
+                                            });
+                                          });
+                                        }
+                                      }
+                                      );
+                                    },
+                                  ),
+
+                                  ElevatedButton(
+                                    child: Image.asset('assets/naver_icon.png', fit: BoxFit.contain, width: 55, height: 55,),
+                                    style: ElevatedButton.styleFrom(
+                                      //backgroundColor: Color(0xff03C75A),
+                                        elevation: 0.0,
+                                        shadowColor: Colors.transparent,
+                                        padding: EdgeInsets.all(0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(100),
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      await signInWithNaver();
+
+                                      // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
+                                      if (FirebaseAuth.instance.currentUser != null) {
+                                        user_uid = FirebaseAuth.instance.currentUser!.uid;
+                                        user_nickName = FirebaseAuth.instance.currentUser!.displayName ?? '';
+                                        user_email = FirebaseAuth.instance.currentUser!.email ?? '';
+                                        user_profileImageUrl = FirebaseAuth.instance.currentUser!.photoURL ?? '';
+
+                                        // 금방 로그인한 유저에 대한 정보
+                                        // 데이터베이스에 유저가 저장되어있는지 확인
+                                        FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
+                                          String doc_id = '';
+
+                                          if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                                            FirebaseFirestore.instance.collection('userInfo').add({
+                                              'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': ''
+                                            }).then((value) {
+                                              doc_id =  value.id.toString();
+
+                                              FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                                                'docID': doc_id
+                                              });
+                                            });
+                                          }
+                                        }
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 30),
+                              Text('Or'),
+                              SizedBox(height: 20),
+
+                              ElevatedButton(
+                                  child: Text('이메일 로그인', style: TextStyle(fontWeight: FontWeight.bold),),
+                                  onPressed: () async {
+                                    await Navigator.pushNamed(context, '/authPage') as Logineduser;
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      elevation: 0.0,
+                                      shadowColor: Colors.transparent,
+                                      padding: EdgeInsets.all(0)
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ));
+                }
+
+
+                // 로그인이 된 상태
+                return FutureBuilder(
+                    future: getUser(),    //  db 에서 먼저 데이터를 받아옴. provider로
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      Provider.of<Logineduser>(context, listen: false).setDocID(user_docID);
+                      Provider.of<Logineduser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl);
+
+                      return Scaffold(
+                        appBar: AppBar(
+                            title: Text(
+                              widget.title,
+                              style: TextStyle(color: themeColor.getColor(), fontWeight: FontWeight.bold),
+                            ),
+                            elevation: 0.0,
+
+                            actions: <Widget>[
+                              _curIndex != 3 && _curIndex != 4
+                                  ? IconButton(
+                                icon: new Icon(Icons.search),
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(_curIndex)));
+                                },
+                              ) : Expanded(child: Container(), flex: 0,),
+                            ]
+                        ),
+                        body: TabBarView(
+                          physics:NeverScrollableScrollPhysics(),
+                          controller: _tabController,
+                          children: [
+                            MainPage(tabController: _tabController),
+                            DictionaryPage(),
+                            CommunityPage(context),
+                            RestaurantPage(),
+                            MyPage()
+                          ],
+                        ),
+                        bottomNavigationBar: SizedBox(
+                          height: 60,
+                          child: TabBar(
+                            controller: _tabController,
+                            tabs: <Widget>[
+                              Tab(icon: _curIndex == 0? Icon(Icons.home, size: 26,) : Icon(Icons.home_outlined, size: 26,),
+                                child: Text('홈', textScaleFactor: 0.8,), ),
+                              Tab(icon: _curIndex == 1? Icon(Icons.book, size: 26,) : Icon(Icons.book_outlined, size: 26,),
+                                child: Text('사전', textScaleFactor: 0.8,), ),
+                              Tab(icon: _curIndex == 2? Icon(Icons.people_alt, size: 26,) : Icon(Icons.people_alt_outlined, size: 26,),
+                                child: Text('커뮤니티', textScaleFactor: 0.8,), ),
+                              Tab(icon: _curIndex == 3? Icon(Icons.map, size: 26,) : Icon(Icons.map_outlined, size: 26,),
+                                child: Text('맛집지도', textScaleFactor: 0.8,), ),
+                              Tab(icon: _curIndex == 4? Icon(Icons.settings, size: 26,) : Icon(Icons.settings_outlined, size: 26,),
+                                child: Text('설정', textScaleFactor: 0.8,),),
+                            ],
+                            onTap: (index) {
+                              setState(() {_curIndex = index;});
+                            },
+                          ),
+                        ),
+
                       );
-                    }, 
-                  ),
-                  ElevatedButton(
-                    child: Image.asset('assets/naver_login.png', fit: BoxFit.fill, width: 150, height: 40,),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.all(0)
-                    ),
-                    onPressed: () async {
-                      await signInWithNaver();
-
-                        // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
-                      if (FirebaseAuth.instance.currentUser != null) {
-                        user_uid = FirebaseAuth.instance.currentUser!.uid;
-                        user_nickName = FirebaseAuth.instance.currentUser!.displayName ?? '';
-                        user_email = FirebaseAuth.instance.currentUser!.email ?? '';
-                        user_profileImageUrl = FirebaseAuth.instance.currentUser!.photoURL ?? '';
-
-                        // 금방 로그인한 유저에 대한 정보
-                        // 데이터베이스에 유저가 저장되어있는지 확인
-                        FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
-                          String doc_id = '';
-
-                          if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                            FirebaseFirestore.instance.collection('userInfo').add({
-                              'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': ''
-                            }).then((value) {
-                              doc_id =  value.id.toString();
-
-                              FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
-                                'docID': doc_id
-                              });
-                            });
-                          }
-                        }
-                        );
-                      }
-                    },
-                  ),
-                  ElevatedButton(
-                    child: const Text('이메일로 로그인') ,
-                    onPressed: () async {
-                      await Navigator.pushNamed(context, '/authPage') as Logineduser;
-                    }, 
-                  )
-                ],
-              );
-            }
-        
-            
-            // 로그인이 된 상태
-            return FutureBuilder(
-              future: getUser(),    //  db 에서 먼저 데이터를 받아옴. provider로
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                Provider.of<Logineduser>(context, listen: false).setDocID(user_docID);
-                Provider.of<Logineduser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl);
-
-                return Scaffold(
-                  appBar: AppBar(
-                      title: Text(
-                        widget.title,
-                        style: TextStyle(color: themeColor.getColor(), fontWeight: FontWeight.bold),
-                      ),
-                      elevation: 0.0,
-                      
-                       actions: <Widget>[
-                        _curIndex != 3 && _curIndex != 4
-                          ? IconButton(
-                              icon: new Icon(Icons.search),
-                              onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(_curIndex)));
-                              },
-                            ) : Expanded(child: Container(), flex: 0,),
-                      ]
-                  ),
-                  body: TabBarView(
-                    physics:NeverScrollableScrollPhysics(),
-                    controller: _tabController,
-                    children: [
-                      MainPage(tabController: _tabController),
-                      DictionaryPage(),
-                      CommunityPage(context),
-                      RestaurantPage(),
-                      MyPage()
-                    ],
-                  ),
-                  bottomNavigationBar: SizedBox(
-                    height: 60,
-                    child: TabBar(
-                      controller: _tabController,
-                      tabs: <Widget>[
-                        Tab(icon: _curIndex == 0? Icon(Icons.home, size: 26,) : Icon(Icons.home_outlined, size: 26,),
-                          child: Text('홈', textScaleFactor: 0.8,), ),
-                        Tab(icon: _curIndex == 1? Icon(Icons.book, size: 26,) : Icon(Icons.book_outlined, size: 26,),
-                          child: Text('사전', textScaleFactor: 0.8,), ),
-                        Tab(icon: _curIndex == 2? Icon(Icons.people_alt, size: 26,) : Icon(Icons.people_alt_outlined, size: 26,),
-                          child: Text('커뮤니티', textScaleFactor: 0.8,), ),
-                        Tab(icon: _curIndex == 3? Icon(Icons.map, size: 26,) : Icon(Icons.map_outlined, size: 26,),
-                          child: Text('맛집지도', textScaleFactor: 0.8,), ),
-                        Tab(icon: _curIndex == 4? Icon(Icons.settings, size: 26,) : Icon(Icons.settings_outlined, size: 26,),
-                          child: Text('설정', textScaleFactor: 0.8,),),
-                      ],
-                      onTap: (index) {
-                        setState(() {_curIndex = index;});
-                      },
-                    ),
-                  ),
-        
+                    }
                 );
               }
-            );
-          }
-        );
-      }
+          );
+        }
+    );
+
+  }
+
+  Widget welcomeText() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('자취 백과사전',
+                style: TextStyle(
+                    color: themeColor.getColor(),
+                    fontWeight: FontWeight.bold),
+                textScaleFactor: 2.3),
+            Text('에 ',
+                style: TextStyle(
+                  color: Colors.black,
+                  // color: themeColor.getColor(),
+                ),
+                textScaleFactor: 1.5),
+          ],
+        ),
+        Padding(padding: EdgeInsets.fromLTRB(0, 2, 0, 0), child: Text('오신 것을 환영합니다!',
+            style: TextStyle(
+              color: Colors.black,
+              // color: themeColor.getColor(),
+            ),
+            textScaleFactor: 1.5),),
+        SizedBox(height: 85),
+
+        Container(
+            width: 200,
+            height: 35,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.black12),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  offset: Offset(0,0),
+                  blurRadius: 6,
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/lightning.png', fit: BoxFit.contain, width:20, height: 20,),
+                Text(' 3초 만에 회원가입하기!',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold
+                      // color: themeColor.getColor(),
+                    ),
+                    textScaleFactor: 1.1),
+              ],
+            )
+
+        ),
+      ],
     );
   }
 
