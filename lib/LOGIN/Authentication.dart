@@ -388,7 +388,6 @@ class _onboardingScreenState extends State<onboardingScreen> {
   }) {
     return SingleChildScrollView( child:
         Container(
-          color: Colors.red,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -407,7 +406,6 @@ class _onboardingScreenState extends State<onboardingScreen> {
               SizedBox(height: 60),
               Container(
                 width: double.infinity,
-                color: Colors.blue,
                 child:
                     //TODO: 이미지 출력
                     Image.asset(
