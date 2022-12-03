@@ -125,7 +125,12 @@ class CommunityItem{
 
 
   Widget build(BuildContext context, {String? commentItemID}) {
-    String timeText = '${time!.hour.toString()}:${time!.minute.toString()}';
+    int hour = time!.hour;
+    int minute = time!.minute;
+    String hourText = (hour < 10)?("0$hour"):("$hour");
+    String minuteText = (minute < 10)?("0$minute"):("$minute");
+
+    String timeText = "$hourText:$minuteText";
     String omittedBody = getOmittedBody();
 
     return Padding(
