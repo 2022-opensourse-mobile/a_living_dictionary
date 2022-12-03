@@ -34,7 +34,6 @@ class DictionaryCardPage {
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 10/9, // 가로 세로 비율
-          //childAspectRatio: (width / 2) / (isPortrait?(height < 750 ? 250 : portraitH):landscapeH), // 가로 세로 비율
         ),
       ),
     );
@@ -57,91 +56,15 @@ class DictionaryCardPage {
           final documents = snap.data!.docs;
 
           return Container(
-            child: GridView.builder(
-              physics: ScrollPhysics(),
-              shrinkWrap: true,
-              padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
-              itemCount: 4, //몇 개 출력할 건지
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 0),
-                  width: width / 2,
-                  height: width*(9/20),
-                  child: InkWell(
-                    onTap: () {
-                      String clicked_id = documents[index]['item_id'];
-                      Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
-                    
-                      PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
-                      Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
-                    },
-                    child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        elevation: 0,
-                        child: StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance.collection('dictionaryItem').where('__name__', isEqualTo: documents[index]['item_id']).snapshots(),
-                            builder: (context, snap) {
-
-                              if (!snap.hasData)
-                                return Center(child: CircularProgressIndicator());
-
-                              if (snap.hasError)
-                                return Center(child: CircularProgressIndicator());
-
-                              if (snap.connectionState == ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              }
-
-
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    child: Image.network(documents[0]['thumbnail']),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(8, 5, 8, 0), // 게시글 제목 여백
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
-                                          child: Text(
-                                            "#추천",
-                                            style: TextStyle(color: themeColor.getColor(),),
-                                            textScaleFactor: 1, 
-                                          ),
-                                        ), 
-                                        Text(documents[0]['title'])
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              );
-                            })),
-                  ),
-                );
-              },
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 10/9
-              ),
-            ),
+            child: gridViewList(context, documents, "추천"),
           );
         });
   }
-
-
 
   Widget otherPostList(BuildContext context, String tabName) {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('dictionaryItem').where("hashtag", isEqualTo: tabName).snapshots(),
         builder: (context, AsyncSnapshot snap) {
-
           if (!snap.hasData)
             return Center(child: CircularProgressIndicator());
 
@@ -156,73 +79,79 @@ class DictionaryCardPage {
           final documents = snap.data!.docs;
 
           return Container(
-            child: GridView.builder(
-              physics: const ScrollPhysics(),
-              shrinkWrap: true,
-              padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-              itemCount: documents.length,
-              //몇 개 출력할 건지
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 0),
-                  width: width / 2,
-                  height: width*(101515),
-                  child: InkWell(
-                    onTap: () {
-                      String clicked_id = documents[index].id; // 지금 클릭한 dictionaryItem의 item_id
-                      Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
+            child: gridViewList(context, documents, tabName),
+          );
+        }
+    );
+  }
 
-                      PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
-                      Navigator.push(
-                          context, pageRouteWithAnimation.slideLeftToRight());
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0), 
-                            child: Image.network(documents[index]['thumbnail']), 
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),// 게시글 제목 여백
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
-                                  child: Text(
-                                    "#$tabName",
-                                    style: TextStyle(
-                                      color: themeColor.getColor(),
-                                    ),
-                                    textScaleFactor: 1,
-                                  ),
-                                ),
-                                Text(
-                                  documents[index]['title'],
-                                  overflow: TextOverflow.ellipsis,  
-                                )
-                              ],
+  // 공통되는 gridView 분리
+  Widget gridViewList(BuildContext context, List<DocumentSnapshot> documents, String tabName) {
+    return GridView.builder(
+      physics: const ScrollPhysics(),
+      shrinkWrap: true,
+      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+      itemCount: documents.length,
+      //몇 개 출력할 건지
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 0),
+          width: width / 2,
+          height: width*(101515),
+          child: InkWell(
+            onTap: () {
+              String clicked_id = documents[index].id; // 지금 클릭한 dictionaryItem의 item_id
+              Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, documents[index]['author'], documents[index]['card_num'], documents[index]['date'], documents[index]['hashtag'], documents[index]['scrapnum'], documents[index]['thumbnail'], documents[index]['title']);
+
+              PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(pageView(context));
+              Navigator.push(
+                  context, pageRouteWithAnimation.slideLeftToRight());
+            },
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.network(documents[index]['thumbnail']),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),// 게시글 제목 여백
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
+                          child: Text(
+                            tabName == "search"? "#${documents[index]['hashtag']}" : "#$tabName",
+                            style: TextStyle(
+                              color: themeColor.getColor(),
                             ),
+                            textScaleFactor: 1,
                           ),
-                        ],
-                      ),
+                        ),
+                        Text(
+                          documents[index]['title'],
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      ],
                     ),
                   ),
-                );
-              },
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 10/9 // 가로 세로 비율
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 10/9 // 가로 세로 비율
+      ),
+    );
   }
 
   Widget post(BuildContext context, int index) {
@@ -292,6 +221,7 @@ class DictionaryCardPage {
           );
         });
   }
+  
   Widget pageView(BuildContext context) {
     return Consumer2<DictionaryItemInfo, Logineduser>(
       builder: (context, dicProvider, userProvider, child) {
@@ -404,23 +334,25 @@ class DictionaryCardPage {
                               ),
                             ),
                           ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: Image.network(cardDocList[index]['img']),    // 카드 해당 이미지 출력
-                              ),
-                              SizedBox(
-                                width: double.infinity,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Text(
-                                    cardDocList[index]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
-                                    style: const TextStyle(color: Colors.white,),
+                          Center(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.network(cardDocList[index]['img']),    // 카드 해당 이미지 출력
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Text(
+                                            cardDocList[index]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
+                                            style: const TextStyle(color: Colors.white,),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       );

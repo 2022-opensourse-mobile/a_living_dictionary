@@ -1,7 +1,5 @@
 import 'dart:ui';
 import 'package:a_living_dictionary/DB/CommunityItem.dart';
-
-import 'DictionaryCardPage.dart' as dicCard;
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/UI/Supplementary/CheckClick.dart';
 import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
@@ -9,9 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'ThemeColor.dart';
-
-import 'package:firebase_core/firebase_core.dart';
-import '../../firebase_options.dart';
+import 'DictionaryCardPage.dart';
 
 ThemeColor themeColor = ThemeColor();
 final CheckClick clickCheck = CheckClick();
@@ -41,6 +37,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset : false,
       appBar: AppBar(
         elevation: 0,
         automaticallyImplyLeading: false,
@@ -82,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 });
                               },
                             ) : SizedBox(),
-                        hintText: curIndex == 2? "글 제목, 내용" : "글 제목, 해시태그",
+                        hintText: curIndex == 2? "글 제목, 내용, 해시태그" : "글 제목, 해시태그",
                         labelStyle: TextStyle(color: Colors.black),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.transparent),
@@ -115,18 +112,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 ],
               ),
             ),
-            _buildBody(context),
+            curIndex == 2? _searchCommunity(context) : _searchDictionary(context),
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildBody(BuildContext context) {
-    if (curIndex == 2) // 커뮤니티 검색
-      return _searchCommunity(context);
-    else // 백과사전 검색
-      return _searchDictionary(context);
   }
 
   // 백과사전 검색
@@ -147,8 +137,7 @@ class _SearchScreenState extends State<SearchScreen> {
         List<DocumentSnapshot> searchResults = [];
 
         for (int i=0; i<documents.length; i++) {
-          // 단어가 해시태그 또는 제목에 포함되면 검색 가능
-          if (documents[i]['hashtag'].toString().contains(_searchText)  || documents[i]['title'].toString().contains(_searchText))
+          if (('#' + documents[i]['hashtag'].toString()).contains(_searchText)  || documents[i]['title'].toString().contains(_searchText))
             searchResults.add(documents[i]);
         }
 
@@ -168,71 +157,7 @@ class _SearchScreenState extends State<SearchScreen> {
         }
 
         return Expanded(
-          child: GridView.builder(
-            physics: ScrollPhysics(),
-            shrinkWrap: true,
-            padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 10/9,
-            ),
-            itemCount: searchResults.length,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 0),
-                width: w / 2,
-                height: w * (101515),
-                child: InkWell(
-                  onTap: () {
-                    String clicked_id = searchResults[index].id;
-                    Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clicked_id, searchResults[index]['author'], searchResults[index]['card_num'], searchResults[index]['date'],
-                        searchResults[index]['hashtag'], searchResults[index]['scrapnum'], searchResults[index]['thumbnail'], searchResults[index]['title']);
-
-                    PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(
-                        dicCard.DictionaryCardPage(w, h, portraitH, landscapeH, isPortrait).pageView(context));
-                    Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 0,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: Image.network(searchResults[index]['thumbnail']),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(8, 5, 8, 0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
-                                child: Text(
-                                  "#${searchResults[index]['hashtag']}",
-                                  style: TextStyle(
-                                    color: themeColor.getColor(),
-                                  ),
-                                  textScaleFactor: 1,
-                                ),
-                              ),
-                              Text(
-                                searchResults[index]['title'],
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+          child: DictionaryCardPage(w, h, portraitH, landscapeH, isPortrait).gridViewList(context, searchResults, "search"),
         );
       },
     );
@@ -250,8 +175,8 @@ class _SearchScreenState extends State<SearchScreen> {
         List<DocumentSnapshot> searchResults = [];
 
         for (int i=0; i<documents.length; i++) {
-          // 단어가 제목 또는 본문에 포함되면 검색 가능
-          if (documents[i]['title'].toString().contains(_searchText) || documents[i]['body'].toString().contains(_searchText))
+          if (documents[i]['title'].toString().contains(_searchText) || documents[i]['body'].toString().contains(_searchText)
+              || documents[i]['hashTag'].toString().contains(_searchText))
             searchResults.add(documents[i]);
         }
 
