@@ -182,8 +182,6 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
                       child: Image(image: NetworkImage(item['thumbnail']), fit: BoxFit.contain),
 
                       onTap: (() {
-                        String clicked_id = item.id; // 지금 클릭한 dictionaryItem의 도큐먼트 id
-                        
                         Provider.of<DictionaryItemInfo>(context, listen:false).setInfo(item.id, item['author'], item['card_num'], item['date'], item['hashtag'], item['scrapnum'], item['thumbnail'], item['title']);
                         
                         PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context));
