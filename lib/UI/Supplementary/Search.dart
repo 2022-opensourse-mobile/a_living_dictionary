@@ -57,41 +57,41 @@ class _SearchScreenState extends State<SearchScreen> {
                     flex: 6,
                     child: TextField(
                       focusNode: focusNode,
+                      cursorColor: themeColor.getMaterialColor(), //커서 색상
                       style: TextStyle(
                         fontSize: 15,
                       ),
                       autofocus: true,
                       controller: _filter,
                       textInputAction: TextInputAction.search,
-                      cursorColor: Colors.white,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.white24,
+                        fillColor: Colors.white,
                         floatingLabelBehavior: FloatingLabelBehavior.never,
-                        prefixIcon: Icon(Icons.search, color: Colors.white60, size: 20,),
+                        prefixIcon: Icon(Icons.search, color: Colors.black54, size: 20,),
                         suffixIcon: _searchText != ""
-                          ? IconButton(
-                              icon: Icon(Icons.cancel,size: 20,),
-                              onPressed: (){
-                                setState(() {
-                                  _filter.clear();
-                                  _searchText = "";
-                                });
-                              },
-                            ) : SizedBox(),
+                            ? IconButton(
+                          icon: Icon(Icons.cancel, color: Colors.black54, size: 20,),
+                          onPressed: (){
+                            setState(() {
+                              _filter.clear();
+                              _searchText = "";
+                            });
+                          },
+                        ) : SizedBox(),
                         hintText: curIndex == 2? "글 제목, 내용, 해시태그" : "글 제목, 해시태그",
                         labelStyle: TextStyle(color: Colors.black),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.transparent),
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius: BorderRadius.all(Radius.circular(0)),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.transparent),
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius: BorderRadius.all(Radius.circular(0)),
                         ),
                         border: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.transparent),
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius: BorderRadius.all(Radius.circular(0)),
                         ),
                       ),
                     ),

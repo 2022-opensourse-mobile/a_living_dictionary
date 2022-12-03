@@ -94,10 +94,7 @@ class _ComminityState extends State<Community> with TickerProviderStateMixin{
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(CommunityWritePage(context, null));
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         },
-        child: const Icon(
-          Icons.add,
-          color: Colors.black,
-        ),
+        child: const Icon(Icons.add, color: Colors.black),
       ),
     );
   }

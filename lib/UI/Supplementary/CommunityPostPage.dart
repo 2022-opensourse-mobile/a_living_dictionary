@@ -143,7 +143,12 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
           child: Row(
             children: [
               CircleAvatar(
-                backgroundImage: NetworkImage(item.profileImage), //프로필 사진
+                radius: 20,
+                backgroundColor: Color(0xffe0e0e0),
+                child: CircleAvatar(
+                  radius: 19.5,
+                  backgroundImage: NetworkImage(item.profileImage), //프로필 사진
+                ),
               ),
               Text(" $writer", style: const TextStyle(fontSize: 15)),
             ],
@@ -321,7 +326,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
               )
             ],
           ),
-    )]);
+    ), SizedBox(height: 30)]);
   }
   Widget getCommentListWidget() {
     return StreamBuilder<QuerySnapshot>(
@@ -359,10 +364,19 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                 title: (Text(commentItem.writerNickname, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: charColor))),
                 //수정 버튼을 눌렀다면 TextFromField 출력, 아니라면 댓글 내용 출력
                 subtitle: (isOnGoing && commentItem.doc_id == changedDocID)?
-                  (TextFormField(controller: commentModifyController)):
+                  (TextFormField(controller: commentModifyController,
+                  decoration: InputDecoration(
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black,)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black,)),
+                  ),)):
                   (Text(commentItem.body, style: TextStyle(fontSize: 14, color: charColor))),
                 leading: CircleAvatar(
-                  backgroundImage: NetworkImage(commentItem.profileImage), //프로필 사진
+                  radius: 20,
+                  backgroundColor: Color(0xffe0e0e0),
+                  child: CircleAvatar(
+                    radius: 19.5,
+                    backgroundImage: NetworkImage(item.profileImage), //프로필 사진
+                  ),
                 ),
                 minVerticalPadding: 0,
               ),
