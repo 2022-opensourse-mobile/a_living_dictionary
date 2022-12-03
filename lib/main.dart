@@ -347,16 +347,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           child: TabBar(
                             controller: _tabController,
                             tabs: <Widget>[
-                              Tab(icon: _curIndex == 0? Icon(Icons.home, size: 26,) : Icon(Icons.home_outlined, size: 26,),
-                                child: Text('홈', textScaleFactor: 0.8,), ),
-                              Tab(icon: _curIndex == 1? Icon(Icons.book, size: 26,) : Icon(Icons.book_outlined, size: 26,),
-                                child: Text('백과사전', textScaleFactor: 0.8,), ),
-                              Tab(icon: _curIndex == 2? Icon(Icons.people_alt, size: 26,) : Icon(Icons.people_alt_outlined, size: 26,),
-                                child: Text('커뮤니티', textScaleFactor: 0.8,), ),
-                              Tab(icon: _curIndex == 3? Icon(Icons.map, size: 26,) : Icon(Icons.map_outlined, size: 26,),
-                                child: Text('맛집지도', textScaleFactor: 0.8,), ),
-                              Tab(icon: _curIndex == 4? Icon(Icons.settings, size: 26,) : Icon(Icons.settings_outlined, size: 26,),
-                                child: Text('설정', textScaleFactor: 0.8,),),
+                              Tab(icon: _curIndex == 0? Icon(Icons.home, size: 26, color: Colors.black,) : Icon(Icons.home_outlined, size: 26, color: Colors.black,),
+                                child: Text('홈', textScaleFactor: 0.8, style: TextStyle(color: Colors.black,),), ),
+                              Tab(icon: _curIndex == 1? Icon(Icons.book, size: 26,color: Colors.black,) : Icon(Icons.book_outlined, size: 26, color: Colors.black,),
+                                child: Text('백과사전', textScaleFactor: 0.8, style: TextStyle(color: Colors.black,),), ),
+                              Tab(icon: _curIndex == 2? Icon(Icons.people_alt, size: 26, color: Colors.black,) : Icon(Icons.people_alt_outlined, size: 26, color: Colors.black,),
+                                child: Text('커뮤니티', textScaleFactor: 0.8, style: TextStyle(color: Colors.black,),), ),
+                              Tab(icon: _curIndex == 3? Icon(Icons.map, size: 26, color: Colors.black,) : Icon(Icons.map_outlined, size: 26, color: Colors.black,),
+                                child: Text('맛집지도', textScaleFactor: 0.8, style: TextStyle(color: Colors.black,),), ),
+                              Tab(icon: _curIndex == 4? Icon(Icons.settings, size: 26, color: Colors.black,) : Icon(Icons.settings_outlined, size: 26, color: Colors.black,),
+                                child: Text('설정', textScaleFactor: 0.8, style: TextStyle(color: Colors.black,),), ),
                             ],
                             onTap: (index) {
                               setState(() {_curIndex = index;});
