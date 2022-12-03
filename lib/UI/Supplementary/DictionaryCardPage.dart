@@ -2,6 +2,7 @@ import 'dart:ui';
 
 
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
+import 'package:a_living_dictionary/UI/Supplementary/ThemeColor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,8 @@ import 'package:a_living_dictionary/UI/Supplementary/CheckClick.dart';
 
 import '../DictionaryPage.dart';
 import 'PageRouteWithAnimation.dart';
+
+ThemeColor themeColor = ThemeColor();
 
 class DictionaryCardPage {
   DictionaryCardPage(this.width, this.height, this.portraitH, this.landscapeH, this.isPortrait);
@@ -382,47 +385,99 @@ class DictionaryCardPage {
                     controller: PageController(
                       initialPage: 0,
                     ),
-                    itemCount: cardDocList.length,
+                    itemCount: cardDocList.length+1, 
                     itemBuilder: (context, index) {
                       return Stack(
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(cardDocList[0]['img']),    // 카드 맨 첫 번째 사진으로 배경 설정
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            child: ClipRect(
-                              child: BackdropFilter(
-                                filter:
-                                    ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.5)),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: Image.network(cardDocList[index]['img']),    // 카드 해당 이미지 출력
-                              ),
-                              SizedBox(
-                                width: double.infinity,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Text(
-                                    cardDocList[index]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
-                                    style: const TextStyle(color: Colors.white,),
+                          Consumer<DictionaryItemInfo>(
+                            builder: (context, dicProvider, child) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: NetworkImage(cardDocList[0]['img']),    // 카드 맨 첫 번째 사진으로 배경 설정
+                                    // image: NetworkImage(dicProvider.),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
-                              ),
-                            ],
+                                child: ClipRect(
+                                  child: BackdropFilter(
+                                    filter:
+                                        ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.5)),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
                           ),
-                        ],
+                          
+                          if (index != 0)
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [ 
+                                Center(
+                                  child: Image.network(cardDocList[index-1]['img'])// 카드 해당 이미지 출력
+                                ),
+                            
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Text(
+                                      cardDocList[index-1]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
+                                      style: const TextStyle(color: Colors.white,),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          
+                          if (index == 0) // 제목 페이지
+                            Consumer<DictionaryItemInfo>(
+                              builder: (context, dicProvider, child) {
+                                return Stack(
+                                  children: [
+
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(child: SizedBox(),),
+                                            Icon(Icons.star, color: Colors.amber[600],),
+                                            Text(
+                                              "스크랩하기↗",
+                                              style: TextStyle(color: Colors.white, fontSize: 16),
+                                            ),
+                                            SizedBox(width:30)
+                                          ],
+                                        ),
+                                        Expanded(child:SizedBox())
+                                      ]
+                                      
+                                    ),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        // Expanded(child: SizedBox()),
+                                        Image.network(dicProvider.thumbnail),
+                                        SizedBox(height: 10),
+                                        Center(
+                                          child: Text(
+                                            dicProvider.title,
+                                            style: const TextStyle(color: Colors.white, fontSize: 16),
+                                          )// 카드 해당 이미지 출력
+                                        ),
+                                        
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              }
+                            ),
+                          ],
                       );
                     },
                   );
