@@ -92,7 +92,7 @@ class CommunityWritePage extends StatelessWidget {
             communityItem.profileImage = profileIMG;
             communityItem.writerNickname = nickName;
             communityItem.body = bodyController.text;
-            communityItem.title = bodyController.text;
+            communityItem.title = titleController.text;
 
             if(isNull){
               communityItem.writerID = user.uid;
