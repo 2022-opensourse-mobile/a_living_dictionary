@@ -687,13 +687,29 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                     
                   ),
                   child: Text('완료', style: TextStyle(color: Colors.white)),
-                  onPressed: () {
+                  onPressed: () async {
+                    String inputText = _nickNameController.text.trim();
+                    
+
                     if(this.formKey.currentState!.validate()) {
-                      if (_nickNameController.text.length < 2) {
-                        snackBar('닉네임을 두 글자 이상 입력해주세요!');
-                      } else {
-                        Provider.of<Logineduser>(context, listen: false).setNickName(_nickNameController.text);
-                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': _nickNameController.text});
+
+                      //닉네임 중복 확인
+                      bool isduplicate = false;
+
+                      await FirebaseFirestore.instance.collection('userInfo').where("nickName", isEqualTo: inputText).get().then((value) {
+                        if (value.docs.length != 0) {
+                          isduplicate = true;
+                        }
+                      });
+
+                      if (inputText.length < 2) {
+                        snackBar('닉네임을 두 글자 이상 입력해주세요.');
+                      } else if (isduplicate) {
+                        snackBar('중복된 닉네임입니다. 다른 닉네임을 입력하세요.');
+                      }
+                      else {
+                        Provider.of<Logineduser>(context, listen: false).setNickName(inputText);
+                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': inputText});
                         Navigator.pop(context);
                         snackBar('닉네임 변경이 완료되었습니다');
                       }
