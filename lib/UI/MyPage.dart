@@ -464,7 +464,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                       }
                     }).toList()));
                   } else {
-                    return const Center(child: Text("댓글을 작성한 게시물이 없습니다"));
+                    return const Center(child: Text("작성한 게시물이 없습니다"));
                   }
                 }))
           ],
