@@ -75,7 +75,6 @@ class restaurantMapState extends State<restaurantMap> {
             final MarkerId markerId = MarkerId(store);
 
             markers[markerId] = Marker(
-              // icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
               position: LatLng(lat, lng),
               markerId: MarkerId(store),
               infoWindow: InfoWindow(
@@ -85,7 +84,7 @@ class restaurantMapState extends State<restaurantMap> {
             );
           }
         }
-        return getUserMarker(context);
+        return googleMap(context);
       },
     );
   }
@@ -121,7 +120,7 @@ class restaurantMapState extends State<restaurantMap> {
                 ),
               );
             }
-            return googleMap(context);
+            return getMarker(context);
           },
         );
       },
@@ -150,7 +149,6 @@ class restaurantMapState extends State<restaurantMap> {
   void deleteMarker(BuildContext context, String store) {
     markers.removeWhere((key, value) => key == MarkerId(store));
     getUserMarker(context);
-
   }
 
   // 좋아요 아이콘
@@ -406,7 +404,7 @@ class restaurantMapState extends State<restaurantMap> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
-                                    child: Text("$store", textScaleFactor: 1.2,),),
+                                      child: Text("$store", textScaleFactor: 1.2,),),
                                     Text("${documents[0]['address']}",
                                       textScaleFactor: 1.0,
                                       overflow: TextOverflow.ellipsis,
@@ -578,8 +576,7 @@ class restaurantMapState extends State<restaurantMap> {
           color: Colors.grey,
           child: Stack(
             children: [
-              getMarker(context),
-              // getUserMarker(context),
+              getUserMarker(context),
               Align(
                 alignment: Alignment.topRight,
                 child: Padding(
