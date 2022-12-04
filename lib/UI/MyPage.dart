@@ -546,98 +546,106 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                 builder: (context, userProvider, child) {
                   return StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").snapshots(),
-                      builder: (context, AsyncSnapshot snap) {
-
+                      builder: (context, snap) {
                         if (!snap.hasData) {
                           return const Center(child: CircularProgressIndicator());
                         }
-
                         if(snap.hasError){
                           return const Center(child: CircularProgressIndicator());
                         }
-
                         if (snap.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());
                         }
 
                         final userDocuments = snap.data!.docs;
 
-                        return Container(
-                            child: GridView.builder(
-                              physics: ScrollPhysics(),
-                              shrinkWrap: true,
-                              padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
-                              itemCount: userDocuments.length,
-                              itemBuilder: (context, index) {
-                                return StreamBuilder<QuerySnapshot>(
-                                    stream: FirebaseFirestore.instance.collection('dictionaryItem').where('__name__', isEqualTo: userDocuments[index]['docID']).snapshots(),
-                                    builder: (context, snap) {
-                                      if (!snap.hasData) {
-                                        return CircularProgressIndicator();
-                                      }
-                                      final itemDocuments = snap.data!.docs;
-
-                                      DictionaryCardPage card = DictionaryCardPage(width, height, portraitH, landscapeH, isPortrait);
-                                      return Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 0),
-                                        width: width / 2,
-                                        height: width*(101515),
-                                        child: InkWell(
-                                          onTap: () {
-                                            String clickedId = itemDocuments[0].id; // 지금 클릭한 dictionaryItem의 item_id
-                                            Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clickedId, itemDocuments[0]['author'], itemDocuments[0]['card_num'], itemDocuments[0]['date'], itemDocuments[0]['hashtag'], itemDocuments[0]['scrapnum'], itemDocuments[0]['thumbnail'], itemDocuments[0]['title']);
-                                            PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context));
-                                            Navigator.push(
-                                                context, pageRouteWithAnimation.slideLeftToRight());
-                                          },
-                                          child: Card(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            elevation: 0,
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius: BorderRadius.circular(10.0),
-                                                  child: Image.network(itemDocuments[0]['thumbnail']), // TODO 임시 사진, 썸네일로 바꿔야함
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(8, 5, 8, 0),
-                                                  // 게시글 제목 여백
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Padding(
-                                                        padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
-                                                        child: Text(
-                                                          "#"+itemDocuments[0]['hashtag'],
-                                                          style: TextStyle(
-                                                            color: themeColor.getColor(),
-                                                          ),
-                                                          textScaleFactor: 1,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        // snapshot.data!.docs[0]['title']
-                                                          itemDocuments[0]['title'])
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                );
-                              },
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 10/9 // 가로 세로 비율
+                        if(userDocuments.isEmpty){
+                          return Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                height: height/2.4,
+                                child: Text(" "),
                               ),
-                            )
-                        );
+                              Text("스크랩한 게시물이 없습니다.")
+                            ],
+                          );
+                        }else{
+                        return GridView.builder(
+                          physics: const ScrollPhysics(),
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                          itemCount: userDocuments.length,
+                          itemBuilder: (context, index) {
+                            return StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance.collection('dictionaryItem').where('__name__', isEqualTo: userDocuments[index]['docID']).snapshots(),
+                                builder: (context, snap) {
+                                  if (!snap.hasData) {
+                                    return const CircularProgressIndicator();
+                                  }
+                                  final itemDocuments = snap.data!.docs;
+
+                                  DictionaryCardPage card = DictionaryCardPage(width, height, portraitH, landscapeH, isPortrait);
+                                  return Container(
+                                    margin: EdgeInsets.symmetric(horizontal: 0),
+                                    width: width / 2,
+                                    height: width*(101515),
+                                    child: InkWell(
+                                      onTap: () {
+                                        String clickedId = itemDocuments[0].id; // 지금 클릭한 dictionaryItem의 item_id
+                                        Provider.of<DictionaryItemInfo>(context, listen: false).setInfo(clickedId, itemDocuments[0]['author'], itemDocuments[0]['card_num'], itemDocuments[0]['date'], itemDocuments[0]['hashtag'], itemDocuments[0]['scrapnum'], itemDocuments[0]['thumbnail'], itemDocuments[0]['title']);
+                                        PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(card.pageView(context));
+                                        Navigator.push(
+                                            context, pageRouteWithAnimation.slideLeftToRight());
+                                      },
+                                      child: Card(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        elevation: 0,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(10.0),
+                                              child: Image.network(itemDocuments[0]['thumbnail']), // TODO 임시 사진, 썸네일로 바꿔야함
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(8, 5, 8, 0),
+                                              // 게시글 제목 여백
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
+                                                    child: Text(
+                                                      "#"+itemDocuments[0]['hashtag'],
+                                                      style: TextStyle(
+                                                        color: themeColor.getColor(),
+                                                      ),
+                                                      textScaleFactor: 1,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    // snapshot.data!.docs[0]['title']
+                                                      itemDocuments[0]['title'])
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                            );
+                          },
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 10/9 // 가로 세로 비율
+                          ),
+                        );}
                       });
                 }
             ),
