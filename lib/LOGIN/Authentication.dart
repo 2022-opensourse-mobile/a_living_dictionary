@@ -297,13 +297,13 @@ class _onboardingScreenState extends State<onboardingScreen> {
                 ),
                 buildPage(
                     context: context,
-                    urlImage: 'assets/page1.png',
+                    urlImage: 'assets/page2.png',
                     title: '커뮤니티',
                     subtitle: '자유롭게 소통할 수 있어요'
                 ),
                 buildPage(
                     context: context,
-                    urlImage: 'assets/page1.png',
+                    urlImage: 'assets/page3.png',
                     title: '맛집지도',
                     subtitle: '내 주변 맛집들을 찾아보세요'
                 ),
