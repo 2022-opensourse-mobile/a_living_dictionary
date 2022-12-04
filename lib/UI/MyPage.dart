@@ -22,11 +22,10 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 
 
-
-// 화면전환 페이지 위젯은 전부 'my___'로 시작함
-
 ThemeColor themeColor = ThemeColor();
 const version = '1.0.0';
+
+
 
 class MyPage extends StatefulWidget {
   const MyPage({Key? key}) : super(key: key);
@@ -308,15 +307,12 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
                           resetPassword(userProvider.email);
                           // _emailController.clear();
-
                           Navigator.pop(context);
                         }
                         ),
                       ],
                     ),
                   );
-                
-                
                 }
               }
             ),
@@ -379,13 +375,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               builder: (context) => AlertDialog(
                 content: const Text('로그아웃하시겠습니까?'),
                 actions: [
+                  TextButton(child: Text('예',
+                    style: TextStyle(color: themeColor.getMaterialColor(),
+                      fontWeight: FontWeight.bold,),), onPressed: () { Navigator.pop(context); FirebaseAuth.instance.signOut(); }),
                   TextButton(child: Text('아니오',
                     style: TextStyle(color: themeColor.getMaterialColor(),
                       fontWeight: FontWeight.bold,),),
                       onPressed: () { Navigator.pop(context); }),
-                  TextButton(child: Text('예',
-                    style: TextStyle(color: themeColor.getMaterialColor(),
-                      fontWeight: FontWeight.bold,),), onPressed: () { Navigator.pop(context); FirebaseAuth.instance.signOut(); })
                 ],
               ),
             );
@@ -424,7 +420,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           final userDocuments = snapshot.data!.docs;
 
           if (userDocuments.length == 0)
-            return Center(child: Text("좋아요 목록이 없습니다", textScaleFactor: 1.0,));
+            return Center(child: Text("좋아요 누른 목록이 없습니다", textScaleFactor: 1.0,));
 
           return SingleChildScrollView(
             child:Column(
@@ -703,9 +699,9 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                       });
 
                       if (inputText.length < 2) {
-                        snackBar('닉네임을 두 글자 이상 입력해주세요.');
+                        snackBar('닉네임을 두 글자 이상 입력해주세요');
                       } else if (isduplicate) {
-                        snackBar('중복된 닉네임입니다. 다른 닉네임을 입력하세요.');
+                        snackBar('중복된 닉네임입니다! 다른 닉네임을 입력해주세요');
                       }
                       else {
                         Provider.of<Logineduser>(context, listen: false).setNickName(inputText);
