@@ -36,84 +36,89 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset : false,
-      appBar: AppBar(
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: curIndex == 2
-            ? Text("커뮤니티 검색", style: TextStyle(color: themeColor.getColor()))
-              : Text("백과사전 검색", style: TextStyle(color: themeColor.getColor())),
-      ),
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            Container(
-              color: themeColor.getColor(),
-              padding: EdgeInsets.fromLTRB(5, 8, 5, 8),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 6,
-                    child: TextField(
-                      focusNode: focusNode,
-                      cursorColor: themeColor.getMaterialColor(), //커서 색상
-                      style: TextStyle(
-                        fontSize: 15,
-                      ),
-                      autofocus: true,
-                      controller: _filter,
-                      textInputAction: TextInputAction.search,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                        prefixIcon: Icon(Icons.search, color: Colors.black54, size: 20,),
-                        suffixIcon: _searchText != ""
-                            ? IconButton(
-                          icon: Icon(Icons.cancel, color: Colors.black54, size: 20,),
-                          onPressed: (){
-                            setState(() {
-                              _filter.clear();
-                              _searchText = "";
-                            });
-                          },
-                        ) : SizedBox(),
-                        hintText: curIndex == 2? "글 제목, 내용, 해시태그" : "글 제목, 해시태그",
-                        labelStyle: TextStyle(color: Colors.black),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.transparent),
-                          borderRadius: BorderRadius.all(Radius.circular(0)),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset : false,
+        appBar: AppBar(
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          title: curIndex == 2
+              ? Text("커뮤니티 검색", style: TextStyle(color: themeColor.getColor()))
+                : Text("백과사전 검색", style: TextStyle(color: themeColor.getColor())),
+        ),
+        body: Container(
+          child: Column(
+            children: <Widget>[
+              Container(
+                color: themeColor.getColor(),
+                padding: EdgeInsets.fromLTRB(5, 8, 5, 8),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 6,
+                      child: TextField(
+                        focusNode: focusNode,
+                        cursorColor: themeColor.getMaterialColor(), //커서 색상
+                        style: TextStyle(
+                          fontSize: 15,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.transparent),
-                          borderRadius: BorderRadius.all(Radius.circular(0)),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.transparent),
-                          borderRadius: BorderRadius.all(Radius.circular(0)),
+                        autofocus: true,
+                        controller: _filter,
+                        textInputAction: TextInputAction.search,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          prefixIcon: Icon(Icons.search, color: Colors.black54, size: 20,),
+                          suffixIcon: _searchText != ""
+                              ? IconButton(
+                            icon: Icon(Icons.cancel, color: Colors.black54, size: 20,),
+                            onPressed: (){
+                              setState(() {
+                                _filter.clear();
+                                _searchText = "";
+                              });
+                            },
+                          ) : SizedBox(),
+                          hintText: curIndex == 2? "글 제목, 내용, 해시태그" : "글 제목, 해시태그",
+                          labelStyle: TextStyle(color: Colors.black),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                            borderRadius: BorderRadius.all(Radius.circular(0)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                            borderRadius: BorderRadius.all(Radius.circular(0)),
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                            borderRadius: BorderRadius.all(Radius.circular(0)),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: TextButton(
-                      child: Text('취소'),
-                      onPressed: (){
-                        setState(() {
-                          _filter.clear();
-                          _searchText = "";
-                          focusNode.unfocus();
-                          Navigator.pop(context);
-                        });
-                      },
+                    Expanded(
+                      child: TextButton(
+                        child: Text('취소'),
+                        onPressed: (){
+                          setState(() {
+                            _filter.clear();
+                            _searchText = "";
+                            focusNode.unfocus();
+                            Navigator.pop(context);
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            curIndex == 2? _searchCommunity(context) : _searchDictionary(context),
-          ],
+              curIndex == 2? _searchCommunity(context) : _searchDictionary(context),
+            ],
+          ),
         ),
       ),
     );
