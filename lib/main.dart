@@ -205,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                     onPressed: () async {
                                       viewModel = new MainViewModel(KakaoLogin());
                                       await viewModel.login();
-                                      setState((){}); // 화면 갱신만 하는 것
+                                      //setState((){}); // 화면 갱신만 하는 것
 
                                       // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
                                       if (FirebaseAuth.instance.currentUser != null) {

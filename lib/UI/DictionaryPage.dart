@@ -27,7 +27,7 @@ class _DictionaryPageState extends State<DictionaryPage> with TickerProviderStat
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(length: 5, vsync: this);
+    _tabController = new TabController(length: 4, vsync: this);
   }
 
   @override
