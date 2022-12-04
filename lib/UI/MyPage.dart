@@ -475,14 +475,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
         appBar: AppBar(title: const Text('댓글 단 게시물'), elevation: 0.0),
         body: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance.collection('userInfo').doc(userDocID).collection("CommentList").snapshots(),
-            builder: (context, AsyncSnapshot snap) {
+            builder: (context, snap) {
               if (!snap.hasData) {
+                return const Center(child: Text("댓글을 작성한 게시글이 없습니다."));
+              }
+              if (snap.hasError) {
                 return const Center(child: CircularProgressIndicator());
               }
-              if(snap.hasError){
-                return const Center(child: CircularProgressIndicator());
-              }
-
               if (snap.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
@@ -490,43 +489,35 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               final userDocuments = snap.data!.docs;
 
               if(userDocuments.isEmpty){
-                return Container(
-                  child: ListView.builder(
-                    physics: ScrollPhysics(),
-                    shrinkWrap: true,
-                    padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
-                    itemCount: userDocuments.length,
-                    itemBuilder: (context, index) {
-                      return StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('CommunityDB').where('doc_id',
-                                  isEqualTo: userDocuments[index]['community_id']).snapshots(),
-                          builder: (context, snap) {
-                            if (!snap.hasData) {
-                              return CircularProgressIndicator();
-                            }
-                            if (snap.hasError) {
-                              return CircularProgressIndicator();
-                            }
-                            final itemDocuments = snap.data!.docs;
-                            if (itemDocuments.isNotEmpty) {
-                              return Container(
-                                  child: CommunityItem.getDataFromDoc(
-                                          itemDocuments.first)
-                                      .build(context,
-                                          commentItemID: userDocuments[index]
-                                              ['comment_id']));
-                            } else {
-                              return const Center();
-                            }
-                          });
-                    },
-                  ),
-                );}
-              else{
-                return const Center(child: Text("댓글을 작성한 게시물이 없습니다"));
+                return const Center(child: Text("댓글을 작성한 게시물이 없습니다."));
               }
-            })
-    );
+              return ListView.builder(
+                physics: const ScrollPhysics(),
+                shrinkWrap: true,
+                padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                itemCount: userDocuments.length,
+                itemBuilder: (context, index) {
+                  return StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection('CommunityDB').where('doc_id', isEqualTo: userDocuments[index]['community_id']).snapshots(),
+                      builder: (context, snap) {
+                        if (!snap.hasData) {
+                          return const CircularProgressIndicator();
+                        }
+                        if (snap.hasError) {
+                          return const CircularProgressIndicator();
+                        }
+                        final itemDocuments = snap.data!.docs;
+                        if (itemDocuments.isNotEmpty) {
+                          return Container(
+                              child: CommunityItem.getDataFromDoc(itemDocuments.first)
+                                  .build(context, commentItemID: userDocuments[index]['comment_id']));
+                        } else {
+                          return const Center();
+                        }
+                      });
+                },
+              );
+            }));
   }
 
   Future<List<String>> get() async {
