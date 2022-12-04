@@ -54,29 +54,33 @@ class CommunityWritePage extends StatelessWidget {
   }
 
   Widget writePost() {
-    return Scaffold(
-      appBar: AppBar(title: const Text('글 쓰기'), elevation: 0.0, actions: [
-        getFinishButton()
-      ]),
-      body: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Column(
-                children: [
-                  getHashTag(communityItem: communityItem),
-                  const Divider(thickness: 0.5),
-                  getTitleWidget(),
-                  const Divider(thickness: 0.5),
-                  getBodyWidget(),
-                  getCautionWidget()
-                ],
-              ),
-            ),
+    return Builder(
+      builder: (context) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('글 쓰기'), elevation: 0.0, actions: [
+            getFinishButton(context)
           ]),
+          body: ListView(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: Column(
+                    children: [
+                      getHashTag(communityItem: communityItem),
+                      const Divider(thickness: 0.5),
+                      getTitleWidget(),
+                      const Divider(thickness: 0.5),
+                      getBodyWidget(),
+                      getCautionWidget()
+                    ],
+                  ),
+                ),
+              ]),
+        );
+      }
     );
   }
-  Widget getFinishButton(){
+  Widget getFinishButton(BuildContext context){
     return Padding(
       padding: const EdgeInsets.all(10),
       child: SizedBox(
@@ -91,6 +95,16 @@ class CommunityWritePage extends StatelessWidget {
           ),
           child: const Text('완료', style: TextStyle(color: Colors.white)),
           onPressed: () {
+            String titleTemp = titleController.text.replaceAll(' ', '');
+            String bodyTemp = bodyController.text.replaceAll(' ', '');
+            if(titleTemp.isEmpty){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("제목을 입력해주세요.")));
+              return;
+            }
+            if(bodyTemp.isEmpty){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("내용을 입력해주세요.")));
+              return;
+            }
             final profileIMG = (user.profileImageUrl != '')?(user.profileImageUrl):(basicProfileImage);
             final nickName = (user.nickName != '') ? (user.nickName) : ("익명");
 
@@ -208,4 +222,13 @@ class _getHashTagState extends State<getHashTag> {
   DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(value: item, child:
   Text(item, style: TextStyle(color: themeColor.getColor()), textScaleFactor: 0.9,)
   );
+
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar(String text) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$text'), //내용
+          duration: Duration(seconds: 2), //올라와 있는 시간
+        )
+    );
+  }
 }
