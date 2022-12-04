@@ -6,7 +6,6 @@ import 'package:a_living_dictionary/LOGIN/main_view_model.dart';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
-// import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -239,8 +238,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                             });
                                           });
                                         }
-                                      }
-                                      );
+                                      });
+
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => onboardingScreen('kakao')));
                                     },
                                   ),
 
@@ -282,8 +282,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                               });
                                             });
                                           }
-                                        }
-                                        );
+                                        });
+
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => onboardingScreen('naver')));
                                       }
                                     },
                                   ),
