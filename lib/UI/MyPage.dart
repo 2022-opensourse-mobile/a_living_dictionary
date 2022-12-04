@@ -464,7 +464,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                       }
                     }).toList()));
                   } else {
-                    return const Text("작성한 게시글이 없습니다");
+                    return const Center(child: Text("댓글을 작성한 게시물이 없습니다."));
                   }
                 }))
           ],
@@ -491,9 +491,10 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                 return const Center(child: CircularProgressIndicator());
               }
 
-
               final userDocuments = snap.data!.docs;
-              return Container(
+
+              if(userDocuments.isEmpty){
+                return Container(
                   child: ListView.builder(
                     physics: ScrollPhysics(),
                     shrinkWrap: true,
@@ -501,27 +502,33 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                     itemCount: userDocuments.length,
                     itemBuilder: (context, index) {
                       return StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('CommunityDB').where('doc_id', isEqualTo: userDocuments[index]['community_id']).snapshots(),
+                          stream: FirebaseFirestore.instance.collection('CommunityDB').where('doc_id',
+                                  isEqualTo: userDocuments[index]['community_id']).snapshots(),
                           builder: (context, snap) {
                             if (!snap.hasData) {
                               return CircularProgressIndicator();
                             }
-                            if(snap.hasError){
+                            if (snap.hasError) {
                               return CircularProgressIndicator();
                             }
                             final itemDocuments = snap.data!.docs;
-                            if(itemDocuments.isNotEmpty){
+                            if (itemDocuments.isNotEmpty) {
                               return Container(
-                                child: CommunityItem.getDataFromDoc(itemDocuments.first).build(context, commentItemID: userDocuments[index]['comment_id'])
-                              );
-                            }else{
-                              return Container();
+                                  child: CommunityItem.getDataFromDoc(
+                                          itemDocuments.first)
+                                      .build(context,
+                                          commentItemID: userDocuments[index]
+                                              ['comment_id']));
+                            } else {
+                              return const Center();
                             }
-                          }
-                      );
+                          });
                     },
-                    ),
-              );
+                  ),
+                );}
+              else{
+                return const Center(child: Text("댓글을 작성한 게시물이 없습니다."));
+              }
             })
     );
   }
