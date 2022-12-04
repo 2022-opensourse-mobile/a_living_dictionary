@@ -123,7 +123,9 @@ class Authentication extends StatelessWidget {
 
 
               FirebaseFirestore.instance.collection('userInfo').add({
-                'uid': FirebaseAuth.instance.currentUser!.uid, 'nickName': FirebaseAuth.instance.currentUser!.uid, 'email': FirebaseAuth.instance.currentUser!.email ?? '', 'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260'
+                'uid': FirebaseAuth.instance.currentUser!.uid, 'nickName': FirebaseAuth.instance.currentUser!.uid, 'email': FirebaseAuth.instance.currentUser!.email ?? '', 
+                'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260',
+                'admin': false
               }).then((value) {
                 String doc_id =  value.id.toString();
                 
@@ -363,7 +365,9 @@ class _onboardingScreenState extends State<onboardingScreen> {
 
                             if (snap.size == 0) { // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
                               FirebaseFirestore.instance.collection('userInfo').add({
-                                'uid': user_id, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260'
+                                'uid': user_id, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 
+                                'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260',
+                                'admin': false
                               }).then((value) {
                                 doc_id =  value.id.toString();
                                 FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
