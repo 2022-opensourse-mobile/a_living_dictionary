@@ -174,11 +174,28 @@ class CommunityItem{
     return omittedBody;
   }
   String getTime(){
+    DateTime now = DateTime.now() ;
+    int year = time!.year;
+    int month = time!.month;
+    int day = time!.day;
     int hour = time!.hour;
     int minute = time!.minute;
-    String hourText = (hour < 10)?("0$hour"):("$hour");
-    String minuteText = (minute < 10)?("0$minute"):("$minute");
-    return "$hourText:$minuteText";
+
+    String monthText = (month < 10) ? ("0$month") : ("$month");
+    String dayText = (day < 10) ? ("0$day") : ("$day");
+    String hourText = (hour < 10) ? ("0$hour") : ("$hour");
+    String minuteText = (minute < 10) ? ("0$minute") : ("$minute");
+
+    if(now.year != year){
+      return "$year/$monthText/$dayText";
+    }else{
+      if(now.day != day){
+        return "$monthText/$dayText";
+      }
+      else {
+        return "$hourText:$minuteText";
+      }
+    }
   }
 
   Widget buildMain(BuildContext context) {
