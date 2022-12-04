@@ -132,7 +132,13 @@ class Authentication extends StatelessWidget {
                 });
 
                 Provider.of<Logineduser>(context, listen: false).setDocID(doc_id);
-                Provider.of<Logineduser>(context, listen: false).setInfo(FirebaseAuth.instance.currentUser!.uid, '',FirebaseAuth.instance.currentUser!.email ?? '', 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260');
+                Provider.of<Logineduser>(context, listen: false).setInfo(
+                    FirebaseAuth.instance.currentUser!.uid,
+                    '',
+                    FirebaseAuth.instance.currentUser!.email ?? '',
+                    'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260',
+                    false
+                );
               });
 
               Future.delayed(Duration.zero, () => nickNameAlert(context));

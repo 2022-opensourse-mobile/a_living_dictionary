@@ -8,13 +8,14 @@ class Logineduser  with ChangeNotifier {
   String nickName ='';
   String email ='';
   String profileImageUrl = '';
+  bool admin = false;
 
-  void setInfo(uid, nickName, email, profileImageUrl) {
+  void setInfo(uid, nickName, email, profileImageUrl, admin) {
     this.uid = uid;
     this.nickName = nickName;
     this.email = email;
     this.profileImageUrl = profileImageUrl;
-
+    this.admin = admin;
     notifyListeners();
   }
 

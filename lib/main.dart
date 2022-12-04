@@ -7,7 +7,6 @@ import 'package:a_living_dictionary/LOGIN/main_view_model.dart';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
-import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
 // import 'package:a_living_dictionary/UI/Supplementary/TempSearch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -116,6 +115,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   String user_nickName ='';
   String user_email ='';
   String user_profileImageUrl = '';
+  bool user_admin = false;
 
   
 
@@ -311,7 +311,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     future: getUser(),    //  db 에서 먼저 데이터를 받아옴. provider로
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       Provider.of<Logineduser>(context, listen: false).setDocID(user_docID);
-                      Provider.of<Logineduser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl);
+                      Provider.of<Logineduser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl, user_admin);
 
                       return Scaffold(
                         appBar: AppBar(
@@ -444,6 +444,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         user_nickName =doc['nickName'];
         user_email =doc['email'];
         user_profileImageUrl = doc['profileImageUrl'];
+        user_admin = doc['admin'];
       }
       ); 
       }
