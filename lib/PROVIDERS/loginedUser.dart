@@ -16,19 +16,19 @@ class Logineduser  with ChangeNotifier {
     this.email = email;
     this.profileImageUrl = profileImageUrl;
     this.admin = admin;
-    notifyListeners();
+    //notifyListeners();
   }
 
   void setNickName(nickName) {
     this.nickName = nickName;
 
-    notifyListeners();
+    //notifyListeners();
   }
 
   void setProfileImageUrl(profileImageUrl) {
     this.profileImageUrl = profileImageUrl;
 
-    notifyListeners();
+    //notifyListeners();
   }
 
   void setDocID(doc_id) {
