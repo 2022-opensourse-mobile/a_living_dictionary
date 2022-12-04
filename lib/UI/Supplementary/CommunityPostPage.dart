@@ -122,12 +122,12 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                     textScaleFactor: 1.0)
             ),
             Row(
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              // crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
                   width: (user.uid == item.writerID)
-                      ? ((width > 750) ? (550) : (width - 150))
+                      ? ((width > 750) ? (620) : (width - 130))
                       : ((width > 750) ? (700) : (width - 50)),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(15, 10, 0, 10),
