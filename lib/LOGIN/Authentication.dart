@@ -123,7 +123,9 @@ class Authentication extends StatelessWidget {
 
 
               FirebaseFirestore.instance.collection('userInfo').add({
-                'uid': FirebaseAuth.instance.currentUser!.uid, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260'
+                'uid': FirebaseAuth.instance.currentUser!.uid, 'nickName': FirebaseAuth.instance.currentUser!.uid, 'email': FirebaseAuth.instance.currentUser!.email ?? '', 
+                'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260',
+                'admin': false
               }).then((value) {
                 String doc_id =  value.id.toString();
                 
@@ -214,17 +216,19 @@ class Authentication extends StatelessWidget {
                 return TextButton(child: Text('확인',
                   style: TextStyle(color: themeColor.getMaterialColor(),
                     fontWeight: FontWeight.bold,),),
-                    onPressed: () {
+                    onPressed: () async {
                       if(_formKey.currentState!.validate()) {
-                        /*  TODO: ↓ 닉네임 입력 완료버튼 누르면 실행되어야 할 부분 ↓ */
-                        // TODO: 여기에 작성
+                        String inputText = _nickNameController.text.trim();
+
+                        //닉네임 중복 확인
+                        bool isduplicate = false;
+                        await FirebaseFirestore.instance.collection('userInfo').where("nickName", isEqualTo: inputText).get().then((value) {
+                        if (value.docs.length != 0) {
+                          isduplicate = true;
+                          }
+                        });
       
-                        if (_nickNameController.text.length < 2) {
-                          // SnackBar(
-                          //   content: Text('닉네임을 두 글자 이상 입력해주세요!'), //내용
-                          //   duration: Duration(seconds: 2), //올라와 있는 시간
-                          // );
-      
+                        if (inputText.length < 2) {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
@@ -232,7 +236,24 @@ class Authentication extends StatelessWidget {
                                   style: TextStyle(
                                       color: themeColor.getMaterialColor(),
                                       fontWeight: FontWeight.bold)),
-                              content: Text('닉네임을 두 글자 이상 입력해주세요!'),
+                              content: Text('닉네임을 두 글자 이상 입력해주세요.'),
+                              actions: [
+                                TextButton(child: Text('확인',
+                                  style: TextStyle(color: themeColor.getMaterialColor(),
+                                    fontWeight: FontWeight.bold,),),
+                                    onPressed: () { Navigator.pop(context); }),
+                              ],
+                            ),
+                          );
+                        } else if (isduplicate) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('닉네임 중복',
+                                  style: TextStyle(
+                                      color: themeColor.getMaterialColor(),
+                                      fontWeight: FontWeight.bold)),
+                              content: Text('중복된 닉네임입니다. 다른 닉네임을 입력하세요.'),
                               actions: [
                                 TextButton(child: Text('확인',
                                   style: TextStyle(color: themeColor.getMaterialColor(),
@@ -242,8 +263,8 @@ class Authentication extends StatelessWidget {
                             ),
                           );
                         } else {
-                          Provider.of<Logineduser>(context, listen: false).setNickName(_nickNameController.text);
-                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': _nickNameController.text});
+                          Provider.of<Logineduser>(context, listen: false).setNickName(inputText);
+                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': inputText});
                           Navigator.pop(context);
                           SnackBar(
                             content: Text('닉네임 설정이 완료되었습니다'), //내용
@@ -303,13 +324,13 @@ class _onboardingScreenState extends State<onboardingScreen> {
                 ),
                 buildPage(
                     context: context,
-                    urlImage: 'assets/page1.png',
+                    urlImage: 'assets/page2.png',
                     title: '커뮤니티',
                     subtitle: '자유롭게 소통할 수 있어요'
                 ),
                 buildPage(
                     context: context,
-                    urlImage: 'assets/page1.png',
+                    urlImage: 'assets/page3.png',
                     title: '맛집지도',
                     subtitle: '내 주변 맛집들을 찾아보세요'
                 ),
@@ -350,7 +371,9 @@ class _onboardingScreenState extends State<onboardingScreen> {
 
                             if (snap.size == 0) { // 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
                               FirebaseFirestore.instance.collection('userInfo').add({
-                                'uid': user_id, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260'
+                                'uid': user_id, 'nickName': '', 'email': FirebaseAuth.instance.currentUser!.email ?? '', 
+                                'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260',
+                                'admin': false
                               }).then((value) {
                                 doc_id =  value.id.toString();
                                 FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({

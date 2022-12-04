@@ -22,11 +22,10 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 
 
-
-// 화면전환 페이지 위젯은 전부 'my___'로 시작함
-
 ThemeColor themeColor = ThemeColor();
 const version = '1.0.0';
+
+
 
 class MyPage extends StatefulWidget {
   const MyPage({Key? key}) : super(key: key);
@@ -308,15 +307,12 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
                           resetPassword(userProvider.email);
                           // _emailController.clear();
-
                           Navigator.pop(context);
                         }
                         ),
                       ],
                     ),
                   );
-                
-                
                 }
               }
             ),
@@ -385,7 +381,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                       onPressed: () { Navigator.pop(context); }),
                   TextButton(child: Text('예',
                     style: TextStyle(color: themeColor.getMaterialColor(),
-                      fontWeight: FontWeight.bold,),), onPressed: () { Navigator.pop(context); FirebaseAuth.instance.signOut(); })
+                      fontWeight: FontWeight.bold,),), onPressed: () { Navigator.pop(context); FirebaseAuth.instance.signOut(); }),
                 ],
               ),
             );
@@ -424,7 +420,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           final userDocuments = snapshot.data!.docs;
 
           if (userDocuments.length == 0)
-            return Center(child: Text("좋아요 목록이 없습니다", textScaleFactor: 1.0,));
+            return Center(child: Text("좋아요 누른 목록이 없습니다", textScaleFactor: 1.0,));
 
           return SingleChildScrollView(
             child:Column(
@@ -464,7 +460,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                       }
                     }).toList()));
                   } else {
-                    return const Center(child: Text("댓글을 작성한 게시물이 없습니다."));
+                    return const Center(child: Text("작성한 게시물이 없습니다"));
                   }
                 }))
           ],
@@ -527,7 +523,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                   ),
                 );}
               else{
-                return const Center(child: Text("댓글을 작성한 게시물이 없습니다."));
+                return const Center(child: Text("댓글을 작성한 게시물이 없습니다"));
               }
             })
     );
@@ -687,13 +683,29 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                     
                   ),
                   child: Text('완료', style: TextStyle(color: Colors.white)),
-                  onPressed: () {
+                  onPressed: () async {
+                    String inputText = _nickNameController.text.trim();
+                    
+
                     if(this.formKey.currentState!.validate()) {
-                      if (_nickNameController.text.length < 2) {
-                        snackBar('닉네임을 두 글자 이상 입력해주세요!');
-                      } else {
-                        Provider.of<Logineduser>(context, listen: false).setNickName(_nickNameController.text);
-                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': _nickNameController.text});
+
+                      //닉네임 중복 확인
+                      bool isduplicate = false;
+
+                      await FirebaseFirestore.instance.collection('userInfo').where("nickName", isEqualTo: inputText).get().then((value) {
+                        if (value.docs.length != 0) {
+                          isduplicate = true;
+                        }
+                      });
+
+                      if (inputText.length < 2) {
+                        snackBar('닉네임을 두 글자 이상 입력해주세요');
+                      } else if (isduplicate) {
+                        snackBar('중복된 닉네임입니다! 다른 닉네임을 입력해주세요');
+                      }
+                      else {
+                        Provider.of<Logineduser>(context, listen: false).setNickName(inputText);
+                        FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': inputText});
                         Navigator.pop(context);
                         snackBar('닉네임 변경이 완료되었습니다');
                       }
@@ -884,18 +896,6 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                         fontWeight: FontWeight.bold)),
                                         content: Text('정말로 삭제하겠습니까?'),
                                         actions: [
-                                          TextButton(child: Text('확인',
-                                            style: TextStyle(
-                                              color: themeColor.getMaterialColor(),
-                                              fontWeight: FontWeight.bold,),),
-                                              onPressed: () async {
-                                                await FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({
-                                                  'profileImageUrl': defaultImgUrl,
-                                                });
-                                                Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(defaultImgUrl);                             
-                                                Navigator.pop(context);
-                                                snackBar('프로필 이미지 삭제가 완료되었습니다');
-                                              }),
                                           TextButton(
                                             child: Text('취소',
                                               style: TextStyle(
@@ -904,7 +904,19 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               }
-                                          )
+                                          ),
+                                          TextButton(child: Text('확인',
+                                            style: TextStyle(
+                                              color: themeColor.getMaterialColor(),
+                                              fontWeight: FontWeight.bold,),),
+                                              onPressed: () async {
+                                                await FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({
+                                                  'profileImageUrl': defaultImgUrl,
+                                                });
+                                                Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(defaultImgUrl);
+                                                Navigator.pop(context);
+                                                snackBar('프로필 이미지 삭제가 완료되었습니다');
+                                              }),
                                         ],
                                       ),
                                     );
@@ -1209,11 +1221,10 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   
 ① 욕설, 비하, 차별, 혐오, 폭력이 관련된 내용 금지
 ② 음란물, 성적 수치심을 유발하는 내용 금지
-③ 공포 사진, 고어 사진, 더러운 사진 등 눈살 찌푸려지는 내용 금지
-④ 영화, 드라마, 도서 등 내용 스포일러 하기 금지 (단, 스포일러가 포함됐다는 내용을 미리 알렸을 경우 무시)
-⑤ 정치, 사회 관련 내용 금지
-⑥ 홍보, 판매 관련 내용 금지
-⑦ 불법 촬영물 유통 금지
+③ 영화, 드라마, 도서 등 내용 스포일러 하기 금지 (스포일러가 포함된 내용이라는 것을 미리 알린 경우 제외)
+④ 정치, 사회 관련 내용 금지
+⑤ 홍보, 판매 관련 내용 금지 (자취 백과사전과 사전에 미리 협의된 경우 제외)
+⑥ 불법 촬영물 유통 금지
 ''';
 
   String otherRuleText = ''' 

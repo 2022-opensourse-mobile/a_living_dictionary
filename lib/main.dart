@@ -1,5 +1,4 @@
 import 'dart:convert';
-// import 'dart:html';
 
 import 'package:a_living_dictionary/LOGIN/Authentication.dart';
 import 'package:a_living_dictionary/LOGIN/kakao_login.dart';
@@ -7,8 +6,8 @@ import 'package:a_living_dictionary/LOGIN/main_view_model.dart';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
+// import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
-// import 'package:a_living_dictionary/UI/Supplementary/TempSearch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -117,7 +116,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   String user_profileImageUrl = '';
   bool user_admin = false;
 
-  
 
   @override
   void initState() {
@@ -175,8 +173,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
 
-
-
     return Consumer<Logineduser>(
         builder: (context, userProvider, child) {
           return StreamBuilder<User?>(
@@ -196,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  ElevatedButton(
+                                  ElevatedButton( // 카카오 로그인
                                     child: Image.asset('assets/kakao_icon.png', fit: BoxFit.contain, width:55, height: 55,),
                                     style: ElevatedButton.styleFrom(
                                       elevation: 0.0,
@@ -226,7 +222,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
                                         if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
                                           FirebaseFirestore.instance.collection('userInfo').add({
-                                            'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': ''
+                                            'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': '', 
+                                            'admin': false
                                           }).then((value) {
                                             doc_id =  value.id.toString();
 
@@ -251,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                         borderRadius: BorderRadius.circular(100),
                                       ),
                                     ),
-                                    onPressed: () async {
+                                    onPressed: () async { // 네이버 로그인
                                       await signInWithNaver();
 
                                       // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
@@ -268,7 +265,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
                                           if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
                                             FirebaseFirestore.instance.collection('userInfo').add({
-                                              'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': ''
+                                              'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': '', 
+                                              'admin': false
                                             }).then((value) {
                                               doc_id =  value.id.toString();
 
