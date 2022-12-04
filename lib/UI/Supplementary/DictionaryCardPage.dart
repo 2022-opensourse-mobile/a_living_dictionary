@@ -312,7 +312,7 @@ class DictionaryCardPage {
                     controller: PageController(
                       initialPage: 0,
                     ),
-                    itemCount: cardDocList.length,
+                    itemCount: cardDocList.length +1,
                     itemBuilder: (context, index) {
                       return Stack(
                         children: [
@@ -334,26 +334,71 @@ class DictionaryCardPage {
                               ),
                             ),
                           ),
-                          Center(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.network(cardDocList[index]['img']),    // 카드 해당 이미지 출력
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Text(
-                                            cardDocList[index]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
-                                            style: const TextStyle(color: Colors.white,),
-                                          ),
+
+                          if (index != 0)
+                            Center(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.network(cardDocList[index-1]['img']),    // 카드 해당 이미지 출력
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(
+                                          cardDocList[index-1]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
+                                          style: const TextStyle(color: Colors.white,),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
+
+                          if (index == 0) // 제목 페이지
+                            Consumer<DictionaryItemInfo>(
+                              builder: (context, dicProvider, child) {
+                                return Stack(
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(child: SizedBox(),),
+                                            Icon(Icons.star, color: Colors.amber[600],),
+                                            Text(
+                                              "스크랩하기↗",
+                                              style: TextStyle(color: Colors.white, fontSize: 16),
+                                            ),
+                                            SizedBox(width:30)
+                                          ],
+                                        ),
+                                        Expanded(child:SizedBox())
+                                      ]
+                                      
+                                    ),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        // Expanded(child: SizedBox()),
+                                        Image.network(dicProvider.thumbnail),
+                                        SizedBox(height: 10),
+                                        Center(
+                                          child: Text(
+                                            dicProvider.title,
+                                            style: const TextStyle(color: Colors.white, fontSize: 16),
+                                          )// 카드 해당 이미지 출력
+                                        ),
+                                        
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              }
+                            ),
                         ],
                       );
                     },
