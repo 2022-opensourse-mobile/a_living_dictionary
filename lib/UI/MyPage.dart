@@ -375,13 +375,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               builder: (context) => AlertDialog(
                 content: const Text('로그아웃하시겠습니까?'),
                 actions: [
-                  TextButton(child: Text('예',
-                    style: TextStyle(color: themeColor.getMaterialColor(),
-                      fontWeight: FontWeight.bold,),), onPressed: () { Navigator.pop(context); FirebaseAuth.instance.signOut(); }),
                   TextButton(child: Text('아니오',
                     style: TextStyle(color: themeColor.getMaterialColor(),
                       fontWeight: FontWeight.bold,),),
                       onPressed: () { Navigator.pop(context); }),
+                  TextButton(child: Text('예',
+                    style: TextStyle(color: themeColor.getMaterialColor(),
+                      fontWeight: FontWeight.bold,),), onPressed: () { Navigator.pop(context); FirebaseAuth.instance.signOut(); }),
                 ],
               ),
             );
@@ -896,18 +896,6 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                         fontWeight: FontWeight.bold)),
                                         content: Text('정말로 삭제하겠습니까?'),
                                         actions: [
-                                          TextButton(child: Text('확인',
-                                            style: TextStyle(
-                                              color: themeColor.getMaterialColor(),
-                                              fontWeight: FontWeight.bold,),),
-                                              onPressed: () async {
-                                                await FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({
-                                                  'profileImageUrl': defaultImgUrl,
-                                                });
-                                                Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(defaultImgUrl);                             
-                                                Navigator.pop(context);
-                                                snackBar('프로필 이미지 삭제가 완료되었습니다');
-                                              }),
                                           TextButton(
                                             child: Text('취소',
                                               style: TextStyle(
@@ -916,7 +904,19 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               }
-                                          )
+                                          ),
+                                          TextButton(child: Text('확인',
+                                            style: TextStyle(
+                                              color: themeColor.getMaterialColor(),
+                                              fontWeight: FontWeight.bold,),),
+                                              onPressed: () async {
+                                                await FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({
+                                                  'profileImageUrl': defaultImgUrl,
+                                                });
+                                                Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(defaultImgUrl);
+                                                Navigator.pop(context);
+                                                snackBar('프로필 이미지 삭제가 완료되었습니다');
+                                              }),
                                         ],
                                       ),
                                     );
@@ -1221,11 +1221,10 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   
 ① 욕설, 비하, 차별, 혐오, 폭력이 관련된 내용 금지
 ② 음란물, 성적 수치심을 유발하는 내용 금지
-③ 공포 사진, 고어 사진, 더러운 사진 등 눈살 찌푸려지는 내용 금지
-④ 영화, 드라마, 도서 등 내용 스포일러 하기 금지 (단, 스포일러가 포함됐다는 내용을 미리 알렸을 경우 무시)
-⑤ 정치, 사회 관련 내용 금지
-⑥ 홍보, 판매 관련 내용 금지
-⑦ 불법 촬영물 유통 금지
+③ 영화, 드라마, 도서 등 내용 스포일러 하기 금지 (스포일러가 포함된 내용이라는 것을 미리 알린 경우 제외)
+④ 정치, 사회 관련 내용 금지
+⑤ 홍보, 판매 관련 내용 금지 (자취 백과사전과 사전에 미리 협의된 경우 제외)
+⑥ 불법 촬영물 유통 금지
 ''';
 
   String otherRuleText = ''' 

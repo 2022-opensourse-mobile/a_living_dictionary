@@ -175,7 +175,7 @@ class CommunityWritePage extends StatelessWidget {
               '※ 음란물, 성적 수치심을 유발하는 글 금지\n'
               '※ 영화, 드라마, 도서 등 내용 스포일러 하는 글 금지 (스포일러가 포함된 글이라고 제목에 알린 경우 제외)\n'
               '※ 정치, 사회 관련 글 금지\n'
-              '※ 홍보, 판매 관련 글 금지\n'
+              '※ 홍보, 판매 관련 글 금지 (자취 백과사전과 사전에 미리 협의된 경우 제외)\n'
               '※ 불법 촬영물 유통 금지\n',
           style: TextStyle(color: Colors.grey),
           textScaleFactor: 0.9,
