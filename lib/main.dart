@@ -15,6 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'UI/CommunityPage.dart';
 import 'UI/MainPage.dart';
@@ -114,6 +115,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   String user_nickName ='';
   String user_email ='';
   String user_profileImageUrl = '';
+  bool user_admin = false;
+  DateTime? currentBackPressTime;
 
 
   @override
@@ -179,7 +182,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               builder: (BuildContext context, snapshot) {
 
                 if(!snapshot.hasData) { // 로그인이 안 된 상태 - 로그인 화면
-                  return Scaffold(
+                  return WillPopScope(
+                      onWillPop: () async {
+                        bool result = backToast();
+                        return await Future.value(result);
+                      },
+                      child: Scaffold(
                       backgroundColor: Colors.white,
                       body: SafeArea(
                         child: Center(
@@ -204,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                     onPressed: () async {
                                       viewModel = new MainViewModel(KakaoLogin());
                                       await viewModel.login();
-                                      setState((){}); // 화면 갱신만 하는 것
+                                      //setState((){}); // 화면 갱신만 하는 것
 
                                       // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
                                       if (FirebaseAuth.instance.currentUser != null) {
@@ -299,7 +307,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             ],
                           ),
                         ),
-                      ));
+                      )));
                 }
 
 
@@ -308,9 +316,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     future: getUser(),    //  db 에서 먼저 데이터를 받아옴. provider로
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       Provider.of<Logineduser>(context, listen: false).setDocID(user_docID);
-                      Provider.of<Logineduser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl);
+                      Provider.of<Logineduser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl, user_admin);
 
-                      return Scaffold(
+                      return WillPopScope(
+                          onWillPop: () async {
+                        bool result = backToast();
+                        return await Future.value(result);
+                      },
+                      child: Scaffold(
                         appBar: AppBar(
                             title: Text(
                               widget.title,
@@ -361,7 +374,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           ),
                         ),
 
-                      );
+                      ));
                     }
                 );
               }
@@ -441,10 +454,29 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         user_nickName =doc['nickName'];
         user_email =doc['email'];
         user_profileImageUrl = doc['profileImageUrl'];
+        user_admin = doc['admin'];
       }
       ); 
       }
     );
     // 사용자의 uid
+  }
+
+
+
+  backToast() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(
+          msg: "'뒤로가기' 버튼을 한 번 더 누르시면 종료됩니다",
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: const Color(0xff6E6E6E),
+          fontSize: 15,
+          toastLength: Toast.LENGTH_SHORT);
+      return false;
+    }
+    return true;
   }
 }

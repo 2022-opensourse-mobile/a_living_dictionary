@@ -105,6 +105,11 @@ class CommunityWritePage extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("내용을 입력해주세요.")));
               return;
             }
+            if(communityItem.hashTag == '#공지' && user.admin == false){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("일반 사용자는 공지 탭 게시물을 작성할 수 없습니다!")));
+              communityItem.hashTag == '#잡담';
+              return;
+            }
             final profileIMG = (user.profileImageUrl != '')?(user.profileImageUrl):(basicProfileImage);
             final nickName = (user.nickName != '') ? (user.nickName) : ("익명");
 
@@ -175,7 +180,7 @@ class CommunityWritePage extends StatelessWidget {
               '※ 음란물, 성적 수치심을 유발하는 글 금지\n'
               '※ 영화, 드라마, 도서 등 내용 스포일러 하는 글 금지 (스포일러가 포함된 글이라고 제목에 알린 경우 제외)\n'
               '※ 정치, 사회 관련 글 금지\n'
-              '※ 홍보, 판매 관련 글 금지\n'
+              '※ 홍보, 판매 관련 글 금지 (자취 백과사전과 사전에 미리 협의된 경우 제외)\n'
               '※ 불법 촬영물 유통 금지\n',
           style: TextStyle(color: Colors.grey),
           textScaleFactor: 0.9,
@@ -199,7 +204,7 @@ class _getHashTagState extends State<getHashTag> {
   }
 
   final CommunityItem communityItem;
-  final hashTag = ['#잡담', '#일상', '#꿀팁', '#힐링'];
+  final hashTag = ['#잡담', '#일상', '#꿀팁', '#힐링', '#공지'];
   var selectTag;
   String? value;
 

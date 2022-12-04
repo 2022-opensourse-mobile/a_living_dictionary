@@ -34,6 +34,7 @@ dependencies:
   location: ^4.4.0
   flutter_provider: ^2.1.0
   flutter_google_places: ^0.3.0
+  fluttertoast: ^8.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -55,3 +56,5 @@ flutter_native_splash:
   color: "#ffffff"
   image: assets/splash_screen.png
   android_12:
+    color: "#ffffff"
+    image: assets/splash_screen.png

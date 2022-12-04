@@ -375,13 +375,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               builder: (context) => AlertDialog(
                 content: const Text('로그아웃하시겠습니까?'),
                 actions: [
-                  TextButton(child: Text('예',
-                    style: TextStyle(color: themeColor.getMaterialColor(),
-                      fontWeight: FontWeight.bold,),), onPressed: () { Navigator.pop(context); FirebaseAuth.instance.signOut(); }),
                   TextButton(child: Text('아니오',
                     style: TextStyle(color: themeColor.getMaterialColor(),
                       fontWeight: FontWeight.bold,),),
                       onPressed: () { Navigator.pop(context); }),
+                  TextButton(child: Text('예',
+                    style: TextStyle(color: themeColor.getMaterialColor(),
+                      fontWeight: FontWeight.bold,),), onPressed: () { Navigator.pop(context); FirebaseAuth.instance.signOut(); }),
                 ],
               ),
             );
@@ -436,36 +436,30 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   }
 
   Widget myPosting() {
-    late Logineduser user = Provider.of<Logineduser>(context, listen: true);
+    late Logineduser user = Provider.of<Logineduser>(context, listen: false);
     return Scaffold(
       appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
         body: Column(
           children: [
             Expanded(child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
+                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).where('writer_id', isEqualTo: user.uid).snapshots(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
+                  if(snapshot.connectionState == ConnectionState.waiting){
+                    return const CircularProgressIndicator();
                   }
-                  final documents = snapshot.data!.docs;
-                  if (!documents.isEmpty) {
-                    return Expanded(
-                        child: ListView(
-                            children: documents.map((doc) {
-                      if (doc['writer_id'] == user.uid) {
-                        CommunityItem item = CommunityItem.getDataFromDoc(doc);
-                        return item.build(context);
-                      } else {
-                        return Container();
-                      }
-                    }).toList()));
-                  } else {
+                  if (!snapshot.hasData) {
                     return const Center(child: Text("작성한 게시물이 없습니다"));
                   }
-                }))
+                  final documents = snapshot.data!.docs;
+                  return Expanded(
+                      child: ListView(children: documents.map((doc) {
+                        CommunityItem item = CommunityItem.getDataFromDoc(doc);
+                        return item.build(context);
+                      }).toList()));
+                    })
+            )
           ],
-        )
-    );
+        ));
   }
 
   Widget myComment() {
@@ -475,14 +469,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
         appBar: AppBar(title: const Text('댓글 단 게시물'), elevation: 0.0),
         body: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance.collection('userInfo').doc(userDocID).collection("CommentList").snapshots(),
-            builder: (context, AsyncSnapshot snap) {
+            builder: (context, snap) {
               if (!snap.hasData) {
+                return const Center(child: Text("댓글을 작성한 게시글이 없습니다."));
+              }
+              if (snap.hasError) {
                 return const Center(child: CircularProgressIndicator());
               }
-              if(snap.hasError){
-                return const Center(child: CircularProgressIndicator());
-              }
-
               if (snap.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
@@ -490,43 +483,35 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               final userDocuments = snap.data!.docs;
 
               if(userDocuments.isEmpty){
-                return Container(
-                  child: ListView.builder(
-                    physics: ScrollPhysics(),
-                    shrinkWrap: true,
-                    padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
-                    itemCount: userDocuments.length,
-                    itemBuilder: (context, index) {
-                      return StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('CommunityDB').where('doc_id',
-                                  isEqualTo: userDocuments[index]['community_id']).snapshots(),
-                          builder: (context, snap) {
-                            if (!snap.hasData) {
-                              return CircularProgressIndicator();
-                            }
-                            if (snap.hasError) {
-                              return CircularProgressIndicator();
-                            }
-                            final itemDocuments = snap.data!.docs;
-                            if (itemDocuments.isNotEmpty) {
-                              return Container(
-                                  child: CommunityItem.getDataFromDoc(
-                                          itemDocuments.first)
-                                      .build(context,
-                                          commentItemID: userDocuments[index]
-                                              ['comment_id']));
-                            } else {
-                              return const Center();
-                            }
-                          });
-                    },
-                  ),
-                );}
-              else{
-                return const Center(child: Text("댓글을 작성한 게시물이 없습니다"));
+                return const Center(child: Text("댓글을 작성한 게시물이 없습니다."));
               }
-            })
-    );
+              return ListView.builder(
+                physics: const ScrollPhysics(),
+                shrinkWrap: true,
+                padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                itemCount: userDocuments.length,
+                itemBuilder: (context, index) {
+                  return StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection('CommunityDB').where('doc_id', isEqualTo: userDocuments[index]['community_id']).snapshots(),
+                      builder: (context, snap) {
+                        if (!snap.hasData) {
+                          return const CircularProgressIndicator();
+                        }
+                        if (snap.hasError) {
+                          return const CircularProgressIndicator();
+                        }
+                        final itemDocuments = snap.data!.docs;
+                        if (itemDocuments.isNotEmpty) {
+                          return Container(
+                              child: CommunityItem.getDataFromDoc(itemDocuments.first)
+                                  .build(context, commentItemID: userDocuments[index]['comment_id']));
+                        } else {
+                          return const Center();
+                        }
+                      });
+                },
+              );
+            }));
   }
 
   Future<List<String>> get() async {
@@ -896,18 +881,6 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                         fontWeight: FontWeight.bold)),
                                         content: Text('정말로 삭제하겠습니까?'),
                                         actions: [
-                                          TextButton(child: Text('확인',
-                                            style: TextStyle(
-                                              color: themeColor.getMaterialColor(),
-                                              fontWeight: FontWeight.bold,),),
-                                              onPressed: () async {
-                                                await FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({
-                                                  'profileImageUrl': defaultImgUrl,
-                                                });
-                                                Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(defaultImgUrl);                             
-                                                Navigator.pop(context);
-                                                snackBar('프로필 이미지 삭제가 완료되었습니다');
-                                              }),
                                           TextButton(
                                             child: Text('취소',
                                               style: TextStyle(
@@ -916,7 +889,19 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               }
-                                          )
+                                          ),
+                                          TextButton(child: Text('확인',
+                                            style: TextStyle(
+                                              color: themeColor.getMaterialColor(),
+                                              fontWeight: FontWeight.bold,),),
+                                              onPressed: () async {
+                                                await FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({
+                                                  'profileImageUrl': defaultImgUrl,
+                                                });
+                                                Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(defaultImgUrl);
+                                                Navigator.pop(context);
+                                                snackBar('프로필 이미지 삭제가 완료되었습니다');
+                                              }),
                                         ],
                                       ),
                                     );
@@ -1221,11 +1206,10 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   
 ① 욕설, 비하, 차별, 혐오, 폭력이 관련된 내용 금지
 ② 음란물, 성적 수치심을 유발하는 내용 금지
-③ 공포 사진, 고어 사진, 더러운 사진 등 눈살 찌푸려지는 내용 금지
-④ 영화, 드라마, 도서 등 내용 스포일러 하기 금지 (단, 스포일러가 포함됐다는 내용을 미리 알렸을 경우 무시)
-⑤ 정치, 사회 관련 내용 금지
-⑥ 홍보, 판매 관련 내용 금지
-⑦ 불법 촬영물 유통 금지
+③ 영화, 드라마, 도서 등 내용 스포일러 하기 금지 (스포일러가 포함된 내용이라는 것을 미리 알린 경우 제외)
+④ 정치, 사회 관련 내용 금지
+⑤ 홍보, 판매 관련 내용 금지 (자취 백과사전과 사전에 미리 협의된 경우 제외)
+⑥ 불법 촬영물 유통 금지
 ''';
 
   String otherRuleText = ''' 
