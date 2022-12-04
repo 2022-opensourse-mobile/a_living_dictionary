@@ -302,11 +302,12 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                   TextButton(
                       onPressed: (){
                         if(commentController.text == '') return;
-                        final it = CommentItem(writerID: user.uid,
-                            writerNickname: user.nickName,
-                            profileImage: user.profileImageUrl,
-                            body: commentController.text,
-                            time:DateTime.now(),
+                        final it = CommentItem(
+                          writerID: user.uid,
+                          writerNickname: user.nickName,
+                          profileImage: user.profileImageUrl,
+                          body: commentController.text,
+                          time:DateTime.now(),
                         );
                         it.add(item);
                         Future.delayed(const Duration(milliseconds: 1000), () {
@@ -375,7 +376,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
                   backgroundColor: Color(0xffe0e0e0),
                   child: CircleAvatar(
                     radius: 19.5,
-                    backgroundImage: NetworkImage(item.profileImage), //프로필 사진
+                    backgroundImage: NetworkImage(commentItem.profileImage), //프로필 사진
                   ),
                 ),
                 minVerticalPadding: 0,
