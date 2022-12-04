@@ -15,6 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'UI/CommunityPage.dart';
 import 'UI/MainPage.dart';
@@ -115,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   String user_email ='';
   String user_profileImageUrl = '';
   bool user_admin = false;
+  DateTime? currentBackPressTime;
 
 
   @override
@@ -180,7 +182,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               builder: (BuildContext context, snapshot) {
 
                 if(!snapshot.hasData) { // 로그인이 안 된 상태 - 로그인 화면
-                  return Scaffold(
+                  return WillPopScope(
+                      onWillPop: () async {
+                        bool result = backToast();
+                        return await Future.value(result);
+                      },
+                      child: Scaffold(
                       backgroundColor: Colors.white,
                       body: SafeArea(
                         child: Center(
@@ -300,7 +307,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             ],
                           ),
                         ),
-                      ));
+                      )));
                 }
 
 
@@ -311,7 +318,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       Provider.of<Logineduser>(context, listen: false).setDocID(user_docID);
                       Provider.of<Logineduser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl, user_admin);
 
-                      return Scaffold(
+                      return WillPopScope(
+                          onWillPop: () async {
+                        bool result = backToast();
+                        return await Future.value(result);
+                      },
+                      child: Scaffold(
                         appBar: AppBar(
                             title: Text(
                               widget.title,
@@ -362,7 +374,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           ),
                         ),
 
-                      );
+                      ));
                     }
                 );
               }
@@ -448,5 +460,23 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       }
     );
     // 사용자의 uid
+  }
+
+
+
+  backToast() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(
+          msg: "'뒤로가기' 버튼을 한 번 더 누르시면 종료됩니다",
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: const Color(0xff6E6E6E),
+          fontSize: 15,
+          toastLength: Toast.LENGTH_SHORT);
+      return false;
+    }
+    return true;
   }
 }
