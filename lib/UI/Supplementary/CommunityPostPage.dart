@@ -109,33 +109,41 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   Widget getTitleWidget(String title, String writer) {
     return Column(children: [
       Container(
-        //(width > 750) ? (750) : (width)
         width: (width > 750) ? (750) : (width),
-        alignment: Alignment.centerLeft,
-        child: Column(
+        child : Align(
+          alignment: Alignment.centerLeft,
+          child : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-              child: Text(item.hashTag, style: TextStyle(color: themeColor.getColor()), textScaleFactor: 1.0)
+            Padding(
+                padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+                child: Text(item.hashTag,
+                    style: TextStyle(color: themeColor.getColor()),
+                    textScaleFactor: 1.0)
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  width: (user.uid == item.writerID)?((width > 650) ? (500) : (width-150)):(width),
+                  width: (user.uid == item.writerID)
+                      ? ((width > 750) ? (550) : (width - 150))
+                      : ((width > 750) ? (700) : (width - 50)),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(15, 10, 0, 10),
-                    child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
+                    child: Text(title,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        textScaleFactor: 1.7),
                   ),
                 ),
                 getModifyBtn(),
               ],
             ),
           ],
-        ),
+        ),),
       ),
       Container(
-        width: width,
+        width: ((width > 750) ? (750) : (width)),
         height: 50,
         alignment: Alignment.centerLeft,
         child: Padding(
@@ -155,7 +163,6 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
           ),
         ),
       ),
-
       Divider(thickness: 0.5),
     ]);
   }
