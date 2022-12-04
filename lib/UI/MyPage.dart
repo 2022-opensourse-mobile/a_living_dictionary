@@ -436,36 +436,30 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   }
 
   Widget myPosting() {
-    late Logineduser user = Provider.of<Logineduser>(context, listen: true);
+    late Logineduser user = Provider.of<Logineduser>(context, listen: false);
     return Scaffold(
       appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
         body: Column(
           children: [
             Expanded(child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
+                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).where('writer_id', isEqualTo: user.uid).snapshots(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
+                  if(snapshot.connectionState == ConnectionState.waiting){
+                    return const CircularProgressIndicator();
                   }
-                  final documents = snapshot.data!.docs;
-                  if (!documents.isEmpty) {
-                    return Expanded(
-                        child: ListView(
-                            children: documents.map((doc) {
-                      if (doc['writer_id'] == user.uid) {
-                        CommunityItem item = CommunityItem.getDataFromDoc(doc);
-                        return item.build(context);
-                      } else {
-                        return Container();
-                      }
-                    }).toList()));
-                  } else {
+                  if (!snapshot.hasData) {
                     return const Center(child: Text("작성한 게시물이 없습니다"));
                   }
-                }))
+                  final documents = snapshot.data!.docs;
+                  return Expanded(
+                      child: ListView(children: documents.map((doc) {
+                        CommunityItem item = CommunityItem.getDataFromDoc(doc);
+                        return item.build(context);
+                      }).toList()));
+                    })
+            )
           ],
-        )
-    );
+        ));
   }
 
   Widget myComment() {
