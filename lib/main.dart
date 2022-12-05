@@ -65,6 +65,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       builder: (context,child) {
         return MediaQuery(data: MediaQuery.of(context).copyWith(textScaleFactor: 1), child: child!);},
       title: 'Flutter Demo',
