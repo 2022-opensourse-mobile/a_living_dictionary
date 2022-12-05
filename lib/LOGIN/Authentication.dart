@@ -10,9 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 
-//https://firebase.google.com/codelabs/firebase-auth-in-flutter-apps#5
-
-// 이메일 로그인 구현중
+// 이메일 로그인
 class Authentication extends StatelessWidget {
    Authentication({super.key});
 
@@ -20,15 +18,11 @@ class Authentication extends StatelessWidget {
   TextEditingController _nickNameController = TextEditingController();
 
 
-  
-  
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(), // 로그인 로그아웃 이거 구독하고 있다가 builder로 화면 새롭게그려줌
       builder: (context, snapshot) {
-        
 
         if (!snapshot.hasData) {// 인증을 받지 않았으면 로그인화면
           return MaterialApp(
@@ -63,10 +57,9 @@ class Authentication extends StatelessWidget {
                   }),
                         
                   providerConfigs: [
-                    EmailProviderConfiguration(),  // 이메일 인증 가능하게 해주는 기능
+                    EmailProviderConfiguration(),  // 이메일 인증
                   ],
-                        
-                        
+                              
                 subtitleBuilder: (context, action) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -75,16 +68,6 @@ class Authentication extends StatelessWidget {
                         : const Text('회원가입을 진행하세요.'),
                   );
                 },
-                        
-                // footerBuilder: (context, action) {
-                //    return const Padding(
-                //      padding: EdgeInsets.only(top: 16),
-                //      child: Text(
-                //        'By signing in, you agree to our terms and conditions.',
-                //        style: TextStyle(color: Colors.grey),
-                //      ),
-                //    );
-                //  },
                         
                  sideBuilder: (context, shrinkOffset) {   // 화면 늘렸을 때 나오는 사진
                    return Padding(
@@ -95,16 +78,11 @@ class Authentication extends StatelessWidget {
                      ),
                    );
                  },
-                  
-                  // showAuthActionSwitch: false,  
                 ),
               ),
             ),
           );
         } 
-
-
-
 
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid).snapshots(),
@@ -115,13 +93,6 @@ class Authentication extends StatelessWidget {
             }
 
             if (snapshot.data!.size == 0) {   // 사용자 해당 정보가 디비에 없을 때
-            //void setInfo(uid, nickName, email, profileImageUrl)
-              // Logineduser logineduser = new Logineduser();
-              // logineduser.setInfo(FirebaseAuth.instance.currentUser!.uid, '',FirebaseAuth.instance.currentUser!.email ?? '', 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260');
-              // logineduser.setDocID('');
-              
-
-
               FirebaseFirestore.instance.collection('userInfo').add({
                 'uid': FirebaseAuth.instance.currentUser!.uid, 'nickName': FirebaseAuth.instance.currentUser!.uid, 'email': FirebaseAuth.instance.currentUser!.email ?? '', 
                 'profileImageUrl': 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260',
@@ -148,17 +119,14 @@ class Authentication extends StatelessWidget {
               return Container(color: Colors.white,);
             }
 
-            return onboardingScreen('email');
+            return onboardingScreen('email'); // 첫 설명 화면으로
           }
         );
-        
       }
-      // Signin 위젯이 있다. flutterfire_ui 깔기
-      );
+    );
   }
 
-  void nickNameAlert(BuildContext context) {
-    
+  void nickNameAlert(BuildContext context) {  // 닉네임 첫 설정 화면
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -177,23 +145,8 @@ class Authentication extends StatelessWidget {
               autovalidateMode: AutovalidateMode.always,
               child: Stack(
                 children: [
-                     //           Positioned(
-            //             right: -40.0,
-            //             top: -40.0,
-            //             child: InkResponse(
-            //               onTap: () {
-            //                 Navigator.of(context).pop();
-                        
-            //               },
-            //               child: CircleAvatar(
-            //                 child: Icon(Icons.close),
-            //                 backgroundColor: Colors.red,
-            //               ),
-            //             ),
-            //           ),
                   TextFormField(
                     controller: _nickNameController,
-                    // onSaved: (name) {myNickname = name!;},
                     validator: (value) {
                       if(value!.isEmpty) return '닉네임을 입력하세요';
                     },
@@ -281,14 +234,9 @@ class Authentication extends StatelessWidget {
           ),
         ),
       ),
-    );
-  
-        
-
+    ); 
   }
 }
-
-
 
 //TODO: 이미지 가로버전에서 오버플로우 되는 거 고치기
 class onboardingScreen extends StatefulWidget {
@@ -303,7 +251,6 @@ class _onboardingScreenState extends State<onboardingScreen> {
   _onboardingScreenState(this.loginType);
   String loginType;
 
-
   final controller = PageController();
 
   @override
@@ -314,7 +261,6 @@ class _onboardingScreenState extends State<onboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
@@ -367,7 +313,6 @@ class _onboardingScreenState extends State<onboardingScreen> {
                       TextButton(
                         onPressed: () async {
                           if (loginType == 'email') {   // 이메일 로그인일 때만 데이터베이스 넣는 코드
-                            // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
                             String user_id = FirebaseAuth.instance.currentUser!.uid;
 
                             // 금방 로그인한 유저에 대한 정보
@@ -386,7 +331,6 @@ class _onboardingScreenState extends State<onboardingScreen> {
                                     'docID': doc_id
                                   });
                                 });
-
                               }
                               }
                             );
@@ -414,37 +358,38 @@ class _onboardingScreenState extends State<onboardingScreen> {
     required String subtitle,
     required BuildContext context,
   }) {
-    return SingleChildScrollView( child:
-        Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: 60),
-              Text(title,
-                  style: TextStyle(
-                      color: themeColor.getColor(),
-                      fontWeight: FontWeight.bold),
-                  textScaleFactor: 1.8),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                child: Text(subtitle,
-                    style: TextStyle(color: Colors.black38),
-                    textScaleFactor: 1.4),
-              ),
-              SizedBox(height: 60),
-              Container(
-                width: double.infinity,
-                child:
-                    //TODO: 이미지 출력
-                    Image.asset(
-                      urlImage,
-                      fit: BoxFit.fill,
-                      // width: double.infinity,
-                      //height: MediaQuery.of(context).size.height * 0.3,
-                    ),
-              )
-            ],
-          ),
-        ));
+    return SingleChildScrollView( 
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 60),
+            Text(title,
+                style: TextStyle(
+                    color: themeColor.getColor(),
+                    fontWeight: FontWeight.bold),
+                textScaleFactor: 1.8),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: Text(subtitle,
+                  style: TextStyle(color: Colors.black38),
+                  textScaleFactor: 1.4),
+            ),
+            SizedBox(height: 60),
+            Container(
+              width: double.infinity,
+              child:
+                  //TODO: 이미지 출력
+                  Image.asset(
+                    urlImage,
+                    fit: BoxFit.fill,
+                    // width: double.infinity,
+                    //height: MediaQuery.of(context).size.height * 0.3,
+                  ),
+            )
+          ],
+        ),
+      )
+    );
   }
 }

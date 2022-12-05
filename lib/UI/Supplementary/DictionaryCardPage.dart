@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +73,6 @@ class DictionaryCardPage {
           if (snap.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
           }
-
 
           final documents = snap.data!.docs;
 
@@ -300,7 +298,6 @@ class DictionaryCardPage {
                   return const CircularProgressIndicator();
                 }
                 
-                
                 if (!snap.hasData || snap.data == null || snap.data!.size == 0) {
                   return nonExistentCard();
                 }
@@ -335,7 +332,7 @@ class DictionaryCardPage {
                             ),
                           ),
 
-                          if (index != 0)
+                          if (index != 0) // 제목 아닌 컨텐츠 페이지
                             Center(
                               child: SingleChildScrollView(
                                 child: Column(
@@ -392,7 +389,6 @@ class DictionaryCardPage {
                                             style: const TextStyle(color: Colors.white, fontSize: 16),
                                           )// 카드 해당 이미지 출력
                                         ),
-                                        
                                       ],
                                     ),
                                   ],

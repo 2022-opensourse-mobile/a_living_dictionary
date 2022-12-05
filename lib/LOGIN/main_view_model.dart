@@ -5,15 +5,10 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:a_living_dictionary/LOGIN/firebase_auth_remote_data_source.dart';
 import 'package:a_living_dictionary/LOGIN/social_login.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-// firebase function은 서버없이 기능을 만들어서 올릴 수 ㅇ
-// 기본요금제에서는 못한다... blaze요금제...
-// 사용한 만큼 지불된다..
-// firebase init
-// 서버쪽 코드 작성해야한다. - 이걸로 토큰발급, 배포해서 사용할거야
-// 본인 서버에서 토큰발급 진행 ㄱㄱ
-
-
+// 서버쪽 코드 작성해야한다. - 이걸로 토큰발급, 배포해서 사용할거야: 본인 서버에서 토큰발급 진행 ㄱ
 class MainViewModel {
   final _firebaseAuthDataSource = FirebaseAuthRemoteDataSource();
   final SocialLogin _socialLogin;
@@ -43,8 +38,17 @@ class MainViewModel {
 
       await FirebaseAuth.instance.signInWithCustomToken(token);
 
-    } else if (_socialLogin.runtimeType is NaverLogin) {
-      
+    } else if (_socialLogin.runtimeType == NaverLogin) {
+      Uri tokenUrl = (_socialLogin as NaverLogin).getTokenUrl();
+
+      var response = await http.post(tokenUrl);
+      var accessTokenResult = json.decode(response.body);
+      var responseCustomToken = await http.post(
+        Uri.parse("https://loveyou.run.goorm.io/callbacks/naver/token"),
+        body: {"accessToken": accessTokenResult['access_token']}
+      );
+
+      await FirebaseAuth.instance.signInWithCustomToken(responseCustomToken.body);
     }
   }
 
