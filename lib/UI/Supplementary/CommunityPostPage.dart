@@ -37,6 +37,13 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   bool isClickedGlobal = false;
   final CheckClick clickCheck = CheckClick();
 
+  static const int KOR = 15;
+  static const int ENG = 10;
+  static const int NUM = 10;
+  static const double SPACIAL = 9.5;
+  static const int SPACE = 4;
+
+
 
   String changedDocID = '';
   bool isOnGoing = false;
@@ -167,9 +174,13 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
     ]);
   }
   Widget getBodyWidget(String body) {
+    int line = getLineNum(body);
+    bool isOvered = (line > 15)?(true):(false);
+    double h = ((isOvered)?(19.5*line):(300)).toDouble();
+
     return Container(
       width: (width > 750) ? (750) : (width),
-      height: 300,
+      height: h.toDouble(),
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
       margin: const EdgeInsets.fromLTRB(0, 0, 0, 15),
       child: Column(
@@ -263,7 +274,48 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
       ],
     );
   }
+  int getLineNum(String body){
+    RegExp koreanReg = RegExp(r"^[ㄱ-ㅎ가-힣]*$");
+    RegExp engReg = RegExp(r"^[a-zA-Z]*$");
+    RegExp numReg = RegExp(r"^[0-9]*$");
+    RegExp spaceReg = RegExp(r"\s+");
+    RegExp spacialReg = RegExp(r'[@#^$%&*?"<>]');
+    RegExp spacial2Reg = RegExp(r'[!(),.:{}|]');
 
+    List<RegExpMatch?> regExpMatch = <RegExpMatch?>[];
+
+    double sum = 0;
+    int line = 1;
+    for(int i = 0; i < body.length; i++){
+      regExpMatch.add(koreanReg.firstMatch(body[i]));
+      regExpMatch.add(engReg.firstMatch(body[i]));
+      regExpMatch.add(numReg.firstMatch(body[i]));
+      regExpMatch.add(spacialReg.firstMatch(body[i]));
+      regExpMatch.add(spacial2Reg.firstMatch(body[i]));
+      regExpMatch.add(spaceReg.firstMatch(body[i]));
+
+
+      if(regExpMatch[0]?.end == 1){
+        sum += KOR;
+      } else if(regExpMatch[1]?.end == 1){
+        sum += ENG;
+      } else if(regExpMatch[2]?.end == 1){
+        sum += NUM;
+      }else if(regExpMatch[3]?.end == 1){
+        sum += SPACIAL;
+      }else if(regExpMatch[4]?.end == 1){
+        sum += SPACIAL;
+      }else if(regExpMatch[5]?.end == 1){
+        sum += SPACE;
+      }
+
+      if(sum >= width || body[i] == '\n'){
+        sum = 0;
+        line++;
+      }
+    }//
+    return line;
+  }
 
 
   // 아래는 댓글에 필요한 위젯들
