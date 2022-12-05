@@ -308,13 +308,13 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
       }else if(regExpMatch[5]?.end == 1){
         sum += SPACE;
       }
-      int w = (width > 750)?(750):(width);
+      double w = (width > 750)?(750):(width);
 
       if(sum >= w || body[i] == '\n'){
         sum = 0;
         line++;
       }
-    }//
+    }
     return line;
   }
 
