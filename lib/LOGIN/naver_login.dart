@@ -1,9 +1,6 @@
-// import 'dart:convert';
 
 import 'package:a_living_dictionary/LOGIN/social_login.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
-// import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 class NaverLogin implements SocialLogin {

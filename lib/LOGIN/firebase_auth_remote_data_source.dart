@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 
+// 카카오 로그인 토큰만드는거
 class FirebaseAuthRemoteDataSource {
     final String kakaoUrl = 'https://loveyou.run.goorm.io/kakao';      // 백엔드 서버 url
     

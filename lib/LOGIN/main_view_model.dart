@@ -19,6 +19,7 @@ class MainViewModel {
 
   Future login() async {
     isLogined = await _socialLogin.login();
+    String token = '';
 
     if (!isLogined) {
       return;
@@ -27,16 +28,14 @@ class MainViewModel {
     if (_socialLogin.runtimeType == KakaoLogin) {
       user = await kakao.UserApi.instance.me();
 
-      // 토큰 발급은 user정보를 얻은 후 해야함. USER정보 보내야하니까
-      // 인증이 된다. 필요 데이터 던져주기
-      final token = await _firebaseAuthDataSource.createCustomToken({
+      // 토큰 발급은 user정보를 얻은 후 해야함. USER정보 보내야하니까 - 인증이 된다. 필요 데이터 던져주기
+      token = await _firebaseAuthDataSource.createCustomToken({
         'uid': user!.id.toString(),
         'displayName': user!.kakaoAccount!.profile!.nickname,
         'email': user!.kakaoAccount!.email!,
         'photoURL': user!.kakaoAccount!.profile!.profileImageUrl!,
       });
 
-      await FirebaseAuth.instance.signInWithCustomToken(token);
 
     } else if (_socialLogin.runtimeType == NaverLogin) {
       Uri tokenUrl = (_socialLogin as NaverLogin).getTokenUrl();
@@ -48,8 +47,10 @@ class MainViewModel {
         body: {"accessToken": accessTokenResult['access_token']}
       );
 
-      await FirebaseAuth.instance.signInWithCustomToken(responseCustomToken.body);
+      token = responseCustomToken.body;
     }
+
+    await FirebaseAuth.instance.signInWithCustomToken(token);
   }
 
   Future logout() async {
