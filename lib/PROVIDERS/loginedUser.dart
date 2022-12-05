@@ -22,7 +22,7 @@ class Logineduser  with ChangeNotifier {
   void setNickName(nickName) {
     this.nickName = nickName;
 
-    //notifyListeners();
+    notifyListeners();
   }
 
   void setProfileImageUrl(profileImageUrl) {

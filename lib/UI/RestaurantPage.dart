@@ -26,6 +26,7 @@ final _mapApiKey = 'AIzaSyDV1uWDF4S16dDx5oQAAJ399p3e9Cbot90';
 
 final GlobalKey scrollKey = GlobalKey(); // 키 생성
 final formKey = GlobalKey<FormState>();
+final navigatorKey = GlobalKey<NavigatorState>();
 
 class RestaurantPage extends StatelessWidget {
   const RestaurantPage({Key? key}) : super(key: key);
@@ -316,7 +317,7 @@ class restaurantMapState extends State<restaurantMap> {
             highlightElevation: 0,
             onPressed: () {
               showDialog(
-                context: context,
+                context: navigatorKey.currentContext!,
                 builder: (context) => AlertDialog(
                   title: Text('후기 작성하기',
                       style: TextStyle(
@@ -348,7 +349,9 @@ class restaurantMapState extends State<restaurantMap> {
                     TextButton(child: Text('취소',
                       style: TextStyle(color: themeColor.getMaterialColor(),
                         fontWeight: FontWeight.bold,),),
-                        onPressed: () { Navigator.pop(context); }),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
                     TextButton(child: Text('확인',
                       style: TextStyle(color: themeColor.getMaterialColor(),
                         fontWeight: FontWeight.bold,),),
@@ -438,7 +441,6 @@ class restaurantMapState extends State<restaurantMap> {
                       Provider.of<MapInfo>(context, listen: false).setInfo(m_id, documents[0]['address'], store, documents[0]['latitude'], documents[0]['longitude'], documents[0]['like']);
                       PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(detailPage(context, store, m_id));
                       Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
-
                     },
                   ),
                   Divider(thickness: 0.5,),
@@ -582,8 +584,8 @@ class restaurantMapState extends State<restaurantMap> {
                 child: Padding(
                   padding: EdgeInsets.all(15),
                   child: Container(
-                    width: isPortrait? w * 0.12 : h * 0.12,
-                    height: isPortrait? w * 0.12 : h * 0.12,
+                    width: 50,
+                    height: 50,
                     decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
                         border: Border.all(
@@ -596,7 +598,7 @@ class restaurantMapState extends State<restaurantMap> {
                       onPressed: () {
                         _currentLocation();
                       },
-                      child: Icon(Icons.my_location, size: isPortrait? w * 0.08 : h * 0.08, color: Colors.black54,),
+                      child: Icon(Icons.my_location, size: 35, color: Colors.black54,),
                       shape: RoundedRectangleBorder(),
                       elevation: 2.0,
                     ),
