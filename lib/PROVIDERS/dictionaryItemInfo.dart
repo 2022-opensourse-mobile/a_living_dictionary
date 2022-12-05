@@ -28,6 +28,7 @@ class DictionaryItemInfo with ChangeNotifier{
     FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({
       'scrapnum': scrapnum
     }); 
+
     notifyListeners();
   }
 
@@ -36,6 +37,7 @@ class DictionaryItemInfo with ChangeNotifier{
     FirebaseFirestore.instance.collection('dictionaryItem').doc(dic_id).update({
       'scrapnum': scrapnum
     });
+    
     notifyListeners();
   }
 }

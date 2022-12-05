@@ -16,7 +16,6 @@ class KakaoLogin implements SocialLogin {
           return false;
         }
       } else {            // 카카오 계정으로 인증
-
         try {
           await kakao.UserApi.instance.loginWithKakaoAccount();
           return true;
@@ -39,5 +38,4 @@ class KakaoLogin implements SocialLogin {
       return false;
     }
   }
-  
 }

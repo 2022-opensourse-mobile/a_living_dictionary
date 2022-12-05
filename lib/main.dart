@@ -1,8 +1,8 @@
-import 'dart:convert';
 
 import 'package:a_living_dictionary/LOGIN/Authentication.dart';
 import 'package:a_living_dictionary/LOGIN/kakao_login.dart';
 import 'package:a_living_dictionary/LOGIN/main_view_model.dart';
+import 'package:a_living_dictionary/LOGIN/naver_login.dart';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
@@ -11,7 +11,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,8 +25,6 @@ import 'UI/Supplementary//ThemeColor.dart';
 import 'UI/Supplementary/WriteDictionaryPage.dart';
 
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:http/http.dart' as http;
-import 'package:uuid/uuid.dart';
 
 // android/app/src/google-services.json과 firebase_options.dart는 gitignore
 // https://funncy.github.io/flutter/2021/03/10/firebase-auth/
@@ -132,43 +129,42 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
 
-  Future<UserCredential> signInWithNaver() async {
-    final clientState = Uuid().v4();
-    final url = Uri.https('nid.naver.com', '/oauth2.0/authorize', {
-      'response_type': 'code',
-      'client_id': 'bTYjIh0nr6vnD0mi8SWh',
-      'response_mode': 'form_post',
-      'redirect_uri': 
-        'https://loveyou.run.goorm.io/callbacks/naver/sign_in',
-      'state': clientState
-    });
+  // Future<UserCredential> signInWithNaver() async {
+  //   final clientState = Uuid().v4();
+  //   final url = Uri.https('nid.naver.com', '/oauth2.0/authorize', {
+  //     'response_type': 'code',
+  //     'client_id': 'bTYjIh0nr6vnD0mi8SWh',
+  //     'response_mode': 'form_post',
+  //     'redirect_uri': 
+  //       'https://loveyou.run.goorm.io/callbacks/naver/sign_in',
+  //     'state': clientState
+  //   });
 
-    final result = await FlutterWebAuth.authenticate(
-        url: url.toString(),
-        callbackUrlScheme: "webauthcallback");
+  //   final result = await FlutterWebAuth.authenticate(
+  //       url: url.toString(),
+  //       callbackUrlScheme: "webauthcallback");
       
 
-    final body = Uri.parse(result).queryParameters;
-    final tokenUrl = Uri.https('nid.naver.com', '/oauth2.0/token', {
-      'grant_type' : 'authorization_code',
-      'client_id': 'bTYjIh0nr6vnD0mi8SWh',
-      'client_secret': 'yXkEij1Zvt',
+  //   final body = Uri.parse(result).queryParameters;
+  //   final tokenUrl = Uri.https('nid.naver.com', '/oauth2.0/token', {
+  //     'grant_type' : 'authorization_code',
+  //     'client_id': 'bTYjIh0nr6vnD0mi8SWh',
+  //     'client_secret': 'yXkEij1Zvt',
       
-      'state': clientState,
-      'code': body['code']
-    });
+  //     'state': clientState,
+  //     'code': body['code']
+  //   });
 
     
-    var response = await http.post(tokenUrl);
-    var accessTokenResult = json.decode(response.body);
-    var responseCustomToken = await http.post(
-      Uri.parse("https://loveyou.run.goorm.io/callbacks/naver/token"),
-      body: {"accessToken": accessTokenResult['access_token']}
-    );
+  //   var response = await http.post(tokenUrl);
+  //   var accessTokenResult = json.decode(response.body);
+  //   var responseCustomToken = await http.post(
+  //     Uri.parse("https://loveyou.run.goorm.io/callbacks/naver/token"),
+  //     body: {"accessToken": accessTokenResult['access_token']}
+  //   );
 
-    return await FirebaseAuth.instance
-      .signInWithCustomToken(responseCustomToken.body);
-  }
+  //   return await FirebaseAuth.instance.signInWithCustomToken(responseCustomToken.body);
+  // }
 
 
   @override
@@ -211,7 +207,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                     onPressed: () async {
                                       viewModel = new MainViewModel(KakaoLogin());
                                       await viewModel.login();
-                                      //setState((){}); // 화면 갱신만 하는 것
 
                                       // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
                                       if (FirebaseAuth.instance.currentUser != null) {
@@ -256,7 +251,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                       ),
                                     ),
                                     onPressed: () async { // 네이버 로그인
-                                      await signInWithNaver();
+                                      viewModel = new MainViewModel(NaverLogin());
+                                      await viewModel.login();
 
                                       // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
                                       if (FirebaseAuth.instance.currentUser != null) {
