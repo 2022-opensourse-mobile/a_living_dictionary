@@ -353,14 +353,11 @@ class DictionaryCardPage {
                                 ),
                               ),
                             ),
-
                           if (index == 0) // 제목 페이지
                             Consumer<DictionaryItemInfo>(
-                              builder: (context, dicProvider, child) {
-                                return Stack(
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
+                                builder: (context, dicProvider, child) {
+                                  return SingleChildScrollView(
+                                    child: Column(
                                       children: [
                                         Row(
                                           children: [
@@ -373,27 +370,21 @@ class DictionaryCardPage {
                                             SizedBox(width:30)
                                           ],
                                         ),
-                                        Expanded(child:SizedBox())
-                                      ]
-                                      
-                                    ),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        // Expanded(child: SizedBox()),
+                                        SizedBox(height: height * 0.25,),
                                         Image.network(dicProvider.thumbnail),
                                         SizedBox(height: 10),
                                         Center(
                                           child: Text(
                                             dicProvider.title,
                                             style: const TextStyle(color: Colors.white, fontSize: 16),
-                                          )// 카드 해당 이미지 출력
+                                          ),
                                         ),
+                                        SizedBox(height: height * 0.2,),
                                       ],
                                     ),
-                                  ],
-                                );
-                              }
+                                  );
+
+                                }
                             ),
                         ],
                       );
