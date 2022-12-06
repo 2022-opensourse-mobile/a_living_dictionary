@@ -77,14 +77,6 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
             appBar: AppBar(
               title: Text(tabName, style: const TextStyle(color: Colors.black)),
               elevation: 0.0,
-              actions: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () => {
-                    //showSearch(context: context, delegate:Search(null))
-                  },
-                )
-              ],
             ),
           body: Align(
             alignment: Alignment.topCenter,
