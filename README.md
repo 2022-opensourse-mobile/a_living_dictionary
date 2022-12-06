@@ -109,9 +109,9 @@ Page가 들어간 Class는 예를 들어 CommunityPostPage 의 경우 커뮤니�
   
 ## 오픈소스 출처와 API 버전  
 GOOGLE MAP API :               
-NAVER API : 
-KAKAO API : 
-FireBase : 
+NAVER API :   
+KAKAO API :   
+FireBase :   
 
 
 
