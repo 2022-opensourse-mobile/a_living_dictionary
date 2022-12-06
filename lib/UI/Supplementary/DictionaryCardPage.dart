@@ -129,11 +129,12 @@ class DictionaryCardPage {
                             style: TextStyle(
                               color: themeColor.getColor(),
                             ),
-                            textScaleFactor: 1,
+                            textScaleFactor: 0.9,
                           ),
                         ),
                         Text(
                           documents[index]['title'],
+                          textScaleFactor: 1.07,
                           overflow: TextOverflow.ellipsis,
                         )
                       ],
@@ -205,10 +206,10 @@ class DictionaryCardPage {
                               style: TextStyle(
                                 color: themeColor.getColor(),
                               ),
-                              textScaleFactor: 1.0,
+                              textScaleFactor: 0.9,
                             ),
                           ),
-                          Text(it['title'].toString(), textScaleFactor: 1)
+                          Text(it['title'].toString(), textScaleFactor: 1.07)
                         ],
                       ),
                     ),
