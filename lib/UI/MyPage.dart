@@ -445,8 +445,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                 stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
-                    print(snapshot.error);
-                    return const Center(child: Text("dasdsa"));
+                    return const Center(child: Text("DB 에러"));
                   } else if (snapshot.hasData) {
                     final documents = snapshot.data!.docs;
                     return ListView(
@@ -455,7 +454,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                         return item.build(context);
                         }).toList());
                   } else {
-                    return Center(child : Text("씨발"));
+                    return Center(child : Text("DB 에러"));
                   }
                 })
             )
