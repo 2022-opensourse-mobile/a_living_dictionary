@@ -420,7 +420,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           final userDocuments = snapshot.data!.docs;
 
           if (userDocuments.length == 0)
-            return Center(child: Text("좋아요 누른 목록이 없습니다", textScaleFactor: 1.0,));
+            return Center(child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline_rounded, size: 60, color: Colors.grey,),
+                Text("좋아요 누른 목록이 없습니다", textScaleFactor: 1.2, style: TextStyle(color: Colors.grey),),
+              ],
+            ));
 
           return SingleChildScrollView(
             child:Column(
@@ -483,7 +489,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               final userDocuments = snap.data!.docs;
 
               if(userDocuments.isEmpty){
-                return const Center(child: Text("댓글을 작성한 게시물이 없습니다."));
+                return Center(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline_rounded, size: 60, color: Colors.grey,),
+                    Text("댓글 단 목록이 없습니다", textScaleFactor: 1.2, style: TextStyle(color: Colors.grey),),
+                  ],
+                ));
               }
               return ListView.builder(
                 physics: const ScrollPhysics(),
@@ -557,7 +569,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
             final userDocuments = snap.data!.docs;
 
             if (userDocuments.isEmpty) {
-              return const Center(child: Text("스크랩 없음."));
+              return Center(child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline_rounded, size: 60, color: Colors.grey,),
+                  Text("스크랩한 목록이 없습니다", textScaleFactor: 1.2, style: TextStyle(color: Colors.grey),),
+                ],
+              ));
             } else {
               return ListView(
                 children: [
