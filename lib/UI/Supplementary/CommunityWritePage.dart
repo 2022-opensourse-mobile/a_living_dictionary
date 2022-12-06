@@ -18,7 +18,7 @@ class CommunityWritePage extends StatelessWidget {
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController bodyController = TextEditingController();
-  late final Logineduser user = Provider.of<Logineduser>(context2, listen: false);
+  late final LoginedUser user = Provider.of<LoginedUser>(context2, listen: false);
 
   CommunityWritePage(this.context2, this.item, {super.key}){
     communityItem = (item != null)?(item!):(CommunityItem());

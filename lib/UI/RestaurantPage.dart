@@ -95,7 +95,7 @@ class restaurantMapState extends State<restaurantMap> {
     double lat, lng;
     String store, udoc_id;
 
-    return Consumer<Logineduser>(
+    return Consumer<LoginedUser>(
       builder: (context, userProvider, child) {
         udoc_id = userProvider.getDocID();
         return StreamBuilder<QuerySnapshot>(
@@ -153,7 +153,7 @@ class restaurantMapState extends State<restaurantMap> {
   }
 
   // 좋아요 아이콘
-  Widget likeIcon(MapInfo mapProvider, Logineduser userProvider) {
+  Widget likeIcon(MapInfo mapProvider, LoginedUser userProvider) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
           .where('docID', isEqualTo: mapProvider.doc_id).snapshots(),
@@ -215,7 +215,7 @@ class restaurantMapState extends State<restaurantMap> {
     return Scaffold(
       appBar: AppBar(title: Text('$store 상세 정보'), elevation: 0.0),
       floatingActionButton: editUI(),
-      body: Consumer2<MapInfo, Logineduser>(
+      body: Consumer2<MapInfo, LoginedUser>(
         builder: (context, mapProvider, userProvider, child) {
           return StreamBuilder(
             stream: FirebaseFirestore.instance.collection('MapDB').doc(id).snapshots(),
@@ -388,7 +388,7 @@ class restaurantMapState extends State<restaurantMap> {
 
         final documents = snapshot.data!.docs;
 
-        return Consumer2<MapInfo, Logineduser>(
+        return Consumer2<MapInfo, LoginedUser>(
             builder: (context, mapProvider, userProvider, child) {
               return Column(
                 children: [

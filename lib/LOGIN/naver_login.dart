@@ -44,7 +44,6 @@ class NaverLogin implements SocialLogin {
 
   @override
   Future<bool> logout() {
-    // TODO: implement logout
-    throw UnimplementedError();
+    return true as Future<bool>;
   }
 }

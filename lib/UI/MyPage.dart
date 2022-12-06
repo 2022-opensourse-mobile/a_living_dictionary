@@ -21,7 +21,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 
-
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 ThemeColor themeColor = ThemeColor();
 const version = '1.0.0';
 
@@ -67,7 +67,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
 
   Widget appID() { //프로필 사진 + 닉네임
-    return Consumer<Logineduser>(
+    return Consumer<LoginedUser>(
         builder: (context, userProvider, child) {
           return Column(
             children: [
@@ -168,7 +168,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
 
   Widget appAccount() { //계정 설정
-    return Consumer<Logineduser>(   // 로그인된 사용자 받아오기위한 provider consumer
+    return Consumer<LoginedUser>(   // 로그인된 사용자 받아오기위한 provider consumer
       builder: (context, userProvider, child) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -379,9 +379,22 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                     style: TextStyle(color: themeColor.getMaterialColor(),
                       fontWeight: FontWeight.bold,),),
                       onPressed: () { Navigator.pop(context); }),
-                  TextButton(child: Text('예',
-                    style: TextStyle(color: themeColor.getMaterialColor(),
-                      fontWeight: FontWeight.bold,),), onPressed: () { Navigator.pop(context); FirebaseAuth.instance.signOut(); }),
+                   Consumer<LoginedUser>(
+                    builder: (context, userProvider, child) {
+                      return TextButton(child: Text('예',
+                        style: TextStyle(color: themeColor.getMaterialColor(),
+                          fontWeight: FontWeight.bold,),), 
+                          onPressed: () async { 
+                            Navigator.pop(context); 
+                            FirebaseAuth.instance.signOut(); 
+
+                            // if (userProvider.uid.substring(0,5) == 'kakao') {
+                            //   await kakao.UserApi.instance.unlink();
+                            // }
+                            
+                          });
+                    }
+                  ),
                 ],
               ),
             );
@@ -397,7 +410,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   /* -------------------------------------------------------------------------------- 화면전환 페이지 */
 
   Widget myLike() {
-    late Logineduser user = Provider.of<Logineduser>(context, listen: false);
+    late LoginedUser user = Provider.of<LoginedUser>(context, listen: false);
     String userDocID = user.doc_id;
     return Scaffold(
       appBar: AppBar(
@@ -436,7 +449,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   }
 
   Widget myPosting() {
-    late Logineduser user = Provider.of<Logineduser>(context, listen: false);
+    late LoginedUser user = Provider.of<LoginedUser>(context, listen: false);
     return Scaffold(
       appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
         body: Column(
@@ -463,7 +476,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   }
 
   Widget myComment() {
-    late Logineduser user = Provider.of<Logineduser>(context, listen: false);
+    late LoginedUser user = Provider.of<LoginedUser>(context, listen: false);
     String userDocID = user.doc_id;
     return Scaffold(
         appBar: AppBar(title: const Text('댓글 단 게시물'), elevation: 0.0),
@@ -515,7 +528,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   }
 
   Future<List<String>> get() async {
-    late Logineduser user = Provider.of<Logineduser>(context, listen: false);
+    late LoginedUser user = Provider.of<LoginedUser>(context, listen: false);
     String uid = user.uid;
     List<String> commentList = <String>[];
     final instance = FirebaseFirestore.instance.collection('userInfo').doc(uid).collection('CommentList');
@@ -536,7 +549,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     var portraitH = deviceSize.height / 3.5; // 세로모드 높이
     var landscapeH = deviceSize.height / 1.2; // 가로모드 높이
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-    var user = Provider.of<Logineduser>(context, listen: false);
+    var user = Provider.of<LoginedUser>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(title: Text('백과사전 스크랩 목록'), elevation: 0.0),
@@ -679,7 +692,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           child: SizedBox(
             width: 50,
             height: 10,
-            child: Consumer<Logineduser>(
+            child: Consumer<LoginedUser>(
               builder: (context, userProvider, child) {
                 return TextButton(
                   style: TextButton.styleFrom(
@@ -713,7 +726,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                         snackBar('중복된 닉네임입니다! 다른 닉네임을 입력해주세요');
                       }
                       else {
-                        Provider.of<Logineduser>(context, listen: false).setNickName(inputText);
+                        Provider.of<LoginedUser>(context, listen: false).setNickName(inputText);
                         FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({'nickName': inputText});
                         Navigator.pop(context);
                         snackBar('닉네임 변경이 완료되었습니다');
@@ -740,7 +753,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                   child: Form(
                     key: this.formKey,
                     autovalidateMode: AutovalidateMode.always,
-                    child: Consumer<Logineduser>(
+                    child: Consumer<LoginedUser>(
                       builder: (context, userProvider, child) {
                         _nickNameController = TextEditingController(text: userProvider.nickName); 
 
@@ -808,7 +821,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
         
         String imgUrl = dowurl.toString();
         
-        Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(imgUrl);
+        Provider.of<LoginedUser>(context, listen: false).setProfileImageUrl(imgUrl);
 
         await FirebaseFirestore.instance.collection('userInfo').doc(user_doc_id).update({
           'profileImageUrl': imgUrl,
@@ -850,7 +863,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           ),
         ),
       ],),
-      body: Consumer<Logineduser>(
+      body: Consumer<LoginedUser>(
         builder: (context, userProvider, child) {
           return ListView(
             children: [
@@ -932,7 +945,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                                 });
                                                 
 
-                                                Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(defaultImgUrl);
+                                                Provider.of<LoginedUser>(context, listen: false).setProfileImageUrl(defaultImgUrl);
                                                 Navigator.pop(context);
                                                 snackBar('프로필 이미지 삭제가 완료되었습니다');
                                               }),
@@ -998,7 +1011,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     TextEditingController emailController = TextEditingController();
     TextEditingController contentController = TextEditingController();
     TextEditingController titleController = TextEditingController();
-    Logineduser user = Provider.of<Logineduser>(context, listen: false);
+    LoginedUser user = Provider.of<LoginedUser>(context, listen: false);
     QuestionItem item = QuestionItem(
       writerID: user.uid,
       writerNickname: user.nickName,

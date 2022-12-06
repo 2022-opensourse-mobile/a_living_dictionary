@@ -21,5 +21,4 @@ class FirebaseAuthRemoteDataSource {
       
       return customTokenResponse.body;
     }
-
 }

@@ -47,7 +47,7 @@ class CommunityItem{
     }).then((value) => FirebaseFirestore.instance.collection('CommunityDB').doc(value.id).update({'doc_id':value.id}));
 
   }
-  Future<void> delete(Logineduser user) async {
+  Future<void> delete(LoginedUser user) async {
     final instance = FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).collection('CommentDB');
     await FirebaseFirestore.instance.collection('CommunityDB').doc(doc_id).delete();
     await for (var snapshot in instance.snapshots()){
@@ -105,13 +105,13 @@ class CommunityItem{
       'boardType': boardType
     });
   }
-  void registerThisPost(Logineduser user){
+  void registerThisPost(LoginedUser user){
     FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').add({
       'like_doc_id' : doc_id
     }).then((value) => FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList').doc(value.id).update(
         {'id':value.id}));
   }
-  void unRegisterThisPost(Logineduser user) async {
+  void unRegisterThisPost(LoginedUser user) async {
     final instance = FirebaseFirestore.instance.collection('userInfo').doc(user.doc_id).collection('LikeList');
     await for (var snapshot in instance.snapshots()){
       for (var doc in snapshot.docs){
@@ -270,7 +270,7 @@ class CommentItem{
     });
 
   }
-  void delete (CommunityItem item, Logineduser user) async {
+  void delete (CommunityItem item, LoginedUser user) async {
     FirebaseFirestore.instance.collection('CommunityDB').doc(item.doc_id)
         .collection('CommentDB').doc(doc_id).delete();
 

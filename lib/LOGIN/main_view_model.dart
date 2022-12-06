@@ -10,7 +10,7 @@ import 'dart:convert';
 
 // 서버쪽 코드 작성해야한다. - 이걸로 토큰발급, 배포해서 사용할거야: 본인 서버에서 토큰발급 진행 ㄱ
 class MainViewModel {
-  final _firebaseAuthDataSource = FirebaseAuthRemoteDataSource();
+  final FirebaseAuthRemoteDataSource _firebaseAuthDataSource = FirebaseAuthRemoteDataSource();
   final SocialLogin _socialLogin;
   bool isLogined = false;
   kakao.User? user;
@@ -51,13 +51,5 @@ class MainViewModel {
     }
 
     await FirebaseAuth.instance.signInWithCustomToken(token);
-  }
-
-  Future logout() async {
-    await _socialLogin.logout();
-    await FirebaseAuth.instance.signOut();
-
-    isLogined = false;
-    user = null;
   }
 }

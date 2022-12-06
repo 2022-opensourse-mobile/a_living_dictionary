@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 
-class Logineduser  with ChangeNotifier {
+class LoginedUser  with ChangeNotifier {
   String doc_id = '';
   String uid = '';
   String nickName ='';
@@ -16,7 +16,7 @@ class Logineduser  with ChangeNotifier {
     this.email = email;
     this.profileImageUrl = profileImageUrl;
     this.admin = admin;
-    //notifyListeners();
+
   }
 
   void setNickName(nickName) {
@@ -27,8 +27,6 @@ class Logineduser  with ChangeNotifier {
 
   void setProfileImageUrl(profileImageUrl) {
     this.profileImageUrl = profileImageUrl;
-
-    //notifyListeners();
   }
 
   void setDocID(doc_id) {
@@ -39,56 +37,3 @@ class Logineduser  with ChangeNotifier {
     return this.doc_id;
   }
 }
-
-
-    // showDialog(
-    //   barrierDismissible: false,
-    //   context: context,
-    //   builder: (BuildContext context) {
-    //     return AlertDialog(
-    //       content: Stack(
-    //         // overflow: Overflow.visible,
-    //         children: <Widget>[
-    //           Positioned(
-    //             right: -40.0,
-    //             top: -40.0,
-    //             child: InkResponse(
-    //               onTap: () {
-    //                 Navigator.of(context).pop();
-                    
-    //               },
-    //               child: CircleAvatar(
-    //                 child: Icon(Icons.close),
-    //                 backgroundColor: Colors.red,
-    //               ),
-    //             ),
-    //           ),
-    //           Form(
-    //             key: _formKey,
-    //             child: Column(
-    //               mainAxisSize: MainAxisSize.min,
-    //               children: <Widget>[
-    //                 Text("사용할 닉네임 입력"),
-    //                 Padding(
-    //                   padding: EdgeInsets.all(8.0),
-    //                   child: TextFormField(),
-    //                 ),
-    //                 Padding(
-    //                   padding: const EdgeInsets.all(8.0),
-    //                   child: ElevatedButton(
-    //                     child: Text("확인"),
-    //                     onPressed: () {
-    //                       if (_formKey.currentState!.validate()) {
-    //                         _formKey.currentState!.save();
-    //                       }
-    //                     },
-    //                   ),
-    //                 )
-    //               ],
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //     );
-    //   }
-    // );

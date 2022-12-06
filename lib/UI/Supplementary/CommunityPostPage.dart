@@ -49,7 +49,7 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   bool isOnGoing = false;
 
 
-  late Logineduser user = Provider.of<Logineduser>(context, listen: true);
+  late LoginedUser user = Provider.of<LoginedUser>(context, listen: true);
 
 
   @override

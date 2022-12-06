@@ -6,6 +6,7 @@ import 'package:a_living_dictionary/LOGIN/naver_login.dart';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
+import 'package:a_living_dictionary/UI/OnBoardingScreen.dart';
 import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => DictionaryItemInfo()),
-        ChangeNotifierProvider(create: (_) => Logineduser()),
+        ChangeNotifierProvider(create: (_) => LoginedUser()),
         ChangeNotifierProvider(create: (_) => MapInfo())
       ],
       child: MyApp(),
@@ -89,7 +90,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-Logineduser loginedUser  = new Logineduser();
+LoginedUser loginedUser  = new LoginedUser();
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -129,49 +130,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     super.dispose();
   }
 
-
-  // Future<UserCredential> signInWithNaver() async {
-  //   final clientState = Uuid().v4();
-  //   final url = Uri.https('nid.naver.com', '/oauth2.0/authorize', {
-  //     'response_type': 'code',
-  //     'client_id': 'bTYjIh0nr6vnD0mi8SWh',
-  //     'response_mode': 'form_post',
-  //     'redirect_uri': 
-  //       'https://loveyou.run.goorm.io/callbacks/naver/sign_in',
-  //     'state': clientState
-  //   });
-
-  //   final result = await FlutterWebAuth.authenticate(
-  //       url: url.toString(),
-  //       callbackUrlScheme: "webauthcallback");
-      
-
-  //   final body = Uri.parse(result).queryParameters;
-  //   final tokenUrl = Uri.https('nid.naver.com', '/oauth2.0/token', {
-  //     'grant_type' : 'authorization_code',
-  //     'client_id': 'bTYjIh0nr6vnD0mi8SWh',
-  //     'client_secret': 'yXkEij1Zvt',
-      
-  //     'state': clientState,
-  //     'code': body['code']
-  //   });
-
-    
-  //   var response = await http.post(tokenUrl);
-  //   var accessTokenResult = json.decode(response.body);
-  //   var responseCustomToken = await http.post(
-  //     Uri.parse("https://loveyou.run.goorm.io/callbacks/naver/token"),
-  //     body: {"accessToken": accessTokenResult['access_token']}
-  //   );
-
-  //   return await FirebaseAuth.instance.signInWithCustomToken(responseCustomToken.body);
-  // }
-
-
   @override
   Widget build(BuildContext context) {
 
-    return Consumer<Logineduser>(
+    return Consumer<LoginedUser>(
         builder: (context, userProvider, child) {
           return StreamBuilder<User?>(
               stream: FirebaseAuth.instance.authStateChanges() , // 로그인 되고 안될때마다 새로운 스트림이 들어옴
@@ -294,7 +256,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                               ElevatedButton(
                                   child: Text('이메일 로그인', style: TextStyle(fontWeight: FontWeight.bold),),
                                   onPressed: () async {
-                                    await Navigator.pushNamed(context, '/authPage') as Logineduser;
+                                    await Navigator.pushNamed(context, '/authPage') as LoginedUser;
                                   },
                                   style: ElevatedButton.styleFrom(
                                       elevation: 0.0,
@@ -313,8 +275,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 return FutureBuilder(
                     future: getUser(),    //  db 에서 먼저 데이터를 받아옴. provider로
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      Provider.of<Logineduser>(context, listen: false).setDocID(user_docID);
-                      Provider.of<Logineduser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl, user_admin);
+                      Provider.of<LoginedUser>(context, listen: false).setDocID(user_docID);
+                      Provider.of<LoginedUser>(context, listen: false).setInfo(user_uid, user_nickName, user_email, user_profileImageUrl, user_admin);
 
                       return WillPopScope(
                           onWillPop: () async {

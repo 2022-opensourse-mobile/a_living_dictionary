@@ -223,7 +223,7 @@ class DictionaryCardPage {
   Widget pageView(BuildContext context) {
         return Scaffold(
           appBar: AppBar(
-            title: Consumer2<DictionaryItemInfo, Logineduser>(
+            title: Consumer2<DictionaryItemInfo, LoginedUser>(
             builder: (context, dicProvider, userProvider, child) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
