@@ -221,181 +221,201 @@ class DictionaryCardPage {
   }
   
   Widget pageView(BuildContext context) {
-    return Consumer2<DictionaryItemInfo, Logineduser>(
-      builder: (context, dicProvider, userProvider, child) {
         return Scaffold(
           appBar: AppBar(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(dicProvider.title, style: const TextStyle(fontSize: 17)),
-                const Expanded(child: SizedBox()),
-                Text(dicProvider.scrapnum.toString(), style: const TextStyle(fontSize: 17), textAlign: TextAlign.center,),
-                StreamBuilder(
-                  stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id)
-                            .snapshots(),
-                  builder: (context, snap) {
-                    if (!snap.hasData)
-                      return Center(child: CircularProgressIndicator());
-
-                    if (snap.hasError)
-                      return Center(child: CircularProgressIndicator());
-
-                    if (snap.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
+            title: Consumer2<DictionaryItemInfo, Logineduser>(
+            builder: (context, dicProvider, userProvider, child) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(dicProvider.title, style: const TextStyle(fontSize: 17)),
+                    const Expanded(child: SizedBox()),
                     
-                    if (snap.data!.size != 0) {   // user가 해당 게시글을 스크랩한 기록이 없는 경우
-                      return IconButton(
-                        icon: const Icon(
-                          Icons.bookmark_outlined,
-                          color: Colors.amberAccent,
-                          size: 30,   
-                        ),
-                        onPressed: (){
-                          if(clickCheck.isRedundentClick(DateTime.now())) return;
-                          
-                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id).get().then((value) {
-                            value.docs.forEach((element) {
-                              FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList")
-                                .doc(element.id)
-                                .delete();
-                            });
-                          });
-                          dicProvider.subScrapNum(dicProvider.doc_id);
-                        }
-                      );
-                    } else {                          // user가 해당 게시글을 스크랩한 기록이 있는 경우
-                      return IconButton(
-                        icon: const Icon(
-                          Icons.bookmark_outline_rounded,
-                          color: Colors.amberAccent,
-                          size: 30,   
-                        ),
-                        onPressed: (){
-                          if(clickCheck.isRedundentClick(DateTime.now())) return;
+                    
+                    StreamBuilder(
+                      stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id)
+                                .snapshots(),
+                      builder: (context, snap) {
+                        if (!snap.hasData)
+                          return Center(child: CircularProgressIndicator());
 
-                          FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").add({'docID' : dicProvider.doc_id});
-                          dicProvider.addScrapNum(dicProvider.doc_id);
-                        });
-                    }   
-                  },
-                )
-              ],
+                        if (snap.hasError)
+                          return Center(child: CircularProgressIndicator());
+
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+                        
+                        if (snap.data!.size != 0) {   // user가 해당 게시글을 스크랩한 기록이 없는 경우
+                          return Row(
+                            children: [
+                              Text(dicProvider.scrapnum.toString(), style: const TextStyle(fontSize: 17), textAlign: TextAlign.center,),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.bookmark_outlined,
+                                  color: Colors.amberAccent,
+                                  size: 30,   
+                                ),
+                                onPressed: (){
+                                  if(clickCheck.isRedundentClick(DateTime.now())) return;
+
+                                  dicProvider.subScrapNum(dicProvider.doc_id);
+                                  
+                                  FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id).get().then((value) {
+                                    value.docs.forEach((element) {
+                                      FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList")
+                                        .doc(element.id)
+                                        .delete();
+                                    });
+                                  });
+                                  
+                                }
+                              ),
+                            ],
+                          );
+                        } else {                          // user가 해당 게시글을 스크랩한 기록이 있는 경우
+                          return Row(
+                            children: [
+                              Text(dicProvider.scrapnum.toString(), style: const TextStyle(fontSize: 17), textAlign: TextAlign.center,),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.bookmark_outline_rounded,
+                                  color: Colors.amberAccent,
+                                  size: 30,   
+                                ),
+                                onPressed: (){
+                                  if(clickCheck.isRedundentClick(DateTime.now())) return;
+
+                                  dicProvider.addScrapNum(dicProvider.doc_id);
+                                  FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").add({'docID' : dicProvider.doc_id});
+                                }),
+                            ],
+                          );
+                        }   
+                      },
+                    )
+                  
+                  ],
+                );
+              }
             ),
             titleSpacing: 0,
             elevation: 0,
           ),
-          body: StreamBuilder(
-              stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dicProvider.doc_id).collection('dictionaryCard').orderBy("card_id", descending: false).snapshots(),
-              builder: (context, AsyncSnapshot snap) {
-                List cardDocList;
+          body: Consumer<DictionaryItemInfo>(
+            builder: (context, dicProvider, child) {
 
-                if (snap.hasError) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snap.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-                
-                if (!snap.hasData || snap.data == null || snap.data!.size == 0) {
-                  return nonExistentCard();
-                }
-                else {
-                  final documents = snap.data!.docs;
-                  cardDocList = documents.toList();
+              return StreamBuilder(
+                stream: FirebaseFirestore.instance.collection('dictionaryItem').doc(dicProvider.doc_id).collection('dictionaryCard').orderBy("card_id", descending: false).snapshots(),
+                builder: (context, AsyncSnapshot snap) {
+                  List cardDocList;
 
-                  return PageView.builder(
-                    controller: PageController(
-                      initialPage: 0,
-                    ),
-                    itemCount: cardDocList.length +1,
-                    itemBuilder: (context, index) {
-                      return Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(cardDocList[0]['img']),    // 카드 맨 첫 번째 사진으로 배경 설정
-                                fit: BoxFit.cover,
+                  if (snap.hasError) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (snap.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  
+                  if (!snap.hasData || snap.data == null || snap.data!.size == 0) {
+                    return nonExistentCard();
+                  }
+                  else {
+                    final documents = snap.data!.docs;
+                    cardDocList = documents.toList();
+
+                    return PageView.builder(
+                      controller: PageController(
+                        initialPage: 0,
+                      ),
+                      itemCount: cardDocList.length +1,
+                      itemBuilder: (context, index) {
+                        return Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(cardDocList[0]['img']),    // 카드 맨 첫 번째 사진으로 배경 설정
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
-                            child: ClipRect(
-                              child: BackdropFilter(
-                                filter:
-                                    ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.5)),
+                              child: ClipRect(
+                                child: BackdropFilter(
+                                  filter:
+                                      ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.5)),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
 
-                          if (index != 0) // 제목 아닌 컨텐츠 페이지
-                            Center(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.network(cardDocList[index-1]['img']),    // 카드 해당 이미지 출력
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: Text(
-                                          cardDocList[index-1]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
-                                          style: const TextStyle(color: Colors.white,),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          if (index == 0) // 제목 페이지
-                            Consumer<DictionaryItemInfo>(
-                                builder: (context, dicProvider, child) {
-                                  return SingleChildScrollView(
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Expanded(child: SizedBox(),),
-                                            Icon(Icons.star, color: Colors.amber[600],),
-                                            Text(
-                                              "스크랩하기↗",
-                                              style: TextStyle(color: Colors.white, fontSize: 16),
-                                            ),
-                                            SizedBox(width:30)
-                                          ],
-                                        ),
-                                        SizedBox(height: height * 0.25,),
-                                        Image.network(dicProvider.thumbnail),
-                                        SizedBox(height: 10),
-                                        Center(
+                            if (index != 0) // 제목 아닌 컨텐츠 페이지
+                              Center(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.network(cardDocList[index-1]['img']),    // 카드 해당 이미지 출력
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
                                           child: Text(
-                                            dicProvider.title,
-                                            style: const TextStyle(color: Colors.white, fontSize: 16),
+                                            cardDocList[index-1]['content'].toString().replaceAll(RegExp(r'\\n'), '\n'),  // 게시글 줄바꿈 구현
+                                            style: const TextStyle(color: Colors.white,),
                                           ),
                                         ),
-                                        SizedBox(height: height * 0.2,),
-                                      ],
-                                    ),
-                                  );
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            if (index == 0) // 제목 페이지
+                              Consumer<DictionaryItemInfo>(
+                                  builder: (context, dicProvider, child) {
+                                    return SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(child: SizedBox(),),
+                                              Icon(Icons.star, color: Colors.amber[600],),
+                                              Text(
+                                                "스크랩하기↗",
+                                                style: TextStyle(color: Colors.white, fontSize: 16),
+                                              ),
+                                              SizedBox(width:30)
+                                            ],
+                                          ),
+                                          SizedBox(height: height * 0.25,),
+                                          Image.network(dicProvider.thumbnail),
+                                          SizedBox(height: 10),
+                                          Center(
+                                            child: Text(
+                                              dicProvider.title,
+                                              style: const TextStyle(color: Colors.white, fontSize: 16),
+                                            ),
+                                          ),
+                                          SizedBox(height: height * 0.2,),
+                                        ],
+                                      ),
+                                    );
 
-                                }
-                            ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              }),
+                                  }
+                              ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                });
+            }
+          ),
         );
       }
-    );
-  }
+  
 
   Widget nonExistentCard() {
     return PageView.builder(
