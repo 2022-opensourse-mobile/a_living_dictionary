@@ -215,28 +215,28 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                         user_nickName = viewModel.user?.kakaoAccount?.profile?.nickname ?? '';
                                         user_email = viewModel.user?.kakaoAccount?.email  ?? '';
                                         user_profileImageUrl = viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? '';
-                                      }
+                                      
+                                        // 금방 로그인한 유저에 대한 정보
+                                        // 데이터베이스에 유저가 저장되어있는지 확인
+                                        FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
+                                          String doc_id = '';
 
-                                      // 금방 로그인한 유저에 대한 정보
-                                      // 데이터베이스에 유저가 저장되어있는지 확인
-                                      FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: user_uid).get().then( (QuerySnapshot snap) {
-                                        String doc_id = '';
+                                          if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
+                                            FirebaseFirestore.instance.collection('userInfo').add({
+                                              'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': '', 
+                                              'admin': false
+                                            }).then((value) {
+                                              doc_id =  value.id.toString();
 
-                                        if (snap.size == 0) {// 데이터베이스에 유저가 저장되어있지 않다면 document하나 추가
-                                          FirebaseFirestore.instance.collection('userInfo').add({
-                                            'uid': user_uid, 'nickName': user_nickName, 'email': user_email, 'profileImageUrl': user_profileImageUrl, 'docID': '', 
-                                            'admin': false
-                                          }).then((value) {
-                                            doc_id =  value.id.toString();
-
-                                            FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
-                                              'docID': doc_id
+                                              FirebaseFirestore.instance.collection('userInfo').doc(doc_id).update({
+                                                'docID': doc_id
+                                              });
                                             });
-                                          });
-                                        }
-                                      });
-
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => onboardingScreen('kakao')));
+                                          }
+                                        });
+                                      
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => onboardingScreen('kakao')));
+                                      }
                                     },
                                   ),
 
