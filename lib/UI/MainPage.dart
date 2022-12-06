@@ -201,7 +201,7 @@ class MainPage extends StatelessWidget {
   Container textList(String communityTitle, int boardType) {
     CommunityItem p = CommunityItem();
     return Container(
-        height: 230, //230
+        height: 200, //230
         child: Column(
           children: <Widget>[
             const Divider(thickness: 0.5,),
