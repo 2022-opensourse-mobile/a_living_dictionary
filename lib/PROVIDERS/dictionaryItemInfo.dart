@@ -29,7 +29,7 @@ class DictionaryItemInfo with ChangeNotifier{
       'scrapnum': scrapnum
     }); 
 
-    notifyListeners();
+    // notifyListeners();
   }
 
   void subScrapNum(dic_id) {  // 스크랩 수를 하나 줄임
@@ -38,6 +38,6 @@ class DictionaryItemInfo with ChangeNotifier{
       'scrapnum': scrapnum
     });
     
-    notifyListeners();
+    // notifyListeners();
   }
 }

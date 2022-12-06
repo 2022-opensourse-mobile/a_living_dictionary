@@ -919,9 +919,19 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                               color: themeColor.getMaterialColor(),
                                               fontWeight: FontWeight.bold,),),
                                               onPressed: () async {
+
+                                                // Reference storageRef = await FirebaseStorage.instance.ref(userProvider.profileImageUrl);
+
+                                                // final desertRef = storageRef.child("images/desert.jpg");
+
+                                                // // Delete the file
+                                                // await desertRef.delete();
+
                                                 await FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).update({
                                                   'profileImageUrl': defaultImgUrl,
                                                 });
+                                                
+
                                                 Provider.of<Logineduser>(context, listen: false).setProfileImageUrl(defaultImgUrl);
                                                 Navigator.pop(context);
                                                 snackBar('프로필 이미지 삭제가 완료되었습니다');
