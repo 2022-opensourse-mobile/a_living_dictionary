@@ -1,5 +1,5 @@
 # 자취 백과사전
-## 2022-2 오픈소스 팀 프로젝트
+#### 2022-2 오픈소스 팀 모바일
   
   
   
@@ -10,7 +10,10 @@
 ## 앱 실행 영상  
 
 // 유튜브 주소  
-
+  
+  
+  
+  
 ## 코드 사용법  
 ### 1. lib 폴더
 #### 디렉토리 구조
@@ -100,7 +103,17 @@ Supplementary 폴더는 각 탭에서 추가적으로 필요한 페이지나 클
 각 탭에서 추가적으로 필요한 Class 모음.  
 파일 이름에 Page가 들어가면 추가 Page가 출력되는 클래스이고, 그렇지 않을시 탭의 DomainLogic을 돕기 위한 Class  
 예를 들어 CheckClick이나 ThemeColor Class의 경우 각각 더블 클릭을 방지하기 위한 함수가 정의된 Class, 앱의 테마 색을 정해둔 Class  
-Page가 들어간 Class는 예를 들어 CommunityPostPage 의 경우 커뮤니티 탭에서 특정 게시글을 터치(클릭)했을 때, 해당 게시글을 자세하게 출력하기 위한 클래스  
+Page가 들어간 Class는 예를 들어 CommunityPostPage 의 경우 커뮤니티 탭에서 특정 게시글을 터치(클릭)했을 때, 해당 게시글을 자세하게 출력하기 위한 클래스로  
+추가적인 페이지가 생성됨.  
+  
+  
+  
+## 오픈소스 출처와 API 버전  
+GOOGLE MAP API :               
+NAVER API : 
+KAKAO API : 
+FireBase : 
+
 
 
 
