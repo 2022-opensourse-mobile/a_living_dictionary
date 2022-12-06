@@ -80,6 +80,29 @@ PROVIDER는 flutter에서 특정 객체의 통신을 위한 Class로, 만약 Sca
 6. RestaurantPage.dart  
   
 #### 설명  
+Supplementary 폴더는 각 탭에서 추가적으로 필요한 페이지나 클래스가 정리  
+그 외에는 main.dart 의 하위 위젯들로 각 탭(백과사전, 커뮤니티, 맛집지도, 설정)을 출력하는 주요 Class 들이 포함  
+  
+  
+### 6. Supplementary 폴더  
+#### 디렉토리 구조  
+1. CheckClick.dart  
+2. CommunityPostPage.dart  
+3. CommunityWritePage.dart  
+4. DictionaryCardPage.dart  
+5. WriteDictionaryPage.dart
+6. PageRouteWithAnimation.dart  
+7. Search.dart
+8. TempSearch.dart
+9. ThemeColor.dart
+  
+#### 설명  
+각 탭에서 추가적으로 필요한 Class 모음.  
+파일 이름에 Page가 들어가면 추가 Page가 출력되는 클래스이고, 그렇지 않을시 탭의 DomainLogic을 돕기 위한 Class  
+예를 들어 CheckClick이나 ThemeColor Class의 경우 각각 더블 클릭을 방지하기 위한 함수가 정의된 Class, 앱의 테마 색을 정해둔 Class  
+Page가 들어간 Class는 예를 들어 CommunityPostPage 의 경우 커뮤니티 탭에서 특정 게시글을 터치(클릭)했을 때, 해당 게시글을 자세하게 출력하기 위한 클래스  
+
+
 
 
 
