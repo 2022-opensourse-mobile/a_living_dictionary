@@ -437,30 +437,25 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
   Widget myPosting() {
     late Logineduser user = Provider.of<Logineduser>(context, listen: false);
-
-    print("user : ${user}");
-    print("user uid : ${user.uid}");
     return Scaffold(
-      appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
+        appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
         body: Column(
           children: [
             Expanded(child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).where('writer_id', isEqualTo: user.uid).snapshots(),
+                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
+                  if (snapshot.hasError) {
+                    print(snapshot.error);
+                    return const Center(child: Text("dasdsa"));
+                  } else if (snapshot.hasData) {
                     final documents = snapshot.data!.docs;
-                    if(documents.isEmpty){
-                      return const Center(child: Text("이거 왜 이럼?"),);
-                    }
-                    else{
-                      return ListView(children: documents.map((doc) {
-                            CommunityItem item = CommunityItem.getDataFromDoc(doc);
-                            return item.build(context);
-                          }).toList()
-                      );
-                    }
-                  }else{
-                    return const Center(child : Text("dasdsa"));
+                    return ListView(
+                        children: documents.where((doc) => doc['writer_id'] == user.uid).map((doc) {CommunityItem item =
+                        CommunityItem.getDataFromDoc(doc);
+                        return item.build(context);
+                        }).toList());
+                  } else {
+                    return Center(child : Text("씨발"));
                   }
                 })
             )
