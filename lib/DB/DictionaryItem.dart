@@ -1,11 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'Data.dart';
 
 
 class DictionaryItem extends Data<DictionaryItem>{
+  String title;
+  int item_id;
+  int scrapnum;
+  String hashTag;
+  String author;
+  DateTime? date;
+  String thumbnail;
+
   DictionaryItem(
       this.item_id, {
         this.title = '제목없음',
@@ -14,18 +19,7 @@ class DictionaryItem extends Data<DictionaryItem>{
         this.scrapnum = 0,
         this.date = null,
         this.thumbnail = "",
-        this.recommend = false      // 탭 상단 추천으로 뜰지말지
       });
-
-  String title;
-  int item_id;
-  int scrapnum;
-  String hashTag;
-  String author;
-  DateTime? date;
-  String thumbnail;
-  bool recommend;
-
 
   @override
   void add(E) {
@@ -35,7 +29,6 @@ class DictionaryItem extends Data<DictionaryItem>{
       'hashtag': E.hashTag,
       'scrapnum': E.scrapnum,
       'title': E.title,
-      'recommend': E.recommend,
       'thumbnail': E.thumbnail
     });
   }
@@ -50,16 +43,10 @@ class DictionaryItem extends Data<DictionaryItem>{
         author: doc['author'],
         scrapnum: doc['scrapnum'],
         date: date,
-        recommend: doc['recommend'],
         thumbnail: doc['thumbnail']
     );
   }
 }
-
-
-
-
-
 
 class MyCard extends Data<MyCard>{
   MyCard(this.doc_id, this.card_id, this.img, this.content);
@@ -81,42 +68,3 @@ class MyCard extends Data<MyCard>{
     );
   }
 }
-
-
-
-// class FireConnect {
-//   FirebaseStorage storage = FirebaseStorage.instance;
-//   FirebaseFirestore db = FirebaseFirestore.instance;
-
-//   dynamic getCollection(String collectionName) {
-//     return db.collection(collectionName);
-//   }
-
-//   void addItem(String collectionName, dynamic item) {
-//     if (collectionName == 'dictionaryItem') {
-
-//       db.collection('dictionaryItem')
-//           .add({'author': item.author, 'date': item.date, 'hashtag': item.hashTag, 'item_id': item.post_id, 'scrapnum': item.scrapnum, 'title': item.title});
-
-
-//       // TODO@@ info에 item_num을 갱신하는 코드작성(읽어와서 값을 +1 시키는거)
-//       // db.collection('info')
-
-//     }
-//     if (collectionName == 'card') {
-
-
-//     }
-//   }
-
-//   void deleteItem (String collectionName, String docId) {
-//     db.collection(collectionName).doc(docId).delete();
-//   }
-
-//   // 변수 타입을 몰라서 일단 dynamic , 나중에 고치기
-//   dynamic getDBSnapShot(String collectionName) {
-//     print("@@F@@: "+ db.collection(collectionName).snapshots().runtimeType.toString());
-
-//     return db.collection(collectionName).snapshots();
-//   }
-// }
