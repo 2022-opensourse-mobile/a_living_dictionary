@@ -56,6 +56,7 @@ class restaurantMapState extends State<restaurantMap> {
 
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   String m_id = ""; // Map Id
+  late double W, H;
 
   // DB에 저장된 마커 지도에 추가(좋아요 100개 이상인 마커만)
   Widget getMarker(BuildContext context) {
@@ -216,7 +217,7 @@ class restaurantMapState extends State<restaurantMap> {
     return Scaffold(
       resizeToAvoidBottomInset : false,
       appBar: AppBar(title: Text('$store 상세 정보'), elevation: 0.0),
-      floatingActionButton: editUI(""),
+      floatingActionButton: editUI(),
       body: Consumer2<MapInfo, Logineduser>(
         builder: (context, mapProvider, userProvider, child) {
           return StreamBuilder(
@@ -276,25 +277,22 @@ class restaurantMapState extends State<restaurantMap> {
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: reviewDocuments.length,
                               itemBuilder: (context, index) {
-                                return Row(
-                                  children: [
-                                    SizedBox(
-                                      width: (width > 750)? width * 0.8 : width * 0.6,
-                                      child: ListTile(
-                                        leading: Icon(Icons.chevron_right_rounded),
-                                        title: Row(
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                  reviewDocuments[index]['content']
-                                                      .toString()),
-                                            ),
-                                          ],
+                                return SizedBox(
+                                  width: W,
+                                  child: ListTile(
+                                    leading: Icon(Icons.chevron_right_rounded),
+                                    title: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                              reviewDocuments[index]['content']
+                                                  .toString()),
                                         ),
-                                      ),
+                                        reviewDocuments[index]['writer'] == userProvider.uid?
+                                        Container(child: modifyReview(reviewDocuments[index].id), width: W * 0.25,) : Container(),
+                                      ],
                                     ),
-                                    reviewDocuments[index]['writer'] == userProvider.uid? modifyReview(reviewDocuments[index].id) : Container(),
-                                  ],
+                                  ),
                                 );
                               },
                             );
@@ -311,7 +309,7 @@ class restaurantMapState extends State<restaurantMap> {
   }
 
   // 리뷰 작성 폼
-  Widget editUI(String reviewID) {
+  Widget editUI() {
     String? review;
     return Align(
       alignment: Alignment.bottomRight,
@@ -348,17 +346,23 @@ class restaurantMapState extends State<restaurantMap> {
     String id = FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').doc(rid).id;
     return Row(
       children: [
-        TextButton(
-          onPressed: () {
-            editDialog("수정", rid);
-          },
-          child: const Text("수정", style: TextStyle(color: Colors.grey)),
+        Expanded(
+          flex: 1,
+          child: TextButton(
+            onPressed: () {
+              editDialog("수정", rid);
+            },
+            child: const Text("수정", style: TextStyle(color: Colors.grey)),
+          ),
         ),
-        TextButton(
-          onPressed: () {
-            FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').doc(id).delete();
-          },
-          child: const Text("삭제", style: TextStyle(color: Colors.grey)),
+        Expanded(
+          flex: 1,
+          child: TextButton(
+            onPressed: () {
+              FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').doc(id).delete();
+            },
+            child: const Text("삭제", style: TextStyle(color: Colors.grey)),
+          ),
         ),
       ],
     );
@@ -369,62 +373,66 @@ class restaurantMapState extends State<restaurantMap> {
     String? review;
     showDialog(
       context: navigatorKey.currentContext!,
-      builder: (context) => AlertDialog(
-        title: Text('후기 $write하기',
-            style: TextStyle(
-                color: themeColor.getMaterialColor(),
-                fontWeight: FontWeight.bold)),
-        content: Form(
-          key: formKey,
-          autovalidateMode: AutovalidateMode.always,
-          child: TextFormField(
-            onChanged: (value) {
-              review = value;
-            },
-            validator: (value) {
-              if(value!.isEmpty) return '내용을 입력하세요';
-            },
-            cursorColor: themeColor.getMaterialColor(),
-            minLines: 1,
-            maxLines: 10,
-            decoration: InputDecoration(
-              hintText: '내용을 입력하세요',
-              filled: true,
-              fillColor: Colors.white,
-              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
-              focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+      builder: (context) => Center(
+        child: SingleChildScrollView(
+          child: AlertDialog(
+            title: Text('후기 $write하기',
+                style: TextStyle(
+                    color: themeColor.getMaterialColor(),
+                    fontWeight: FontWeight.bold)),
+            content: Form(
+              key: formKey,
+              autovalidateMode: AutovalidateMode.always,
+              child: TextFormField(
+                onChanged: (value) {
+                  review = value;
+                },
+                validator: (value) {
+                  if(value!.isEmpty) return '내용을 입력하세요';
+                },
+                cursorColor: themeColor.getMaterialColor(),
+                minLines: 1,
+                maxLines: 10,
+                decoration: InputDecoration(
+                  hintText: '내용을 입력하세요',
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                ),
+              ),
             ),
+            actions: [
+              TextButton(child: Text('취소',
+                style: TextStyle(color: themeColor.getMaterialColor(),
+                  fontWeight: FontWeight.bold,),),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              TextButton(child: Text('확인',
+                style: TextStyle(color: themeColor.getMaterialColor(),
+                  fontWeight: FontWeight.bold,),),
+                  onPressed: () {
+                    if(formKey.currentState!.validate()) {
+                      if (write == "수정") { // 수정인 경우
+                        FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').doc(id).update({
+                          'content': review
+                        });
+                      }
+                      else { // 처음 작성인 경우
+                        Timestamp timestamp = Timestamp.now();
+                        FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').add({
+                          'content': review,
+                          'writer': id,
+                          'time': timestamp,
+                        });
+                      }
+                      Navigator.pop(context);
+                    }
+                  }),
+            ],
           ),
         ),
-        actions: [
-          TextButton(child: Text('취소',
-            style: TextStyle(color: themeColor.getMaterialColor(),
-              fontWeight: FontWeight.bold,),),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-          TextButton(child: Text('확인',
-            style: TextStyle(color: themeColor.getMaterialColor(),
-              fontWeight: FontWeight.bold,),),
-              onPressed: () {
-                if(formKey.currentState!.validate()) {
-                  if (write == "수정") { // 수정인 경우
-                    FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').doc(id).update({
-                      'content': review
-                    });
-                  }
-                  else { // 처음 작성인 경우
-                    Timestamp timestamp = Timestamp.now();
-                    FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').add({
-                      'content': review,
-                      'writer': id,
-                      'time': timestamp,
-                    });
-                  }
-                  Navigator.pop(context);
-                }
-              }),
-        ],
       ),
     );
   }
@@ -516,7 +524,7 @@ class restaurantMapState extends State<restaurantMap> {
 
         setState(() {
           _controller = controller;
-          // _currentLocation();
+          _currentLocation();
         });
       },
       markers: Set<Marker>.of(markers.values),
@@ -622,15 +630,15 @@ class restaurantMapState extends State<restaurantMap> {
 
   @override
   Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
-    double h = MediaQuery.of(context).size.height;
+    W = MediaQuery.of(context).size.width;
+    H = MediaQuery.of(context).size.height;
     final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Column(
       children: [
         Container(
           key: scrollKey,
-          width: w,
-          height: isPortrait? h * 0.7 : h * 0.55,
+          width: W,
+          height: isPortrait? H * 0.7 : H * 0.55,
           color: Colors.grey,
           child: Stack(
             children: [
