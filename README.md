@@ -7,18 +7,18 @@
   
   
   
-### 앱 실행 영상
+## 앱 실행 영상
 
-### 코드 사용법
-##### 디렉토리 구조  
+## 코드 사용법
+#### 디렉토리 구조  
 1. DB 폴더  
 2. PROVIDERS 폴더  
 3. LOGIN 폴더  
 4. UI 폴더  
 5. main.dart  
 
-#### 1. DB  
-##### 디렉토리 구조  
+### 1. DB  
+#### 디렉토리 구조  
 
 
 DictionaryItem, CommunityItem, Map, Review, QuestionItem 클래스가 각각 있으며 각각 백과사전, 커뮤니티, 맛집지도, 맛집리뷰, 문의사항에 관련된 클래스입니다.  
