@@ -1,16 +1,12 @@
-import 'dart:ui';
+
 import 'package:a_living_dictionary/DB/CommunityItem.dart';
-import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/UI/Supplementary/CheckClick.dart';
-import 'package:a_living_dictionary/UI/Supplementary/PageRouteWithAnimation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'ThemeColor.dart';
 import 'DictionaryCardPage.dart';
 
 ThemeColor themeColor = ThemeColor();
-final CheckClick clickCheck = CheckClick();
 
 class SearchScreen extends StatefulWidget {
   final int curIndex;
@@ -25,6 +21,7 @@ class _SearchScreenState extends State<SearchScreen> {
   FocusNode focusNode = FocusNode();
   String _searchText = "";
   int curIndex;
+  final CheckClick clickCheck = CheckClick();
 
   _SearchScreenState(this.curIndex) {
     _filter.addListener(() {

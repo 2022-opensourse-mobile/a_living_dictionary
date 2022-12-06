@@ -30,7 +30,6 @@ class Community extends StatefulWidget {
 }
 class _ComminityState extends State<Community> with TickerProviderStateMixin{
   _ComminityState(this.context2);
-  CommunityItem p = CommunityItem();
   late TabController _tabController;
   final BuildContext context2;
 

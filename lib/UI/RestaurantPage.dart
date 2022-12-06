@@ -35,27 +35,33 @@ class RestaurantPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: restaurantMap(),
+        child: RestaurantMap(),
       ),
       floatingActionButton: upButton(),
     );
   }
 }
 
-class restaurantMap extends StatefulWidget {
-  restaurantMap({Key? key}) : super(key: key);
+class RestaurantMap extends StatefulWidget {
+  RestaurantMap({Key? key}) : super(key: key);
 
   @override
-  State<restaurantMap> createState() => restaurantMapState();
+  State<RestaurantMap> createState() => RestaurantMapState();
 }
 
-class restaurantMapState extends State<restaurantMap> {
+class RestaurantMapState extends State<RestaurantMap> {
   late GoogleMapController _controller;
   NearbyPlacesResponse nearbyPlacesResponse = NearbyPlacesResponse();
   MapInfo mapInfo = MapInfo();
 
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   String m_id = ""; // Map Id
+
+  // 초기 위치 설정(금오공대)
+  static final CameraPosition _initialLocation = CameraPosition(
+    target: LatLng(36.1461382, 128.3934882),
+    zoom: 16.0,
+  );
 
   // DB에 저장된 마커 지도에 추가(좋아요 100개 이상인 마커만)
   Widget getMarker(BuildContext context) {
@@ -477,11 +483,6 @@ class restaurantMapState extends State<restaurantMap> {
     );
   }
 
-  // 초기 위치 설정(금오공대)
-  static final CameraPosition _initialLocation = CameraPosition(
-    target: LatLng(36.1461382, 128.3934882),
-    zoom: 16.0,
-  );
 
   // 현재 위치 구하기
   void _currentLocation() async {

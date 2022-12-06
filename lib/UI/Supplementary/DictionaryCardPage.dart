@@ -11,12 +11,13 @@ import '../DictionaryPage.dart';
 import 'PageRouteWithAnimation.dart';
 
 class DictionaryCardPage {
-  DictionaryCardPage(this.width, this.height, this.portraitH, this.landscapeH, this.isPortrait);
 
   double width, height, portraitH, landscapeH;
   bool isPortrait;
   final CheckClick clickCheck = CheckClick();
 
+  DictionaryCardPage(this.width, this.height, this.portraitH, this.landscapeH, this.isPortrait);
+  
   //메인화면 post
   Widget mainPostList(BuildContext context, int postNum) {
     return Container(

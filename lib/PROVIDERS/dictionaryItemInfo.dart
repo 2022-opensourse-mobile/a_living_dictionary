@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 
 class DictionaryItemInfo with ChangeNotifier{
   String doc_id ='';
-  var author='';
+  String author='';
   int card_num=0;
-  DateTime? date= DateTime.now(); //Timestamp.now().toDate(),
-  var hashtag='';
+  DateTime? date= null; //Timestamp.now().toDate(),
+  String hashtag='';
   int scrapnum=0;
-  
   String thumbnail='';
   String title='';
 

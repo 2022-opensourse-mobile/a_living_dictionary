@@ -20,8 +20,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
-
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+
 ThemeColor themeColor = ThemeColor();
 const version = '1.0.0';
 
@@ -439,7 +439,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
             child:Column(
               children: [
                 for (int i=0; i<userDocuments.length; i++)
-                  restaurantMapState().nearbyPlacesWidget(userDocuments[i]['store']),
+                  RestaurantMapState().nearbyPlacesWidget(userDocuments[i]['store']),
               ],
             ),
           );

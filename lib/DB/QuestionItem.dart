@@ -1,6 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class QuestionItem{
+  String title;
+  String content;
+  String writerID;
+  String writerNickname;
+  String writerEmail;
+  late DateTime time;
+
   QuestionItem({
     this.title ='',
     this.content = '',
@@ -8,13 +15,6 @@ class QuestionItem{
     this.writerEmail = '',
     this.writerNickname = '',
   });
-  String title;
-  String content;
-  late DateTime time;
-
-  String writerID;
-  String writerNickname;
-  String writerEmail;
 
   void add(DateTime inputTime){
     time = inputTime;

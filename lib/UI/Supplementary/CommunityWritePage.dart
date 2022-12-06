@@ -28,7 +28,6 @@ class CommunityWritePage extends StatelessWidget {
   }
 
 
-
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
@@ -198,15 +197,16 @@ class getHashTag extends StatefulWidget {
 }
 
 class _getHashTagState extends State<getHashTag> {
-  _getHashTagState(this.communityItem){
-    selectTag = (communityItem.hashTag != '')?(communityItem.hashTag):("#잡담");
-    communityItem.hashTag = selectTag;
-  }
 
   final CommunityItem communityItem;
   final hashTag = ['#잡담', '#일상', '#꿀팁', '#힐링', '#공지'];
   var selectTag;
   String? value;
+  
+  _getHashTagState(this.communityItem){
+    selectTag = (communityItem.hashTag != '')?(communityItem.hashTag):("#잡담");
+    communityItem.hashTag = selectTag;
+  }
 
   @override
   Widget build(BuildContext context) {

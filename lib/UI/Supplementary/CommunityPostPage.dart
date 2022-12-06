@@ -43,11 +43,8 @@ class _CommunityPostPageState extends State<CommunityPostPage> with SingleTicker
   static const double SPACIAL = 9.5;
   static const int SPACE = 4;
 
-
-
   String changedDocID = '';
   bool isOnGoing = false;
-
 
   late LoginedUser user = Provider.of<LoginedUser>(context, listen: true);
 
