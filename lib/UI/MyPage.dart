@@ -454,7 +454,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                         return item.build(context);
                         }).toList());
                   } else {
-                    return Center(child : Text("DB 에러"));
+                    return const Center(child: CircularProgressIndicator());
                   }
                 })
             )
@@ -471,7 +471,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
             stream: FirebaseFirestore.instance.collection('userInfo').doc(userDocID).collection("CommentList").orderBy('time', descending: true).snapshots(),
             builder: (context, snap) {
               if (!snap.hasData) {
-                return const Center(child: Text("댓글을 작성한 게시글이 없습니다."));
+                return const Center(child: CircularProgressIndicator());
               }
               if (snap.hasError) {
                 return const Center(child: CircularProgressIndicator());
