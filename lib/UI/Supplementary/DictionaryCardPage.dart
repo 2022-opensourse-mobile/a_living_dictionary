@@ -254,6 +254,7 @@ class DictionaryCardPage {
                         ),
                         onPressed: (){
                           if(clickCheck.isRedundentClick(DateTime.now())) return;
+                          
                           FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").where("docID", isEqualTo: dicProvider.doc_id).get().then((value) {
                             value.docs.forEach((element) {
                               FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList")
@@ -272,8 +273,7 @@ class DictionaryCardPage {
                           size: 30,   
                         ),
                         onPressed: (){
-                          if(clickCheck.isRedundentClick(DateTime.now())) 
-                            return;
+                          if(clickCheck.isRedundentClick(DateTime.now())) return;
 
                           FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection("ScrapList").add({'docID' : dicProvider.doc_id});
                           dicProvider.addScrapNum(dicProvider.doc_id);
