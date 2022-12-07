@@ -125,23 +125,22 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
   
   
 ## 오픈소스 출처와 API 버전  
-####GOOGLE MAP API 
-- google_maps_flutter ^2.2.1
-#####PLACES API 
-- flutter_google_places ^0.3.0
-#####GEOCODING API: -
-#####NAVER API: -
-####KAKAO API
+####GOOGLE MAP API  
+- google_maps_flutter ^2.2.1  
+#####PLACES API  
+- flutter_google_places ^0.3.0  
+#####GEOCODING API: -  
+#####NAVER API: -  
+####KAKAO API  
 - kakao_flutter_sdk_user ^1.2.2  
-####FireBase
-- firebase_core     ^2.1.0 
-- firebase_storage  ^11.0.5 
-- firebase_auth     ^4.1.3 
-- flutterfire_ui    ^0.4.3+20
-####Server(Nodejs)
-- firebase-admin  ^11.3.0 
+####FireBase  
+- firebase_core     ^2.1.0  
+- firebase_storage  ^11.0.5  
+- firebase_auth     ^4.1.3  
+- flutterfire_ui    ^0.4.3+20 
+####Server(Nodejs)  
+- firebase-admin  ^11.3.0  
 - firebase-auth   ^0.1.2
-
 
 
 
