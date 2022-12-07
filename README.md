@@ -6,7 +6,7 @@
   
   
 사용 언어: Dart, flutter  
-사용 패키지 및 API : Firebase(NOSQL), Google Map, Kakao, Naver(Sign In)  
+사용 패키지 및 API : Firebase(NSQL), Google Map, Kakao, Naver(Sign In)  
 목적 : 자취 전반의 정보 제공을 통한 삶의 질 향상  
 DB 구조 : 
 
