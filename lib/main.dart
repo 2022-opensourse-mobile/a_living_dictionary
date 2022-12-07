@@ -6,6 +6,7 @@ import 'package:a_living_dictionary/LOGIN/naver_login.dart';
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
 import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
+import 'package:a_living_dictionary/UI/Supplementary/OnBordingScreenPage.dart';
 import 'package:a_living_dictionary/UI/Supplementary/Search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +84,7 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(title: '자취 백과사전'),
       routes: {
         '/writeDictionary':(context)=>WriteDictionaryPage(),
-        '/authPage': (context)=> Authentication()
+        '/authPage': (context)=> EmailLoginPage()
       },
     );
   }
@@ -235,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                           }
                                         });
                                       
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => onboardingScreen('kakao')));
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => onboardingScreenPage('kakao')));
                                       }
                                     },
                                   ),
@@ -281,7 +282,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                           }
                                         });
 
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => onboardingScreen('naver')));
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => onboardingScreenPage('naver')));
                                       }
                                     },
                                   ),
