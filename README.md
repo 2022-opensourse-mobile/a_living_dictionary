@@ -10,19 +10,7 @@
 목적 : 자취 전반의 정보 제공을 통한 삶의 질 향상  
 DB 구조 : 
 
-├── userInfo  
-│  ├── ScrapList  
-│  ├── LikeList  
-│  ├── CommentList  
-│  └── MapLikeList
-├── DictionaryItem  
-│  └── DictionaryCard  
-├── CommunityDB  
-│  └── CommentDB  
-├── MapDB  
-│  └── reviewDB  
-├── QuestionDB   
-└── best
+![img](https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/DB%20Structure.png?alt=media&token=4c21c918-3ffd-4009-b60d-35b2a8689876)
 
 
 
