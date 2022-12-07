@@ -23,8 +23,9 @@ DB 구조 :
   
   
 ## 앱 실행 영상  
-  
-[![미리보기](https://img.youtu.be/MkGTi_HMDGY)](https://youtu.be/MkGTi_HMDGY)
+
+[![preview](https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/%EC%9C%A0%ED%8A%9C%EB%B8%8C%20%EC%8D%B8%EB%84%A4%EC%9D%BC.jpg?alt=media&token=67722abf-da42-4683-b781-d52c6ebe9dd4)](https://www.youtube.com/watch?v=MkGTi_HMDGY)
+
 https://youtu.be/MkGTi_HMDGY  
 
   
