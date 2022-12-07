@@ -209,7 +209,7 @@ class DictionaryCardPage {
                               textScaleFactor: 0.9,
                             ),
                           ),
-                          Text(it['title'].toString(), textScaleFactor: 1.07)
+                          Text(it['title'].toString(), textScaleFactor: 1.07, overflow: TextOverflow.ellipsis,)
                         ],
                       ),
                     ),
