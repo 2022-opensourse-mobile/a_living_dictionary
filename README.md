@@ -130,9 +130,7 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
 ##### PLACES API  
 - flutter_google_places: ^0.3.0  
 ##### GEOCODING API  
-- -   
 ##### NAVER API  
-- -   
 #### KAKAO API  
 - kakao_flutter_sdk_user: ^1.2.2  
 #### FireBase  
