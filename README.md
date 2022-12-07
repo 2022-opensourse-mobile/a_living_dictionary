@@ -30,6 +30,7 @@ DB 구조 :
   
   
 ## 코드 사용법  
+![img](https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/DIR%20Structure.png?alt=media&token=d7d01223-3d56-401f-b2d5-b8f928309317)
 ### 1. lib 폴더
 #### 디렉토리 구조
 1. DB 폴더  
@@ -141,10 +142,6 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
 #### Server(Nodejs)  
 - firebase-admin  ^11.3.0  
 - firebase-auth   ^0.1.2  
-
-
-
-
 
 
 
