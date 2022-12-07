@@ -372,7 +372,6 @@ class restaurantMapState extends State<restaurantMap> {
 
   // 후기 작성 팝업창
   void editDialog(String write, String text, String id) {
-    String? review;
     showDialog(
       context: navigatorKey.currentContext!,
       builder: (context) {
@@ -388,9 +387,6 @@ class restaurantMapState extends State<restaurantMap> {
                 key: formKey,
                 autovalidateMode: AutovalidateMode.always,
                 child: TextFormField(
-                  // onChanged: (value) {
-                  //   review = value;
-                  // },
                   controller: reviewController,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
@@ -413,9 +409,7 @@ class restaurantMapState extends State<restaurantMap> {
                   style: TextStyle(color: themeColor.getMaterialColor(),
                     fontWeight: FontWeight.bold,),),
                     onPressed: () {
-                      // reviewController.clear();
                       Navigator.pop(context);
-                      // reviewController.clear();
                     }),
                 TextButton(child: Text('확인',
                   style: TextStyle(color: themeColor.getMaterialColor(),
@@ -425,23 +419,18 @@ class restaurantMapState extends State<restaurantMap> {
                         if (write == "수정") { // 수정인 경우
                           FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').doc(id).update({
                             'content': reviewController.text
-                            // 'content': review
                           });
                           Navigator.pop(context);
-                          // reviewController.clear();
                         }
                         else { // 처음 작성인 경우
                           Timestamp timestamp = Timestamp.now();
                           FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').add({
                             'content': reviewController.text,
-                            // 'content': review,
                             'writer': id,
                             'time': timestamp,
                           });
                           Navigator.pop(context);
-
                         }
-                        // reviewController.clear();
                       }
                     }),
               ],
@@ -648,6 +637,8 @@ class restaurantMapState extends State<restaurantMap> {
 
   @override
   Widget build(BuildContext context) {
+
+    Future.delayed(const Duration(milliseconds: 2000), () {});
     W = MediaQuery.of(context).size.width;
     H = MediaQuery.of(context).size.height;
     final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
