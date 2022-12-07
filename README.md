@@ -64,7 +64,7 @@ UI 폴더 : 각 탭에 해당하는 UI PageClass 모음
   
 ### 3. LOGIN 폴더  
 #### 디렉토리 구조  
-1. Authentication.dart   
+1. EmailLoginPage.dart   
 2. firebase_auth_remote_data_source.dart  
 3. kakao_login.dart  
 4. main_view_model.dart  
@@ -72,13 +72,11 @@ UI 폴더 : 각 탭에 해당하는 UI PageClass 모음
 6. social_login.dart  
   
 #### 설명  
-로그인과 관련된 Class 모음입니다.
-Authentication.dart는 이메일 로그인 시 보여지는 화면에 대한
-firebase_auth_remote_data_source.dart 는 카카오 로그인 토큰을 만들어주는 클래스입니다.
-social_login.dart 은 소셜로그인과 관련된 클래스가 상속받아야하는 추상클래스를 정의한 파일입니다. kakao_login과 naver_login은 이를 상속받아서 클래스를 정의합니다. 
-main_view_model.dart 은 소셜 로그인 시 토큰을 받고 firebaseAuth에 로그인하는 과정이 포함됩니다.
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@수정필요
-
+로그인과 관련된 파일 모음입니다.
+EmailLoginPage.dart는 이메일 로그인 시 보여지는 화면에 대한 파일입니다. 
+social_login.dart 은 소셜로그인과 관련된 클래스가 상속받아야하는 추상클래스를 정의한 파일입니다. kakao_login과 naver_login파일의 클래스는 이를 상속받습니다. 
+firebase_auth_remote_data_source.dart 는 카카오 로그인 토큰을 만들어주는 클래스를 포함합니다.
+main_view_model.dart 은 소셜 로그인 시 토큰을 받고 firebaseAuth에 로그인하는 과정을 수행합니다.
   
   
 ### 4. PROVIDER 폴더  
@@ -116,8 +114,8 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
 5. WriteDictionaryPage.dart
 6. PageRouteWithAnimation.dart  
 7. Search.dart
-8. TempSearch.dart
-9. ThemeColor.dart
+8. ThemeColor.dart
+9. OnBoardingScreenPage.dart
   
 #### 설명  
 해당 폴더는 각 탭에서 추가적으로 필요한 클래스 모음 폴더입니다.  
@@ -128,10 +126,14 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
   
 ## 오픈소스 출처와 API 버전  
 GOOGLE MAP API :               
-NAVER API :   
-KAKAO API :   
-FireBase :   
-
+NAVER API : -
+KAKAO API : kakao_flutter_sdk_user ^1.2.2  
+FireBase :  firebase_core     ^2.1.0
+            firebase_storage  ^11.0.5
+            firebase_auth     ^4.1.3
+            flutterfire_ui    ^0.4.3+20
+Server(Nodejs): firebase-admin  ^11.3.0
+                firebase-auth   ^0.1.2
 
 
 
