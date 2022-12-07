@@ -72,7 +72,13 @@ UI 폴더 : 각 탭에 해당하는 UI PageClass 모음
 6. social_login.dart  
   
 #### 설명  
-// 로그인 디렉토리 설명 //  
+로그인과 관련된 Class 모음입니다.
+Authentication.dart는 이메일 로그인 시 보여지는 화면에 대한
+firebase_auth_remote_data_source.dart 는 카카오 로그인 토큰을 만들어주는 클래스입니다.
+social_login.dart 은 소셜로그인과 관련된 클래스가 상속받아야하는 추상클래스를 정의한 파일입니다. kakao_login과 naver_login은 이를 상속받아서 클래스를 정의합니다. 
+main_view_model.dart 은 소셜 로그인 시 토큰을 받고 firebaseAuth에 로그인하는 과정이 포함됩니다.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@수정필요
+
   
   
 ### 4. PROVIDER 폴더  
