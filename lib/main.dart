@@ -1,5 +1,3 @@
-
-import 'package:a_living_dictionary/LOGIN/Authentication.dart';
 import 'package:a_living_dictionary/LOGIN/kakao_login.dart';
 import 'package:a_living_dictionary/LOGIN/main_view_model.dart';
 import 'package:a_living_dictionary/LOGIN/naver_login.dart';
@@ -13,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'LOGIN/EmailLoginPage.dart';
 import 'firebase_options.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -55,7 +54,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => Logineduser()),
         ChangeNotifierProvider(create: (_) => MapInfo())
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -75,22 +74,22 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
           textSelectionTheme: TextSelectionThemeData(
               cursorColor: themeColor.getMaterialColor(), //커서 색상
-              selectionColor: Color(0xffEAEAEA), //드래그 색상
+              selectionColor: const Color(0xffEAEAEA), //드래그 색상
               selectionHandleColor: themeColor.getMaterialColor() //water drop 색상
           ),
         // splashColor: Colors.transparent, //물결효과 적용
         // highlightColor: Colors.transparent,
       ),
-      home: MyHomePage(title: '자취 백과사전'),
+      home: const MyHomePage(title: '자취 백과사전'),
       routes: {
-        '/writeDictionary':(context)=>WriteDictionaryPage(),
+        '/writeDictionary':(context)=>const WriteDictionaryPage(),
         '/authPage': (context)=> EmailLoginPage()
       },
     );
   }
 }
 
-Logineduser loginedUser  = new Logineduser();
+Logineduser loginedUser =  Logineduser();
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -101,7 +100,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
-  MainViewModel viewModel = new MainViewModel(KakaoLogin());
+  MainViewModel viewModel = MainViewModel(KakaoLogin());
 
   final List<String> list = List.generate(10, (index) => "Text $index");
   
@@ -121,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     
-    _tabController = new TabController(vsync: this, length: 5);
+    _tabController = TabController(vsync: this, length: 5);
   }
 
   @override
@@ -192,22 +191,21 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             shrinkWrap: true,
                             children: [
                               welcomeText(),
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   ElevatedButton( // 카카오 로그인
-                                    child: Image.asset('assets/kakao_icon.png', fit: BoxFit.contain, width:55, height: 55,),
                                     style: ElevatedButton.styleFrom(
                                       elevation: 0.0,
                                       shadowColor: Colors.transparent,
-                                      padding: EdgeInsets.all(0),
+                                      padding: const EdgeInsets.all(0),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(100),
                                       ),
                                     ),
                                     onPressed: () async {
-                                      viewModel = new MainViewModel(KakaoLogin());
+                                      viewModel = MainViewModel(KakaoLogin());
                                       await viewModel.login();
 
                                       // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
@@ -238,22 +236,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                       
                                         Navigator.push(context, MaterialPageRoute(builder: (context) => onboardingScreenPage('kakao')));
                                       }
-                                    },
+                                    }, // 카카오 로그인
+                                    child: Image.asset('assets/kakao_icon.png', fit: BoxFit.contain, width:55, height: 55,),
                                   ),
 
                                   ElevatedButton(
-                                    child: Image.asset('assets/naver_icon.png', fit: BoxFit.contain, width: 55, height: 55,),
                                     style: ElevatedButton.styleFrom(
                                       //backgroundColor: Color(0xff03C75A),
                                         elevation: 0.0,
                                         shadowColor: Colors.transparent,
-                                        padding: EdgeInsets.all(0),
+                                        padding: const EdgeInsets.all(0),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(100),
                                       ),
                                     ),
                                     onPressed: () async { // 네이버 로그인
-                                      viewModel = new MainViewModel(NaverLogin());
+                                      viewModel = MainViewModel(NaverLogin());
                                       await viewModel.login();
 
                                       // FirebaseAuth 닉네임 받아와서 user객체 만들거나/ 찾아서 객체에 넣기
@@ -285,23 +283,24 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                         Navigator.push(context, MaterialPageRoute(builder: (context) => onboardingScreenPage('naver')));
                                       }
                                     },
+                                    child: Image.asset('assets/naver_icon.png', fit: BoxFit.contain, width: 55, height: 55,),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 30),
-                              Text('Or', textAlign: TextAlign.center,),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 30),
+                              const Text('Or', textAlign: TextAlign.center,),
+                              const SizedBox(height: 20),
 
                               ElevatedButton(
-                                  child: Text('이메일 로그인', style: TextStyle(fontWeight: FontWeight.bold),),
                                   onPressed: () async {
                                     await Navigator.pushNamed(context, '/authPage') as Logineduser;
                                   },
                                   style: ElevatedButton.styleFrom(
                                       elevation: 0.0,
                                       shadowColor: Colors.transparent,
-                                      padding: EdgeInsets.all(0)
+                                      padding: const EdgeInsets.all(0)
                                   ),
+                                  child: const Text('이메일 로그인', style: TextStyle(fontWeight: FontWeight.bold),),
                                 ),
                             ],
                           ),
@@ -333,22 +332,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             actions: <Widget>[
                               _curIndex != 3 && _curIndex != 4
                                   ? IconButton(
-                                icon: new Icon(Icons.search),
+                                icon: const Icon(Icons.search),
                                 onPressed: () {
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen(_curIndex)));
                                 },
-                              ) : Expanded(child: Container(), flex: 0,),
+                              ) : Expanded(flex: 0,child: Container(),),
                             ]
                         ),
                         body: TabBarView(
-                          physics:NeverScrollableScrollPhysics(),
+                          physics:const NeverScrollableScrollPhysics(),
                           controller: _tabController,
                           children: [
                             MainPage(tabController: _tabController),
-                            DictionaryPage(),
+                            const DictionaryPage(),
                             CommunityPage(context),
-                            RestaurantPage(),
-                            MyPage()
+                            const RestaurantPage(),
+                            const MyPage()
                           ],
                         ),
                         bottomNavigationBar: SizedBox(
@@ -356,19 +355,40 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           child: TabBar(
                             controller: _tabController,
                             tabs: <Widget>[
-                              Tab(icon: _curIndex == 0? Icon(Icons.home, size: 26, color: Colors.black,) : Icon(Icons.home_outlined, size: 26, color: Colors.black,),
-                                child: Text('홈', textScaleFactor: 0.8, style: TextStyle(color: Colors.black,),), ),
-                              Tab(icon: _curIndex == 1? Icon(Icons.book, size: 26,color: Colors.black,) : Icon(Icons.book_outlined, size: 26, color: Colors.black,),
-                                child: Text('백과사전', textScaleFactor: 0.8, style: TextStyle(color: Colors.black,),), ),
-                              Tab(icon: _curIndex == 2? Icon(Icons.people_alt, size: 26, color: Colors.black,) : Icon(Icons.people_alt_outlined, size: 26, color: Colors.black,),
-                                child: Text('커뮤니티', textScaleFactor: 0.8, style: TextStyle(color: Colors.black,),), ),
-                              Tab(icon: _curIndex == 3? Icon(Icons.map, size: 26, color: Colors.black,) : Icon(Icons.map_outlined, size: 26, color: Colors.black,),
-                                child: Text('맛집지도', textScaleFactor: 0.8, style: TextStyle(color: Colors.black,),), ),
-                              Tab(icon: _curIndex == 4? Icon(Icons.settings, size: 26, color: Colors.black,) : Icon(Icons.settings_outlined, size: 26, color: Colors.black,),
-                                child: Text('설정', textScaleFactor: 0.8, style: TextStyle(color: Colors.black,),), ),
+                              Tab(
+                                icon: _curIndex == 0
+                                    ? const Icon(Icons.home, size: 26, color: Colors.black,)
+                                    : const Icon(Icons.home_outlined, size: 26, color: Colors.black,),
+                                child: const Text('홈', textScaleFactor: 0.8, style: TextStyle(color: Colors.black)),
+                              ),
+                              Tab(
+                                icon: _curIndex == 1
+                                    ? const Icon(Icons.book, size: 26, color: Colors.black)
+                                    : const Icon(Icons.book_outlined, size: 26, color: Colors.black),
+                                child: const Text('백과사전', textScaleFactor: 0.8, style: TextStyle(color: Colors.black)),
+                              ),
+                              Tab(
+                                icon: _curIndex == 2
+                                    ? const Icon(Icons.people_alt, size: 26, color: Colors.black,)
+                                    : const Icon(Icons.people_alt_outlined, size: 26, color: Colors.black,),
+                                child: const Text('커뮤니티', textScaleFactor: 0.8, style: TextStyle(color: Colors.black)),
+                              ),
+                              Tab(
+                                icon: _curIndex == 3
+                                    ? const Icon(Icons.map, size: 26, color: Colors.black,)
+                                    : const Icon(Icons.map_outlined, size: 26, color: Colors.black,),
+                                child: const Text('맛집지도', textScaleFactor: 0.8, style: TextStyle(color: Colors.black)),
+                              ),
+                              Tab(
+                                icon: _curIndex == 4 ? const Icon(Icons.settings, size: 26, color: Colors.black)
+                                    : const Icon(Icons.settings_outlined, size: 26, color: Colors.black),
+                                child: const Text('설정', textScaleFactor: 0.8, style: TextStyle(color: Colors.black)),
+                              ),
                             ],
                             onTap: (index) {
-                              setState(() {_curIndex = index;});
+                              setState(() {
+                                _curIndex = index;
+                              });
                             },
                           ),
                         ),
@@ -394,7 +414,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     color: themeColor.getColor(),
                     fontWeight: FontWeight.bold),
                 textScaleFactor: 2.3),
-            Text('에 ',
+            const Text('에 ',
                 style: TextStyle(
                   color: Colors.black,
                   // color: themeColor.getColor(),
@@ -402,13 +422,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 textScaleFactor: 1.5),
           ],
         ),
-        Padding(padding: EdgeInsets.fromLTRB(0, 2, 0, 0), child: Text('오신 것을 환영합니다!',
+        const Padding(padding: EdgeInsets.fromLTRB(0, 2, 0, 0), child: Text('오신 것을 환영합니다!',
             style: TextStyle(
               color: Colors.black,
               // color: themeColor.getColor(),
             ),
             textScaleFactor: 1.5),),
-        SizedBox(height: 85),
+        const SizedBox(height: 85),
 
         Container(
             width: 200,
@@ -417,7 +437,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               color: Colors.white,
               border: Border.all(color: Colors.black12),
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
                   offset: Offset(0,0),
@@ -429,7 +449,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset('assets/lightning.png', fit: BoxFit.contain, width:20, height: 20,),
-                Text(' 3초 만에 회원가입하기!',
+                const Text(' 3초 만에 회원가입하기!',
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold
@@ -447,7 +467,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   
   getUser() async {
     await FirebaseFirestore.instance.collection('userInfo').where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid).get().then( (QuerySnapshot snap) {
-      snap.docs.forEach((doc) {
+      for (var doc in snap.docs) {
         user_uid = FirebaseAuth.instance.currentUser!.uid;
         user_docID =  doc.id;
         user_nickName =doc['nickName'];
@@ -455,10 +475,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         user_profileImageUrl = doc['profileImageUrl'];
         user_admin = doc['admin'];
       }
-      ); 
-      }
-    );
-    // 사용자의 uid
+    });
   }
 
 
