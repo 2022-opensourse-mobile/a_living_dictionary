@@ -75,13 +75,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               ListTile(
                 leading: CircleAvatar(
                   radius: 20,
-                  backgroundColor: Color(0xffe0e0e0),
+                  backgroundColor: const Color(0xffe0e0e0),
                   child: CircleAvatar(
                     radius: 19.5,
                     backgroundImage: NetworkImage(userProvider.profileImageUrl), //프로필 사진
                 ),
                 ),
-                title: Text(userProvider.nickName, style: TextStyle(fontWeight: FontWeight.bold),), //닉네임 출력
+                title: Text(userProvider.nickName, style: const TextStyle(fontWeight: FontWeight.bold),), //닉네임 출력
               ),
               const Divider(thickness: 0.5,),
             ],
@@ -100,12 +100,12 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               color: themeColor.getColor(),
               leadingDistribution: TextLeadingDistribution.even,
             ),
-            textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
+            textScaleFactor: 0.9), visualDensity: const VisualDensity(horizontal: 0, vertical: -3)),
         ListTile(title: const Text('백과사전 스크랩 목록'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myScrap());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
-        Divider(thickness: 0.5,),
+        const Divider(thickness: 0.5,),
       ],
     );
   }
@@ -120,7 +120,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               color: themeColor.getColor(),
               leadingDistribution: TextLeadingDistribution.even,
             ),
-            textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
+            textScaleFactor: 0.9), visualDensity: const VisualDensity(horizontal: 0, vertical: -3)),
         ListTile(title: const Text('작성한 게시물'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myPosting());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
@@ -129,7 +129,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myComment());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
-        Divider(thickness: 0.5,),
+        const Divider(thickness: 0.5,),
       ],
     );
   }
@@ -144,12 +144,12 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               color: themeColor.getColor(),
               leadingDistribution: TextLeadingDistribution.even,
             ),
-            textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
-        ListTile(title: Text('맛집 좋아요 목록'), onTap: (){
+            textScaleFactor: 0.9), visualDensity: const VisualDensity(horizontal: 0, vertical: -3)),
+        ListTile(title: const Text('맛집 좋아요 목록'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myLike());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
-        Divider(thickness: 0.5,),
+        const Divider(thickness: 0.5,),
       ],
     );
   }
@@ -160,7 +160,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
       await FirebaseAuth.instance.setLanguageCode("kr");
       await FirebaseAuth.instance.sendPasswordResetEmail(email:email);
       snackBar('작성하신 이메일로 비밀번호를 전송했습니다');
-    } on FirebaseAuthException catch(e)  {
+    } on FirebaseAuthException catch(_)  {
       snackBar('잘못된 이메일입니다');
     }
 
@@ -180,12 +180,12 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                   color: themeColor.getColor(),
                   leadingDistribution: TextLeadingDistribution.even,
                 ),
-                textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
+                textScaleFactor: 0.9), visualDensity: const VisualDensity(horizontal: 0, vertical: -3)),
             ListTile(
               title: const Text('비밀번호 변경'), 
               onTap: (){
                 if (userProvider.uid.substring(0,5) == 'kakao' || userProvider.uid.substring(0,5) == 'naver') { // 소셜 로그인 유저
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("소셜 로그인 유저는 비밀번호를 변경할 수 없습니다"),));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("소셜 로그인 유저는 비밀번호를 변경할 수 없습니다"),));
                 } else {    // 이메일 로그인 유저
                   // showDialog(
                   //   context: context,
@@ -273,7 +273,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: [
+                        children: const [
                           //SizedBox(height: 10,),
                           Align(
                             alignment: Alignment.centerLeft,
@@ -341,7 +341,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               color: themeColor.getColor(),
               leadingDistribution: TextLeadingDistribution.even,
             ),
-            textScaleFactor: 0.9), visualDensity: VisualDensity(horizontal: 0, vertical: -3)),
+            textScaleFactor: 0.9), visualDensity: const VisualDensity(horizontal: 0, vertical: -3)),
         ListTile(title: const Text('앱 이용규칙'), onTap: (){
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myAppRule());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
@@ -350,13 +350,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
           PageRouteWithAnimation pageRouteWithAnimation = PageRouteWithAnimation(myAsk());
           Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         }),
-        ListTile(title: const Text('버전 정보'), trailing: Text('$version', style: TextStyle(color: Colors.grey)), //버전 설정
+        ListTile(title: const Text('버전 정보'), trailing: const Text(version, style: TextStyle(color: Colors.grey)), //버전 설정
           onTap: (){ snackBar('현재 버전은 $version 입니다'); }
         ), //클릭 시 스낵바에 현재 버전 출력
 
 
 
-        Divider(thickness: 0.5,)
+        const Divider(thickness: 0.5,)
       ],
     );
   }
@@ -415,26 +415,33 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     String userDocID = user.doc_id;
     return Scaffold(
       appBar: AppBar(
-        title: Text('맛집 좋아요 목록'),
+        title: const Text('맛집 좋아요 목록'),
         elevation: 0.0,
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('userInfo').doc(userDocID).collection('MapLikeList').snapshots(),
         builder: (context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData)
-            return Center(child: CircularProgressIndicator());
-
-          if (snapshot.hasError)
-            return Center(child: CircularProgressIndicator());
-
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return const Center(child: CircularProgressIndicator());
+          }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
           }
 
           final userDocuments = snapshot.data!.docs;
 
-          if (userDocuments.length == 0)
-            return Center(child: Text("좋아요 누른 목록이 없습니다", textScaleFactor: 1.0,));
+          if (userDocuments.length == 0) {
+            return Center(child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.error_outline_rounded, size: 60, color: Colors.grey,),
+                Text("좋아요 누른 목록이 없습니다", textScaleFactor: 1.2, style: TextStyle(color: Colors.grey),),
+              ],
+            ));
+          }
 
           return SingleChildScrollView(
             child:Column(
@@ -452,21 +459,31 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   Widget myPosting() {
     late LoginedUser user = Provider.of<LoginedUser>(context, listen: false);
     return Scaffold(
-        appBar: AppBar(title: Text('작성한 게시물'), elevation: 0.0),
+        appBar: AppBar(title: const Text('작성한 게시물'), elevation: 0.0),
         body: Column(
           children: [
             Expanded(child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
+                stream: FirebaseFirestore.instance.collection('CommunityDB').where('writer_id', isEqualTo: user.uid).orderBy('time', descending: true).snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
-                    return const Center(child: Text("DB 에러"));
+                    return const Center(child: Text("DB Error, 개발팀에 문의하세요."));
                   } else if (snapshot.hasData) {
                     final documents = snapshot.data!.docs;
-                    return ListView(
-                        children: documents.where((doc) => doc['writer_id'] == user.uid).map((doc) {CommunityItem item =
-                        CommunityItem.getDataFromDoc(doc);
-                        return item.build(context);
-                        }).toList());
+                    if(documents.isNotEmpty) {
+                      return ListView(
+                          children: documents.map((doc) {
+                            CommunityItem item = CommunityItem.getDataFromDoc(doc);
+                            return item.build(context);
+                          }).toList());
+                    }else {
+                      return Center(child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.error_outline_rounded, size: 60, color: Colors.grey,),
+                          Text("작성한 게시물이 없습니다", textScaleFactor: 1.2, style: TextStyle(color: Colors.grey),),
+                        ],
+                      ));
+                    }
                   } else {
                     return const Center(child: CircularProgressIndicator());
                   }
@@ -497,7 +514,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               final userDocuments = snap.data!.docs;
 
               if(userDocuments.isEmpty){
-                return const Center(child: Text("댓글을 작성한 게시물이 없습니다."));
+                return Center(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.error_outline_rounded, size: 60, color: Colors.grey,),
+                    Text("댓글 단 목록이 없습니다", textScaleFactor: 1.2, style: TextStyle(color: Colors.grey),),
+                  ],
+                ));
               }
               return ListView.builder(
                 physics: const ScrollPhysics(),
@@ -553,7 +576,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     var user = Provider.of<LoginedUser>(context, listen: false);
 
     return Scaffold(
-      appBar: AppBar(title: Text('백과사전 스크랩 목록'), elevation: 0.0),
+      appBar: AppBar(title: const Text('백과사전 스크랩 목록'), elevation: 0.0),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('userInfo').doc(
               user.doc_id).collection("ScrapList").snapshots(),
@@ -571,7 +594,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
             final userDocuments = snap.data!.docs;
 
             if (userDocuments.isEmpty) {
-              return const Center(child: Text("스크랩 없음."));
+              return Center(child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const  [
+                  Icon(Icons.error_outline_rounded, size: 60, color: Colors.grey,),
+                  Text("스크랩한 목록이 없습니다", textScaleFactor: 1.2, style: TextStyle(color: Colors.grey),),
+                ],
+              ));
             } else {
               return ListView(
                 children: [
@@ -599,7 +628,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                     width, height, portraitH, landscapeH,
                                     isPortrait);
                                 return Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 0),
+                                  margin: const EdgeInsets.symmetric(horizontal: 0),
                                   width: width / 2,
                                   height: width * (101515),
                                   child: InkWell(
@@ -638,19 +667,15 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                                 itemDocuments[0]['thumbnail']), // TODO 임시 사진, 썸네일로 바꿔야함
                                           ),
                                           Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                8, 5, 8, 0),
+                                            padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),
                                             // 게시글 제목 여백
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment
-                                                  .start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      0, 0, 0, 3),
+                                                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
                                                   child: Text(
-                                                    "#" +
-                                                        itemDocuments[0]['hashtag'],
+                                                    "#${itemDocuments[0]['hashtag']}",
                                                     style: TextStyle(
                                                       color: themeColor
                                                           .getColor(),
@@ -672,7 +697,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                               }
                           );
                         },
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             childAspectRatio: 10 / 9 // 가로 세로 비율
                         ),
@@ -687,9 +712,9 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
   Widget myNicknamed() {
     return Scaffold(
-      appBar: AppBar(title: Text('닉네임 변경'), elevation: 0.0, actions: [
+      appBar: AppBar(title: const Text('닉네임 변경'), elevation: 0.0, actions: [
         Padding(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: SizedBox(
             width: 50,
             height: 10,
@@ -705,7 +730,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
                     
                   ),
-                  child: Text('완료', style: TextStyle(color: Colors.white)),
+                  child: const Text('완료', style: TextStyle(color: Colors.white)),
                   onPressed: () async {
                     String inputText = _nickNameController.text.trim();
                     
@@ -716,7 +741,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                       bool isduplicate = false;
 
                       await FirebaseFirestore.instance.collection('userInfo').where("nickName", isEqualTo: inputText).get().then((value) {
-                        if (value.docs.length != 0) {
+                        if (value.docs.isNotEmpty) {
                           isduplicate = true;
                         }
                       });
@@ -744,13 +769,13 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
       body: ListView(
         children: [
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('닉네임', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1),
+                const Text('닉네임', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.1),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Form(
                     key: this.formKey,
                     autovalidateMode: AutovalidateMode.always,
@@ -763,7 +788,11 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                           // initialValue: userProvider.nickName, initialvalue와 controllerㄹ를 같이 사용할 수 없음
                           onSaved: (name) {myNickname = name!;},
                           validator: (value) {
-                            if(value!.isEmpty) return '닉네임을 입력하세요';
+                            if(value!.isEmpty) {
+                              return '닉네임을 입력하세요';
+                            } else {
+                              return null;
+                            }
                           },
                           cursorColor: themeColor.getMaterialColor(),
                           decoration: InputDecoration(
@@ -783,7 +812,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                     ),
                   ),
                 ),
-                Text('※ 욕설, 비하, 성적 수치심을 유발하는 닉네임은 관리자가 임의로 변경하오니 주의 바랍니다.',
+                const Text('※ 욕설, 비하, 성적 수치심을 유발하는 닉네임은 관리자가 임의로 변경하오니 주의 바랍니다.',
                     style: TextStyle(color: Colors.grey), textScaleFactor: 0.9)
               ],
             ),
@@ -854,9 +883,9 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
   Widget myProfileImg() {
     return Scaffold(
-      appBar: AppBar(title: Text('프로필 이미지 변경'), elevation: 0.0, actions: [
+      appBar: AppBar(title: const Text('프로필 이미지 변경'), elevation: 0.0, actions: [
         Padding(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: SizedBox(
             width: 50,
             height: 10,
@@ -867,7 +896,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                   borderRadius: BorderRadius.circular(1000),
                 ),
               ),
-              child: Text('완료', style: TextStyle(color: Colors.white)),
+              child: const Text('완료', style: TextStyle(color: Colors.white)),
               onPressed: () {
                 Navigator.pop(context);
                 snackBar('프로필 이미지 변경이 완료되었습니다');
@@ -882,12 +911,12 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
             children: [
               
             Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Center(
                 child: CircleAvatar(
                   minRadius: 80.5,
                   maxRadius: 120.5,
-                  backgroundColor: Color(0xffe0e0e0),
+                  backgroundColor: const Color(0xffe0e0e0),
                   child: CircleAvatar(
                     backgroundImage: NetworkImage(userProvider.profileImageUrl), //TODO: 프로필 이미지
                     minRadius: 80,
@@ -907,21 +936,21 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
                         return Wrap(
                           children: [
-                            ListTile(leading: Icon(Icons.photo_library), title: Text('갤러리'),
+                            ListTile(leading: const Icon(Icons.photo_library), title: const Text('갤러리'),
                               onTap: () async{
                                 Navigator.pop(context);
                                 _upload('gallery', userProvider.doc_id);
                                 
                               },
                             ),
-                            ListTile(leading: Icon(Icons.camera_alt), title: Text('카메라'),
+                            ListTile(leading: const Icon(Icons.camera_alt), title: const Text('카메라'),
                               onTap: () {
                                 Navigator.pop(context);
                                 _upload('camera', userProvider.doc_id);
                               },
                               
                             ),
-                            ListTile(leading: Icon(Icons.image_not_supported), title: Text('프로필 이미지 삭제하기'),
+                            ListTile(leading: const Icon(Icons.image_not_supported), title: const Text('프로필 이미지 삭제하기'),
                               onTap: () async {
                                 await showDialog(
                                   context: context,
@@ -930,7 +959,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                       style: TextStyle(
                                         color: themeColor.getMaterialColor(),
                                         fontWeight: FontWeight.bold)),
-                                        content: Text('정말로 삭제하겠습니까?'),
+                                        content: const Text('정말로 삭제하겠습니까?'),
                                         actions: [
                                           TextButton(
                                             child: Text('취소',
@@ -976,7 +1005,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                     );
                   }
               ),
-              Padding(
+              const Padding(
                   padding: EdgeInsets.fromLTRB(10, 5, 10, 10),
                   child: Text('※ 욕설, 비하, 성적 수치심을 유발하는 이미지는 관리자가 임의로 변경하오니 주의 바랍니다.',
                          style: TextStyle(color: Colors.grey), textScaleFactor: 0.9))
@@ -989,7 +1018,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
   Widget myAppRule() {
     return Scaffold(
-      appBar: AppBar(title: Text('앱 이용규칙'), elevation: 0.0),
+      appBar: AppBar(title: const Text('앱 이용규칙'), elevation: 0.0),
       body: ListView(
         children: [
           LiteraryWorld('앱 이용규칙', appRuleText),
@@ -1005,16 +1034,16 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
   Widget LiteraryWorld(String subTitle, String content) {
     return Padding(
-      padding: EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(15.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
               subTitle,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
               textScaleFactor: 1.3
           ),
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
           Text(content)
         ],
       ),
@@ -1032,9 +1061,9 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text('문의하기'), elevation: 0.0, actions: [
+      appBar: AppBar(title: const Text('문의하기'), elevation: 0.0, actions: [
         Padding(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: SizedBox(
             width: 50,
             height: 10,
@@ -1045,7 +1074,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                   borderRadius: BorderRadius.circular(1000),
                 ),
               ),
-              child: Text('완료', style: TextStyle(color: Colors.white)),
+              child: const Text('완료', style: TextStyle(color: Colors.white)),
               onPressed: () {
                 if(this.formKey.currentState!.validate()) {
                   showDialog(
@@ -1055,7 +1084,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                               style: TextStyle(
                                   color: themeColor.getMaterialColor(),
                                   fontWeight: FontWeight.bold)),
-                          content: Text('문의 처리를 위해 문의 내용에 포함된 이메일, 회원정보 등 '
+                          content: const Text('문의 처리를 위해 문의 내용에 포함된 이메일, 회원정보 등 '
                                         '개인정보가 포함된 문의 내용을 수집하며 개인정보처리방침에 따라 3년 후 파기됩니다.\n\n'
                                         '동의하시겠습니까?\n비동의 시 문의 접수가 제한됩니다.'),
                           actions: [
@@ -1077,7 +1106,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                                     context: context,
                                     builder: (context) =>
                                         AlertDialog(
-                                          content: Text('문의하기가 완료되었습니다.\n'
+                                          content: const Text('문의하기가 완료되었습니다.\n'
                                                         '영업일 기준 2~7일 이내 작성하신 이메일로 답변드리겠습니다.'),
                                           actions: [
                                             TextButton(
@@ -1114,7 +1143,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
       body: ListView(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1129,7 +1158,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                           validator: (value) => validateEmail(value),
                           cursorColor: themeColor.getMaterialColor(),
                           controller: emailController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: '연락받을 이메일 (abcd@naver.com)',
                             filled: true,
                             fillColor: Colors.white,
@@ -1137,15 +1166,19 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                             focusedBorder: InputBorder.none,
                           ),
                         ),
-                        Divider(thickness: 0.5),
+                        const Divider(thickness: 0.5),
                         TextFormField(
                           onSaved: (title) {askTitle = title!;},
                           cursorColor: themeColor.getMaterialColor(),
                           validator: (value) {
-                            if(value!.isEmpty) return '내용을 입력하세요';
+                            if(value!.isEmpty) {
+                              return '내용을 입력하세요';
+                            } else {
+                              return null;
+                            }
                           },
                           controller: titleController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: '제목',
                             filled: true,
                             fillColor: Colors.white,
@@ -1153,19 +1186,23 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                             focusedBorder: InputBorder.none,
                           ),
                         ),
-                        Divider(thickness: 0.5),
+                        const Divider(thickness: 0.5),
                         SizedBox(
                           width: double.infinity,
                           height: 430,
                           child: TextFormField(
                             onSaved: (content) {askContent = content!;},
                             validator: (value) {
-                              if(value!.isEmpty) return '내용을 입력하세요';
+                              if(value!.isEmpty) {
+                                return '내용을 입력하세요';
+                              } else {
+                                return null;
+                              }
                             },
                             cursorColor: themeColor.getMaterialColor(),
                             maxLines: 100,
                             controller: contentController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               hintText: '문의할 내용을 입력하세요',
                               filled: true,
                               fillColor: Colors.white,
@@ -1179,23 +1216,21 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                   ),
 
                   Padding(
-                    padding: EdgeInsets.fromLTRB(10,10,10,20),
-                    child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('※ 문의 답변 시간 안내',
-                              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
-                              textScaleFactor: 0.9,
-                            ),
-                            Text('월, 화, 수, 목, 금 09:00 ~ 18:00\n'
-                                '토, 일, 공휴일 휴무\n\n'
-                                '(금요일 18:00 이후부터 일요일까지 접수된 문의는 월요일부터 순차적으로 답변드립니다.)',
-                              style: TextStyle(color: Colors.grey),
-                              textScaleFactor: 0.9,
-                            ),
-                          ],
-                        )
+                    padding: const EdgeInsets.fromLTRB(10,10,10,20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text('※ 문의 답변 시간 안내',
+                          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                          textScaleFactor: 0.9,
+                        ),
+                        Text('월, 화, 수, 목, 금 09:00 ~ 18:00\n'
+                            '토, 일, 공휴일 휴무\n\n'
+                            '(금요일 18:00 이후부터 일요일까지 접수된 문의는 월요일부터 순차적으로 답변드립니다.)',
+                          style: TextStyle(color: Colors.grey),
+                          textScaleFactor: 0.9,
+                        ),
+                      ],
                     ),),
                 ],
               ),
@@ -1213,17 +1248,18 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
     String pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = RegExp(pattern);
-    if (value == null || value.isEmpty || !regex.hasMatch(value))
+    if (value == null || value.isEmpty || !regex.hasMatch(value)) {
       return '잘못된 이메일 형식입니다';
-    else
+    } else {
       return null;
+    }
   }
 
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar(String text) {
     return ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$text'), //내용
-          duration: Duration(seconds: 2), //올라와 있는 시간
+          content: Text(text), //내용
+          duration: const Duration(seconds: 2), //올라와 있는 시간
         )
     );
   }

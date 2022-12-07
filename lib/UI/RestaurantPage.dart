@@ -51,11 +51,13 @@ class RestaurantMap extends StatefulWidget {
 
 class RestaurantMapState extends State<RestaurantMap> {
   late GoogleMapController _controller;
+  late TextEditingController reviewController;
   NearbyPlacesResponse nearbyPlacesResponse = NearbyPlacesResponse();
   MapInfo mapInfo = MapInfo();
 
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   String m_id = ""; // Map Id
+  late double W, H;
 
   // 초기 위치 설정(금오공대)
   static final CameraPosition _initialLocation = CameraPosition(
@@ -147,9 +149,11 @@ class RestaurantMapState extends State<RestaurantMap> {
       ),
     );
 
-    setState(() {
-      markers[markerId] = marker;
-    });
+    if (this.mounted) {
+      setState(() {
+        markers[markerId] = marker;
+      });
+    }
   }
 
   // 좋아요 취소 시, 마커 삭제
@@ -219,6 +223,7 @@ class RestaurantMapState extends State<RestaurantMap> {
   // 마커 클릭 시 나오는 페이지
   Widget detailPage(BuildContext context, String store, String id) {
     return Scaffold(
+      resizeToAvoidBottomInset : false,
       appBar: AppBar(title: Text('$store 상세 정보'), elevation: 0.0),
       floatingActionButton: editUI(),
       body: Consumer2<MapInfo, LoginedUser>(
@@ -280,11 +285,22 @@ class RestaurantMapState extends State<RestaurantMap> {
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: reviewDocuments.length,
                               itemBuilder: (context, index) {
-                                return ListTile(
-                                  leading: Icon(Icons.chevron_right_rounded),
-                                  title: Text(
-                                      reviewDocuments[index]['content']
-                                          .toString()),
+                                return SizedBox(
+                                  width: W,
+                                  child: ListTile(
+                                    leading: Icon(Icons.chevron_right_rounded),
+                                    title: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                              reviewDocuments[index]['content']
+                                                  .toString()),
+                                        ),
+                                        reviewDocuments[index]['writer'] == userProvider.uid?
+                                        Container(child: modifyReview(reviewDocuments[index].id, reviewDocuments[index]['content']), width: W * 0.25,) : Container(),
+                                      ],
+                                    ),
+                                  ),
                                 );
                               },
                             );
@@ -312,72 +328,133 @@ class RestaurantMapState extends State<RestaurantMap> {
                 color: Colors.black12, width: 1
             )
         ),
-        child: FloatingActionButton(
-            tooltip: "후기 작성하기",
-            child: Icon(Icons.edit, color: Colors.black,),
-            focusColor: Colors.white54,
-            backgroundColor: Colors.white,
-            elevation: 0,
-            hoverElevation: 0,
-            focusElevation: 0,
-            highlightElevation: 0,
-            onPressed: () {
-              showDialog(
-                context: navigatorKey.currentContext!,
-                builder: (context) => AlertDialog(
-                  title: Text('후기 작성하기',
-                      style: TextStyle(
-                          color: themeColor.getMaterialColor(),
-                          fontWeight: FontWeight.bold)),
-                  content: Form(
-                    key: formKey,
-                    autovalidateMode: AutovalidateMode.always,
-                    child: TextFormField(
-                      onChanged: (value) {
-                        review = value;
-                      },
-                      validator: (value) {
-                        if(value!.isEmpty) return '내용을 입력하세요';
-                      },
-                      cursorColor: themeColor.getMaterialColor(),
-                      minLines: 1,
-                      maxLines: 10,
-                      decoration: InputDecoration(
-                        hintText: '내용을 입력하세요',
-                        filled: true,
-                        fillColor: Colors.white,
-                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
-                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
-                      ),
-                    ),
-                  ),
-                  actions: [
-                    TextButton(child: Text('취소',
-                      style: TextStyle(color: themeColor.getMaterialColor(),
-                        fontWeight: FontWeight.bold,),),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }),
-                    TextButton(child: Text('확인',
-                      style: TextStyle(color: themeColor.getMaterialColor(),
-                        fontWeight: FontWeight.bold,),),
-                        onPressed: () {
-                          if(formKey.currentState!.validate()) {
-                            Timestamp timestamp = Timestamp.now();
-                            FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').add({
-                              'content': review,
-                              'writer': loginedUser.nickName,
-                              'time': timestamp,
-                            });
-                            Navigator.pop(context);
-                          }
-                        }),
-                  ],
-                ),
-              );
-            }
+        child: Consumer<Logineduser>(
+          builder: (context, userProvider, child) {
+            return FloatingActionButton(
+                tooltip: "후기 작성하기",
+                child: Icon(Icons.edit, color: Colors.black,),
+                focusColor: Colors.white54,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                hoverElevation: 0,
+                focusElevation: 0,
+                highlightElevation: 0,
+                onPressed: () {
+                  editDialog("작성", "", userProvider.uid);
+                }
+            );
+          },
         ),
       ),
+    );
+  }
+
+  // 후기 수정 및 삭제
+  Widget modifyReview(String rid, String text) {
+    String id = FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').doc(rid).id;
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: TextButton(
+            onPressed: () {
+              editDialog("수정", text, rid);
+            },
+            child: const Text("수정", style: TextStyle(color: Colors.grey)),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: TextButton(
+            onPressed: () {
+              FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').doc(id).delete();
+            },
+            child: const Text("삭제", style: TextStyle(color: Colors.grey)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // 후기 작성 팝업창
+  void editDialog(String write, String text, String id) {
+    String? review;
+    showDialog(
+      context: navigatorKey.currentContext!,
+      builder: (context) {
+        reviewController = TextEditingController(text: text);
+        return Center(
+          child: SingleChildScrollView(
+            child: AlertDialog(
+              title: Text('후기 $write하기',
+                  style: TextStyle(
+                      color: themeColor.getMaterialColor(),
+                      fontWeight: FontWeight.bold)),
+              content: Form(
+                key: formKey,
+                autovalidateMode: AutovalidateMode.always,
+                child: TextFormField(
+                  // onChanged: (value) {
+                  //   review = value;
+                  // },
+                  controller: reviewController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    if(value!.isEmpty) return '내용을 입력하세요';
+                  },
+                  cursorColor: themeColor.getMaterialColor(),
+                  minLines: 1,
+                  maxLines: 10,
+                  decoration: InputDecoration(
+                    hintText: '내용을 입력하세요',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor.getMaterialColor(),)),
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(child: Text('취소',
+                  style: TextStyle(color: themeColor.getMaterialColor(),
+                    fontWeight: FontWeight.bold,),),
+                    onPressed: () {
+                      // reviewController.clear();
+                      Navigator.pop(context);
+                      // reviewController.clear();
+                    }),
+                TextButton(child: Text('확인',
+                  style: TextStyle(color: themeColor.getMaterialColor(),
+                    fontWeight: FontWeight.bold,),),
+                    onPressed: () {
+                      if(formKey.currentState!.validate()) {
+                        if (write == "수정") { // 수정인 경우
+                          FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').doc(id).update({
+                            'content': reviewController.text
+                            // 'content': review
+                          });
+                          Navigator.pop(context);
+                          // reviewController.clear();
+                        }
+                        else { // 처음 작성인 경우
+                          Timestamp timestamp = Timestamp.now();
+                          FirebaseFirestore.instance.collection('MapDB').doc(m_id).collection('reviewDB').add({
+                            'content': reviewController.text,
+                            // 'content': review,
+                            'writer': id,
+                            'time': timestamp,
+                          });
+                          Navigator.pop(context);
+
+                        }
+                        // reviewController.clear();
+                      }
+                    }),
+              ],
+            ),
+          ),
+        );
+      }
     );
   }
 
@@ -465,9 +542,12 @@ class RestaurantMapState extends State<RestaurantMap> {
       initialCameraPosition: _initialLocation,
 
       onMapCreated: (GoogleMapController controller) {
-        setState(() {
-          _controller = controller;
-        });
+        if (this.mounted) {
+          setState(() {
+            _controller = controller;
+            _currentLocation();
+          });
+        }
       },
       markers: Set<Marker>.of(markers.values),
       myLocationEnabled: true, // 현재 위치를 파란색 점으로 표시
@@ -541,7 +621,9 @@ class RestaurantMapState extends State<RestaurantMap> {
         double lng = double.parse(results.geometry!.location!.lng.toString());
         saveLocation(store, lat, lng);
       }
-    setState(() {});
+    if (this.mounted) {
+      setState(() {});
+    }
   }
 
   // 음식점 정보 DB에 저장
@@ -567,15 +649,15 @@ class RestaurantMapState extends State<RestaurantMap> {
 
   @override
   Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
-    double h = MediaQuery.of(context).size.height;
+    W = MediaQuery.of(context).size.width;
+    H = MediaQuery.of(context).size.height;
     final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Column(
       children: [
         Container(
           key: scrollKey,
-          width: w,
-          height: isPortrait? h * 0.7 : h * 0.55,
+          width: W,
+          height: isPortrait? H * 0.7 : H * 0.55,
           color: Colors.grey,
           child: Stack(
             children: [
