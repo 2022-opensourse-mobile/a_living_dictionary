@@ -24,7 +24,7 @@ DB 구조 :
   
 ## 앱 실행 영상  
   
-[![미리보기]([https://img.youtube.com/vi/J3kUYFFdVc0/0.jpg)](https://www.youtube.com/watch?v=J3kUYFFdVc0](https://youtu.be/MkGTi_HMDGY))
+[![미리보기](https://img.youtu.be/MkGTi_HMDGY)](https://youtu.be/MkGTi_HMDGY)
 https://youtu.be/MkGTi_HMDGY  
 
   
