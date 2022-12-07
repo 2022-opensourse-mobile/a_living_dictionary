@@ -817,9 +817,9 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               ? ImageSource.camera
               : ImageSource.gallery,
           maxWidth: 1920);
-
-
-      showDialog(
+ 
+      if (pickedImage != null) {
+        showDialog(
           barrierDismissible: false,
           context: context,
           builder: (context) {
@@ -828,13 +828,14 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               });
             return WillPopScope(
                 onWillPop: () async {
-                  snackBar("이미지 로드 중에는 뒤로가기 버튼을 사용하실 수 없습니다!");
+                  snackBar("잠시만 기다려주세요");
                   return false;
                 },
-                child : const AlertDialog(content: Text('이미지를 로드하는중'))
+                child : const AlertDialog(content: Text('로딩 중...'))
             );
-          });
-
+          }
+        );
+      }
 
       final String fileName = path.basename(pickedImage!.path);
       File imageFile = File(pickedImage.path);
