@@ -19,7 +19,7 @@ ThemeColor themeColor = ThemeColor();
 CheckClick checkClick = CheckClick();
 
 // Google Map API Key
-final _mapApiKey = 'AIzaSyDV1uWDF4S16dDx5oQAAJ399p3e9Cbot90';
+const _mapApiKey = 'AIzaSyDV1uWDF4S16dDx5oQAAJ399p3e9Cbot90';
 
 final GlobalKey scrollKey = GlobalKey(); // 키 생성
 final formKey = GlobalKey<FormState>();
@@ -62,8 +62,9 @@ class restaurantMapState extends State<restaurantMap> {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('MapDB').snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData)
-          return Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
         final documents = snapshot.data!.docs;
         for (int i = 0; i < documents.length; i++) {
@@ -99,8 +100,9 @@ class restaurantMapState extends State<restaurantMap> {
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('userInfo').doc(udoc_id).collection('MapLikeList').snapshots(),
           builder: (context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData)
-              return Center(child: CircularProgressIndicator());
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
             final documents = snapshot.data!.docs;
 
@@ -158,26 +160,28 @@ class restaurantMapState extends State<restaurantMap> {
       stream: FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
           .where('docID', isEqualTo: mapProvider.doc_id).snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
         // 이미 좋아요 누른 경우
         if (snapshot.data!.size != 0) {
           return IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.favorite,
               color: Color(0xffD83064),
               size: 30,
             ),
             onPressed: () {
-              if (checkClick.isRedundentClick(DateTime.now()))
+              if (checkClick.isRedundentClick(DateTime.now())) {
                 return;
+              }
               FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
                   .where('docID', isEqualTo: mapProvider.doc_id).get().then((value) {
-                value.docs.forEach((element) {
+                for (var element in value.docs) {
                   FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList')
                       .doc(element.id).delete();
-                });
+                }
               });
               mapProvider.subLikeNum(mapProvider.doc_id);
               deleteMarker(context, mapProvider.store);
@@ -187,14 +191,15 @@ class restaurantMapState extends State<restaurantMap> {
         // 좋아요 안 누른 경우
         else {
           return IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.favorite_border,
               color: Color(0xffD83064),
               size: 30,
             ),
             onPressed: () {
-              if (checkClick.isRedundentClick(DateTime.now()))
+              if (checkClick.isRedundentClick(DateTime.now())) {
                 return;
+              }
               FirebaseFirestore.instance.collection('userInfo').doc(userProvider.doc_id).collection('MapLikeList').add({
                 'docID': mapProvider.doc_id,
                 'latitude' : mapProvider.latitude,
@@ -222,24 +227,25 @@ class restaurantMapState extends State<restaurantMap> {
           return StreamBuilder(
             stream: FirebaseFirestore.instance.collection('MapDB').doc(id).snapshots(),
             builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-              if (!snapshot.hasData)
-                return Center(child: CircularProgressIndicator());
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
               final mapDocument = snapshot.data!;
 
               return ListView(
                   children: [
                     Padding(
-                      padding: EdgeInsets.fromLTRB(15,10,15,0),
+                      padding: const EdgeInsets.fromLTRB(15,10,15,0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('$store', style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.8),
-                          Text('${mapDocument['address']}', style: TextStyle(color: Colors.grey, height: 1.6), textScaleFactor: 1.2),
+                          Text(store, style: const TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.8),
+                          Text('${mapDocument['address']}', style: const TextStyle(color: Colors.grey, height: 1.6), textScaleFactor: 1.2),
                         ],
                       ),
                     ),
-                    Padding(padding: EdgeInsets.fromLTRB(4,0,0,0),
+                    Padding(padding: const EdgeInsets.fromLTRB(4,0,0,0),
                       child: Row(
                         children: [
                           likeIcon(mapProvider, userProvider),
@@ -247,18 +253,18 @@ class restaurantMapState extends State<restaurantMap> {
                         ],
                       ),
                     ),
-                    Divider(thickness: 0.5),
+                    const Divider(thickness: 0.5),
                     Padding(
-                        padding: EdgeInsets.fromLTRB(15,15,15,15),
+                        padding: const EdgeInsets.fromLTRB(15,15,15,15),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('$store 후기', style:TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.4),
+                            Text('$store 후기', style:const TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.4),
                           ],
                         )
                     ),
                     Padding(
-                      padding: EdgeInsets.all(0),
+                      padding: const EdgeInsets.all(0),
                       child: StreamBuilder(
                           stream: FirebaseFirestore.instance.collection(
                               'MapDB').doc(id)
@@ -266,20 +272,21 @@ class restaurantMapState extends State<restaurantMap> {
                               .orderBy('time', descending: true)
                               .snapshots(),
                           builder: (context, AsyncSnapshot snapshot) {
-                            if (!snapshot.hasData)
-                              return Center(child: CircularProgressIndicator());
+                            if (!snapshot.hasData) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
 
                             final reviewDocuments = snapshot.data!.docs;
 
                             return ListView.builder(
                               shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
+                              physics: const NeverScrollableScrollPhysics(),
                               itemCount: reviewDocuments.length,
                               itemBuilder: (context, index) {
                                 return SizedBox(
                                   width: width,
                                   child: ListTile(
-                                    leading: Icon(Icons.chevron_right_rounded),
+                                    leading: const Icon(Icons.chevron_right_rounded),
                                     title: Row(
                                       children: [
                                         Expanded(
@@ -322,7 +329,7 @@ class restaurantMapState extends State<restaurantMap> {
           builder: (context, userProvider, child) {
             return FloatingActionButton(
                 tooltip: "후기 작성하기",
-                child: Icon(Icons.edit, color: Colors.black,),
+                child: const Icon(Icons.edit, color: Colors.black,),
                 focusColor: Colors.white54,
                 backgroundColor: Colors.white,
                 elevation: 0,
@@ -442,11 +449,13 @@ class restaurantMapState extends State<restaurantMap> {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('MapDB').where('store', isEqualTo: store).snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting)
-          return Center(child: CircularProgressIndicator());
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-        if (!snapshot.hasData)
-          return Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
         final documents = snapshot.data!.docs;
 
@@ -456,41 +465,37 @@ class restaurantMapState extends State<restaurantMap> {
                 children: [
                   InkWell(
                     child: Card(
-                      margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                       elevation: 0,
                       child: Padding(
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         child: Row(
                           children: [
                             Expanded(
                               flex: 9,
-                              child: Container(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
-                                      child: Text("$store", textScaleFactor: 1.2,),),
-                                    Text("${documents[0]['address']}",
-                                      textScaleFactor: 1.0,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                          color: Colors.grey
-                                      ),),
-                                  ],
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
+                                    child: Text(store, textScaleFactor: 1.2,),),
+                                  Text("${documents[0]['address']}",
+                                    textScaleFactor: 1.0,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                        color: Colors.grey
+                                    ),),
+                                ],
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Expanded(
                               flex: 1,
-                              child: Container(
-                                child: Column(
-                                  children: [
-                                    Icon(Icons.favorite_outlined, size: 30, color: Color(0xffD83064),),
-                                    Text("${documents[0]['like'].toString()}", textScaleFactor: 1.0,),
-                                  ],
-                                ),
+                              child: Column(
+                                children: [
+                                  const Icon(Icons.favorite_outlined, size: 30, color: Color(0xffD83064),),
+                                  Text(documents[0]['like'].toString(), textScaleFactor: 1.0,),
+                                ],
                               ),
                             ),
                           ],
@@ -505,7 +510,7 @@ class restaurantMapState extends State<restaurantMap> {
                       Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
                     },
                   ),
-                  Divider(thickness: 0.5,),
+                  const Divider(thickness: 0.5,),
                 ],
               );
             }
@@ -543,14 +548,14 @@ class restaurantMapState extends State<restaurantMap> {
   }
 
   // 초기 위치 설정(금오공대)
-  static final CameraPosition _initialLocation = CameraPosition(
+  static const CameraPosition _initialLocation = CameraPosition(
     target: LatLng(36.1461382, 128.3934882),
     zoom: 16.0,
   );
 
   // 현재 위치 구하기
   void _currentLocation() async {
-    locator.Location location = new locator.Location();
+    locator.Location location = locator.Location();
 
     bool _serviceEnabled;
     locator.PermissionStatus _permissionGranted;
@@ -597,14 +602,15 @@ class restaurantMapState extends State<restaurantMap> {
 
     nearbyPlacesResponse = NearbyPlacesResponse.fromJson(convert.jsonDecode(response.body));
 
-    if(nearbyPlacesResponse.results != null)
-      for(int i = 0 ; i < nearbyPlacesResponse.results!.length; i++) {
+    if(nearbyPlacesResponse.results != null) {
+      for (int i = 0; i < nearbyPlacesResponse.results!.length; i++) {
         Results results = nearbyPlacesResponse.results![i];
         String store = results.name!;
         double lat = double.parse(results.geometry!.location!.lat.toString());
         double lng = double.parse(results.geometry!.location!.lng.toString());
         saveLocation(store, lat, lng);
       }
+    }
     if (this.mounted) {
       setState(() {});
     }
@@ -653,7 +659,7 @@ class restaurantMapState extends State<restaurantMap> {
               Align(
                 alignment: Alignment.topRight,
                 child: Padding(
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                   child: Container(
                     width: 50,
                     height: 50,
@@ -669,9 +675,9 @@ class restaurantMapState extends State<restaurantMap> {
                       onPressed: () {
                         _currentLocation();
                       },
-                      child: Icon(Icons.my_location, size: 35, color: Colors.black54,),
-                      shape: RoundedRectangleBorder(),
+                      shape: const RoundedRectangleBorder(),
                       elevation: 2.0,
+                      child: const Icon(Icons.my_location, size: 35, color: Colors.black54,),
                     ),
                   ),
                 ),
@@ -709,16 +715,16 @@ Widget upButton() {
                 onPressed: () {
                   Scrollable.ensureVisible(
                       scrollKey.currentContext!,
-                      duration: Duration(milliseconds: 500),
+                      duration: const Duration(milliseconds: 500),
                       curve: Curves.easeInOut);
                 },
-                child: Icon(Icons.arrow_upward_rounded, color: Colors.black,),
                 focusColor: Colors.white54,
                 backgroundColor: Colors.white,
                 elevation: 0,
                 hoverElevation: 0,
                 focusElevation: 0,
                 highlightElevation: 0,
+                child: const Icon(Icons.arrow_upward_rounded, color: Colors.black,),
               ),
             ),
           ),
