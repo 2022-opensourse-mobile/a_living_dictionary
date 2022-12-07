@@ -328,7 +328,7 @@ class RestaurantMapState extends State<RestaurantMap> {
                 color: Colors.black12, width: 1
             )
         ),
-        child: Consumer<Logineduser>(
+        child: Consumer<LoginedUser>(
           builder: (context, userProvider, child) {
             return FloatingActionButton(
                 tooltip: "후기 작성하기",
