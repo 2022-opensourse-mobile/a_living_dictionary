@@ -16,9 +16,6 @@ class CommunityPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Community(context2);
   }
-  Widget build2(BuildContext context) {
-    return Community(context2);
-  }
 }
 
 class Community extends StatefulWidget {

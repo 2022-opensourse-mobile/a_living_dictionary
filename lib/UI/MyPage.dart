@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:a_living_dictionary/UI/RestaurantPage.dart';
 import 'package:a_living_dictionary/UI/Supplementary/CheckClick.dart';
@@ -843,7 +841,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
 
       try {
         // Uploading the selected image with some custom meta data
-        Reference ref = await FirebaseStorage.instance.ref(fileName);
+        Reference ref = FirebaseStorage.instance.ref(fileName);
         UploadTask uploadTask = ref.putFile( 
           imageFile,
           SettableMetadata(customMetadata: {
