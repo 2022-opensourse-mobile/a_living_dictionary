@@ -57,7 +57,6 @@ class restaurantMapState extends State<restaurantMap> {
 
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   String m_id = ""; // Map Id
-  late double W, H;
 
   // DB에 저장된 마커 지도에 추가(좋아요 100개 이상인 마커만)
   Widget getMarker(BuildContext context) {
@@ -216,6 +215,7 @@ class restaurantMapState extends State<restaurantMap> {
 
   // 마커 클릭 시 나오는 페이지
   Widget detailPage(BuildContext context, String store, String id) {
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset : false,
       appBar: AppBar(title: Text('$store 상세 정보'), elevation: 0.0),
@@ -280,7 +280,7 @@ class restaurantMapState extends State<restaurantMap> {
                               itemCount: reviewDocuments.length,
                               itemBuilder: (context, index) {
                                 return SizedBox(
-                                  width: W,
+                                  width: width,
                                   child: ListTile(
                                     leading: Icon(Icons.chevron_right_rounded),
                                     title: Row(
@@ -291,7 +291,7 @@ class restaurantMapState extends State<restaurantMap> {
                                                   .toString()),
                                         ),
                                         reviewDocuments[index]['writer'] == userProvider.uid?
-                                        Container(child: modifyReview(reviewDocuments[index].id, reviewDocuments[index]['content']), width: W * 0.25,) : Container(),
+                                        Container(child: modifyReview(reviewDocuments[index].id, reviewDocuments[index]['content']), width: width * 0.25,) : Container(),
                                       ],
                                     ),
                                   ),
@@ -637,10 +637,9 @@ class restaurantMapState extends State<restaurantMap> {
 
   @override
   Widget build(BuildContext context) {
-
     Future.delayed(const Duration(milliseconds: 2000), () {});
-    W = MediaQuery.of(context).size.width;
-    H = MediaQuery.of(context).size.height;
+    double W = MediaQuery.of(context).size.width;
+    double H = MediaQuery.of(context).size.height;
     final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Column(
       children: [
