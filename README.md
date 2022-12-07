@@ -14,7 +14,7 @@ DB 구조 :
 │  ├── ScrapList  
 │  ├── LikeList  
 │  ├── CommentList  
-│  └── MapLikeList
+│  └── MapLikeList  
 ├── DictionaryItem  
 │  └── DictionaryCard  
 ├── CommunityDB  
@@ -22,7 +22,9 @@ DB 구조 :
 ├── MapDB  
 │  └── reviewDB  
 ├── QuestionDB   
-└── best
+└── best  
+
+![2021_04_user_count](~@source/C:/Users/ehddn/Desktop/금오공대/kumoh.3_2/1. 오픈소스 프로젝트/발표/db structure.png)
 
 
 
