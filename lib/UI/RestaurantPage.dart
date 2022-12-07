@@ -1,8 +1,5 @@
 import 'package:a_living_dictionary/PROVIDERS/MapInfo.dart';
 import 'package:a_living_dictionary/PROVIDERS/loginedUser.dart';
-import 'package:a_living_dictionary/main.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -312,7 +309,6 @@ class restaurantMapState extends State<restaurantMap> {
 
   // 리뷰 작성 폼
   Widget editUI() {
-    String? review;
     return Align(
       alignment: Alignment.bottomRight,
       child: Container(
@@ -637,10 +633,13 @@ class restaurantMapState extends State<restaurantMap> {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(milliseconds: 2000), () {});
     double W = MediaQuery.of(context).size.width;
     double H = MediaQuery.of(context).size.height;
     final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
+    Future.delayed(const Duration(milliseconds: 2000), () {
+
+    });
     return Column(
       children: [
         Container(
