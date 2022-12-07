@@ -24,7 +24,9 @@ DB 구조 :
   
 ## 앱 실행 영상  
 
-<center>  [![preview](https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/%EC%9C%A0%ED%8A%9C%EB%B8%8C%20%EC%8D%B8%EB%84%A4%EC%9D%BC50.jpg?alt=media&token=92426f4f-3ae6-4490-bec9-f4be52be476f)](https://www.youtube.com/watch?v=MkGTi_HMDGY)  </center>  
+
+
+<p align="center"><img src="(https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/%EC%9C%A0%ED%8A%9C%EB%B8%8C%20%EC%8D%B8%EB%84%A4%EC%9D%BC50.jpg?alt=media&token=92426f4f-3ae6-4490-bec9-f4be52be476f" width="400px"></p>
 
 https://youtu.be/MkGTi_HMDGY  
 
