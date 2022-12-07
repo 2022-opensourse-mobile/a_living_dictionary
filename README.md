@@ -2,6 +2,27 @@
 #### 2022-2 오픈소스 팀 모바일  
 해당 프로그램은 안드로이드 기반 휴대폰과 태블릿에서 작동하는 앱으로 유저에게 가사, 자취 등의 정보를 사전 형식으로 제공합니다.  
 주요 기능은 자취 사전, 커뮤니티, 혼밥 지도 등이 있으며,  각각 자취 정보를 제공하는 사전, 다양한 태그를 지원하는 커뮤니티, 본인만의 맛집을 저장하고 리뷰를 공유하는 맵 기능을 포함합니다.  
+  
+  
+  
+사용 언어: Dart, flutter  
+사용 패키지 및 API : Firebase(NOSQL), Google Map, Kakao, Naver(Sign In)  
+목적 : 자취 전반의 정보 제공을 통한 삶의 질 향상  
+DB 구조 : 
+
+├── userInfo  
+│  ├── ScrapList  
+│  ├── LikeList  
+│  ├── CommentList  
+│  └── MapLikeList
+├── DictionaryItem  
+│  └── DictionaryCard  
+├── CommunityDB  
+│  └── CommentDB  
+├── MapDB  
+│  └── reviewDB  
+├── QuestionDB   
+└── best
 
 
 
