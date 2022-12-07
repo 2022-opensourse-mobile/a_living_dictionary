@@ -16,10 +16,10 @@ class onboardingScreen extends StatefulWidget {
 }
 
 class _onboardingScreenState extends State<onboardingScreen> {
-  _onboardingScreenState(this.loginType);
   String loginType;
 
   final controller = PageController();
+  _onboardingScreenState(this.loginType);
 
   @override
   void dispose() {

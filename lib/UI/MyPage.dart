@@ -26,7 +26,6 @@ ThemeColor themeColor = ThemeColor();
 const version = '1.0.0';
 
 
-
 class MyPage extends StatefulWidget {
   const MyPage({Key? key}) : super(key: key);
 
@@ -42,6 +41,8 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   TextEditingController _nickNameController = TextEditingController(); 
   // TextEditingController _emailController = TextEditingController(); 
   final CheckClick clickCheck = CheckClick();
+
+  var contextG;
 
   String defaultImgUrl = 'https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/techmo.png?alt=media&token=d8bf4d4e-cc31-4523-8cba-8694e6572260';
 
@@ -797,12 +798,24 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
   Future<void> _upload(String inputSource, user_doc_id) async {
     final picker = ImagePicker();
     XFile? pickedImage;
+     
     try {
       pickedImage = await picker.pickImage(
           source: inputSource == 'camera'
               ? ImageSource.camera
               : ImageSource.gallery,
           maxWidth: 1920);
+
+      showDialog(
+      context: context,
+      builder: (context) {
+        Future.delayed(Duration(seconds: 3), () {
+          Navigator.of(context).pop(true);
+        });
+        return AlertDialog(
+        content: Text('이미지를 로드하는중'),
+          );} 
+        );
 
       final String fileName = path.basename(pickedImage!.path);
       File imageFile = File(pickedImage.path);
@@ -898,6 +911,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
                               onTap: () async{
                                 Navigator.pop(context);
                                 _upload('gallery', userProvider.doc_id);
+                                
                               },
                             ),
                             ListTile(leading: Icon(Icons.camera_alt), title: Text('카메라'),

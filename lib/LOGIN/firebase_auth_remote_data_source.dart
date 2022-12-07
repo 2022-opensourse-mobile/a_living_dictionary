@@ -9,15 +9,15 @@ class FirebaseAuthRemoteDataSource {
     // 서버와 통신해서 토큰을 만들어주는
     Future<String> createCustomToken(Map<String, dynamic> user) async {
 
-    // 토큰 발급을 위한 post요청
-    final customTokenResponse = await http.post(
-      Uri.parse(kakaoUrl), 
-      headers: {
-        "Content-Type": "application/json",
-        'Accept': 'application/json'
-      },
-      body:json.encode( user )
-    );    //  json형태의 데이터를 보낸다
+      // 토큰 발급을 위한 post요청
+      final customTokenResponse = await http.post(
+        Uri.parse(kakaoUrl), 
+        headers: {
+          "Content-Type": "application/json",
+          'Accept': 'application/json'
+        },
+        body:json.encode( user )
+      );    //  json형태의 데이터를 보낸다
       
       return customTokenResponse.body;
     }

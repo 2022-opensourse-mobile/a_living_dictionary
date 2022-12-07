@@ -1,4 +1,4 @@
-import 'dart:ui';
+
 import 'package:a_living_dictionary/PROVIDERS/dictionaryItemInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,6 @@ List<String> subImg = [
 // w=1951&q=80
 
 class MainPage extends StatelessWidget {
-  MainPage({Key? key, required this.tabController}) : super(key: key);
   late List<String> items;
   late TabController tabController;
   var width, height, portraitH, landscapeH;
@@ -30,6 +29,8 @@ class MainPage extends StatelessWidget {
 
   static const FREEBOARD = 0;
   static const HOTBOARD = 1;
+  
+  MainPage({Key? key, required this.tabController}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
