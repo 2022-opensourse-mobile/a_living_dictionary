@@ -820,16 +820,23 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               : ImageSource.gallery,
           maxWidth: 1920);
 
+
       showDialog(
-        context: context,
-        builder: (context) {
-          Future.delayed(Duration(seconds: 3), () {
-            Navigator.of(context).pop(true);
+          barrierDismissible: false,
+          context: context,
+          builder: (context) {
+            Future.delayed(const Duration(seconds: 3), () {
+                Navigator.of(context).pop(true);
+              });
+            return WillPopScope(
+                onWillPop: () async {
+                  snackBar("이미지 로드 중에는 뒤로가기 버튼을 사용하실 수 없습니다!");
+                  return false;
+                },
+                child : const AlertDialog(content: Text('이미지를 로드하는중'))
+            );
           });
-          return AlertDialog(
-          content: Text('이미지를 로드하는중'),
-            );} 
-        );
+
 
       final String fileName = path.basename(pickedImage!.path);
       File imageFile = File(pickedImage.path);
