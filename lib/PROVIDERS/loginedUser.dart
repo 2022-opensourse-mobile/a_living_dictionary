@@ -28,7 +28,7 @@ class Logineduser  with ChangeNotifier {
   void setProfileImageUrl(profileImageUrl) {
     this.profileImageUrl = profileImageUrl;
 
-    //notifyListeners();
+    notifyListeners();
   }
 
   void setDocID(doc_id) {

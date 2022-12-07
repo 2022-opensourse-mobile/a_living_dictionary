@@ -820,6 +820,17 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               : ImageSource.gallery,
           maxWidth: 1920);
 
+      showDialog(
+        context: context,
+        builder: (context) {
+          Future.delayed(Duration(seconds: 3), () {
+            Navigator.of(context).pop(true);
+          });
+          return AlertDialog(
+          content: Text('이미지를 로드하는중'),
+            );} 
+        );
+
       final String fileName = path.basename(pickedImage!.path);
       File imageFile = File(pickedImage.path);
 
