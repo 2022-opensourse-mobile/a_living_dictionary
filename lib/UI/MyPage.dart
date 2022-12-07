@@ -448,17 +448,27 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
         body: Column(
           children: [
             Expanded(child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('CommunityDB').orderBy('time', descending: true).snapshots(),
+                stream: FirebaseFirestore.instance.collection('CommunityDB').where('writer_id', isEqualTo: user.uid).orderBy('time', descending: true).snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
-                    return const Center(child: Text("DB 에러"));
+                    return const Center(child: Text("DB Error, 개발팀에 문의하세요."));
                   } else if (snapshot.hasData) {
                     final documents = snapshot.data!.docs;
-                    return ListView(
-                        children: documents.where((doc) => doc['writer_id'] == user.uid).map((doc) {CommunityItem item =
-                        CommunityItem.getDataFromDoc(doc);
-                        return item.build(context);
-                        }).toList());
+                    if(documents.isNotEmpty) {
+                      return ListView(
+                          children: documents.map((doc) {
+                            CommunityItem item = CommunityItem.getDataFromDoc(doc);
+                            return item.build(context);
+                          }).toList());
+                    }else {
+                      return Center(child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.error_outline_rounded, size: 60, color: Colors.grey,),
+                          Text("작성한 게시물이 없습니다", textScaleFactor: 1.2, style: TextStyle(color: Colors.grey),),
+                        ],
+                      ));
+                    }
                   } else {
                     return const Center(child: CircularProgressIndicator());
                   }
@@ -491,7 +501,7 @@ class _MyPageState extends State<MyPage> with TickerProviderStateMixin{
               if(userDocuments.isEmpty){
                 return Center(child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children: const [
                     Icon(Icons.error_outline_rounded, size: 60, color: Colors.grey,),
                     Text("댓글 단 목록이 없습니다", textScaleFactor: 1.2, style: TextStyle(color: Colors.grey),),
                   ],
