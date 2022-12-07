@@ -24,7 +24,8 @@ DB 구조 :
   
 ## 앱 실행 영상  
 
-// 유튜브 주소  
+https://youtu.be/MkGTi_HMDGY  
+
   
   
   
