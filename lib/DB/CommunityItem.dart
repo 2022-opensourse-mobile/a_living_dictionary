@@ -203,7 +203,7 @@ class CommunityItem{
     return Padding(
         padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: ListTile(
-          title: Text(title, style: const TextStyle(fontSize: 15.5)),
+          title: Text(title, style: const TextStyle(fontSize: 15.5), overflow: TextOverflow.ellipsis),
           visualDensity: const VisualDensity(vertical: -4),
           dense: true,
           trailing: Text(timeText),
