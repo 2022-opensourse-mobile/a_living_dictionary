@@ -108,13 +108,6 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
   
   
 #### 기여자   
-허동원: https://github.com/dongwon99
-정혜지: https://github.com/hyejizip
-주효림: https://github.com/Juhyorim
-구현진: https://github.com/2jin8
-
-
-
 
 <div align="center">
   <a href="https://github.com/dongwon99">
