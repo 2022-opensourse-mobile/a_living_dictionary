@@ -4,6 +4,15 @@
 주요 기능은 자취 사전, 커뮤니티, 혼밥 지도 등이 있으며,  각각 자취 정보를 제공하는 사전, 다양한 태그를 지원하는 커뮤니티, 본인만의 맛집을 저장하고 리뷰를 공유하는 맵 기능을 포함합니다.  
   
   
+  
+## 앱 사용법    
+
+<div align="center">  
+[![Thumbnail](https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/%EC%9C%A0%ED%8A%9C%EB%B8%8C%20%EC%8D%B8%EB%84%A4%EC%9D%BC25.jpg?alt=media&token=5decdd19-14c8-40d4-ac4a-08db25b20753)](https://youtu.be/M32EwZc6X_E)    
+</div>  
+  
+  
+## 개요
   - 목적 : 자취 전반의 정보 제공을 통한 삶의 질 향상    
   - 사용 언어: Dart, flutter, node.js  
   - 사용 패키지 및 API:  
@@ -26,17 +35,6 @@
   
   
   
-  
-  
-  
-  
-## 앱 사용법    
-
-<div align="center">  
-  
-  [![Thumbnail](https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/%EC%9C%A0%ED%8A%9C%EB%B8%8C%20%EC%8D%B8%EB%84%A4%EC%9D%BC25.jpg?alt=media&token=5decdd19-14c8-40d4-ac4a-08db25b20753)](https://youtu.be/M32EwZc6X_E)  
-  
-</div>  
   
   
   
