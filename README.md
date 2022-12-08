@@ -10,8 +10,8 @@
 
 <div align="center">  
   
-[![Thumbnail](https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/%EC%9C%A0%ED%8A%9C%EB%B8%8C%20%EC%8D%B8%EB%84%A4%EC%9D%BC25.jpg?alt=media&token=5decdd19-14c8-40d4-ac4a-08db25b20753)](https://youtu.be/M32EwZc6X_E)    
-  
+[![Thumbnail](https://user-images.githubusercontent.com/102962030/206456509-f2e7c97b-3ca0-4efd-a11b-c8fceba4595c.png)](https://youtu.be/M32EwZc6X_E)    
+
 </div>  
   
   
