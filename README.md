@@ -8,7 +8,9 @@
 ## 앱 사용법    
 
 <div align="center">  
+  
 [![Thumbnail](https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/%EC%9C%A0%ED%8A%9C%EB%B8%8C%20%EC%8D%B8%EB%84%A4%EC%9D%BC25.jpg?alt=media&token=5decdd19-14c8-40d4-ac4a-08db25b20753)](https://youtu.be/M32EwZc6X_E)    
+  
 </div>  
   
   
