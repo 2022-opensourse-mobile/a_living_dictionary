@@ -13,7 +13,7 @@
 
 
   - 서버 : 카카오, 네이버 로그인 서버와 통신하기 위한 node.js 서버 구축  
-  - 서버 코드 Github : https://github.com/2022-opensourse-mobile/2022-opensource-mobile-server 
+  - 서버 코드 Github : https://github.com/2022-opensourse-mobile/2022-opensource-mobile-server/blob/master/README.md
   
   - DB : Firebase(NoSQL)  
   - DB 구조 :  
