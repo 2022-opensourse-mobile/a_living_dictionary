@@ -6,7 +6,7 @@
   
   
   
-## 앱 사용법    
+## 앱 사용영상   
 
 <div align="center">  
   
@@ -16,7 +16,7 @@
   
   
 ## 개요
-  - 목적 : 자취 전반의 정보 제공을 통한 삶의 질 향상    
+  - 목적: 자취 전반의 정보 제공을 통한 삶의 질 향상    
   - 사용 언어: Dart, flutter, node.js  
   - 사용 패키지 및 API:  
     - Google Firebase: Database, storage, auth  
@@ -24,8 +24,8 @@
     - Map: Google Map, Places API, Geocoding API  
 
 
-  - 서버 : 카카오, 네이버 로그인 서버와 통신하기 위한 node.js 서버 구축  
-  - 서버 코드 Github : https://github.com/2022-opensourse-mobile/2022-opensource-mobile-server
+  - 서버: 카카오, 네이버 로그인 서버와 통신하기 위한 node.js 서버 구축  
+  - 서버 코드: https://github.com/2022-opensourse-mobile/2022-opensource-mobile-server
   
   - DB : Firebase(NoSQL)  
   - DB 구조 :  
@@ -83,26 +83,35 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
   
   
 ## 오픈소스 출처와 API 버전  
+### FLUTTER  
 #### GOOGLE MAP API  
-- google_maps_flutter: ^2.2.1  
+    google_maps_flutter: ^2.2.1  
 ##### PLACES API  
-- flutter_google_places: ^0.3.0  
-##### GEOCODING API  
-##### NAVER API  
+    flutter_google_places: ^0.3.0   
 #### KAKAO API  
-- kakao_flutter_sdk_user: ^1.2.2  
+    kakao_flutter_sdk_user: ^1.2.2  
 #### FireBase  
-- firebase_core: ^2.1.0  
-- firebase_storage: ^11.0.5  
-- firebase_auth: ^4.1.3  
-- flutterfire_ui: ^0.4.3+20  
+    firebase_core: ^2.1.0  
+    firebase_storage: ^11.0.5  
+    firebase_auth: ^4.1.3  
+    flutterfire_ui: ^0.4.3+20  
+    cloud_firestore: ^2.1.0
 #### Server(Node.js)  
-- firebase-admin  ^11.3.0  
-- firebase-auth   ^0.1.2  
+    firebase-admin  ^11.3.0  
+    firebase-auth   ^0.1.2  
 
-
-
-
+### NOT FLUTTER  
+##### NAVER API  
+- https://developers.naver.com/docs/serviceapi/datalab/search/search.md#%EA%B0%9C%EC%9A%94  
+##### GEOCODING API 
+- https://developers.google.com/maps/documentation/geocoding/overview  
+  
+  
+#### 기여자   
+허동원  
+정혜지 : https://github.com/orgs/2022-opensourse-mobile/people/hyejizip  
+주효림  
+구현진 : https://github.com/orgs/2022-opensourse-mobile/people/2jin8  
 
 
 
