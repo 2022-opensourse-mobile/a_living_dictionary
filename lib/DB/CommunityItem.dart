@@ -140,7 +140,7 @@ class CommunityItem{
                     child: Text(hashTag, style: TextStyle(color: themeColor.getColor()), textScaleFactor: 0.8)
                 ),
                 Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
-                    child: Text(title.toString()),
+                    child: Text(title, overflow: TextOverflow.ellipsis,),
                 ),
               ],
             ),

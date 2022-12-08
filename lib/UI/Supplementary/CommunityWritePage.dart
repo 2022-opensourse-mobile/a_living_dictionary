@@ -98,15 +98,15 @@ class CommunityWritePage extends StatelessWidget {
             String titleTemp = titleController.text.replaceAll(' ', '');
             String bodyTemp = bodyController.text.replaceAll(' ', '');
             if(titleTemp.isEmpty){
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("제목을 입력해주세요.")));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("제목을 입력해주세요.")));
               return;
             }
             if(bodyTemp.isEmpty){
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("내용을 입력해주세요.")));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("내용을 입력해주세요.")));
               return;
             }
             if(communityItem.hashTag == '#공지' && user.admin == false){
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("일반 사용자는 공지 탭 게시물을 작성할 수 없습니다!")));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("일반 사용자는 공지 탭 게시물을 작성할 수 없습니다!")));
               communityItem.hashTag == '#잡담';
               return;
             }
@@ -120,7 +120,7 @@ class CommunityWritePage extends StatelessWidget {
 
             if(isNull){
               communityItem.writerID = user.uid;
-              communityItem.boardType = 0;
+              communityItem.boardType = (communityItem.hashTag == "#공지")?(2):(0);
               communityItem.time = DateTime.now();
               communityItem.like = 0;
               communityItem.add();
@@ -129,7 +129,7 @@ class CommunityWritePage extends StatelessWidget {
                 'title': communityItem.title,
                 'body': communityItem.body,
                 'time': communityItem.time,
-                'hashTag' : communityItem.hashTag
+                'hashTag':communityItem.hashTag
               });
             }
             Navigator.pop(context2);
