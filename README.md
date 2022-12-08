@@ -106,9 +106,12 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
 ##### GEOCODING API 
 - https://developers.google.com/maps/documentation/geocoding/overview  
   
+ 
+ 
+ 
+## 기여자   
   
-#### 기여자   
-
+  
 <div align="center">
   <a href="https://github.com/dongwon99">
     <img src="https://user-images.githubusercontent.com/102962030/206461747-4d56a152-6963-46ea-853a-603465037070.png", width=200, alt="dongwon"/>
