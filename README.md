@@ -5,12 +5,19 @@
   
   
 목적 : 자취 전반의 정보 제공을 통한 삶의 질 향상    
-사용 언어: Dart, flutter, nodejs  
-사용 패키지 및 API : Firebase(NSQL), Google Map, Kakao, Naver(Sign In)  
-서버 : 카카오, 네이버 로그인 서버와 통신하기 위한 node.js 서버 구축
+사용 언어: Dart, flutter, node.js  
+사용 패키지 및 API:  
+  - Google Firebase: Database, storage, auth  
+  - Login: Kakao, Naver  
+  - Map: Google Map, Places API, Geocoding API  
+
+
+서버 : 카카오, 네이버 로그인 서버와 통신하기 위한 node.js 서버 구축  
+서버 코드 : //GITHUB
   
-DB : Firebase
-DB 구조 : 
+DB : Firebase(NoSQL)  
+DB 구조 :  
+
 ![img](https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/DB%20Structure.png?alt=media&token=4c21c918-3ffd-4009-b60d-35b2a8689876)
 
 
@@ -88,7 +95,7 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
 - firebase_storage: ^11.0.5  
 - firebase_auth: ^4.1.3  
 - flutterfire_ui: ^0.4.3+20  
-#### Server(Nodejs)  
+#### Server(Node.js)  
 - firebase-admin  ^11.3.0  
 - firebase-auth   ^0.1.2  
 
