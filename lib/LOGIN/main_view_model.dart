@@ -29,23 +29,21 @@ class MainViewModel {
       user = await kakao.UserApi.instance.me();
 
       // 토큰 발급은 user정보를 얻은 후 해야함. USER정보 보내야하니까 - 인증이 된다. 필요 데이터 던져주기
+
       token = await _firebaseAuthDataSource.createCustomToken({
         'uid': user!.id.toString(),
         'displayName': user!.kakaoAccount!.profile!.nickname,
-        'email': user!.kakaoAccount!.email!,
+        'email': user!.kakaoAccount!.email?? '',
         'photoURL': user!.kakaoAccount!.profile!.profileImageUrl!,
       });
-
-
     } else if (_socialLogin.runtimeType == NaverLogin) {
       Uri tokenUrl = (_socialLogin as NaverLogin).getTokenUrl();
 
       var response = await http.post(tokenUrl);
       var accessTokenResult = json.decode(response.body);
       var responseCustomToken = await http.post(
-        Uri.parse("https://loveyou.run.goorm.io/callbacks/naver/token"),
-        body: {"accessToken": accessTokenResult['access_token']}
-      );
+          Uri.parse("https://loveyou.run.goorm.io/callbacks/naver/token"),
+          body: {"accessToken": accessTokenResult['access_token']});
 
       token = responseCustomToken.body;
     }
