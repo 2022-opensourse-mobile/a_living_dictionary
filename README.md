@@ -114,16 +114,16 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
   
 <div align="center">
   <a href="https://github.com/dongwon99">
-    <img src="https://user-images.githubusercontent.com/102962030/206461747-4d56a152-6963-46ea-853a-603465037070.png", width=200, alt="dongwon"/>
+    <img src="https://user-images.githubusercontent.com/102962030/206461747-4d56a152-6963-46ea-853a-603465037070.png", width=200, alt="dongwon", title="dongwon99"/>
   </a>
   <a href="https://github.com/hyejizip">
-    <img src="https://user-images.githubusercontent.com/102962030/206461751-ba5681fd-0512-47fb-b04f-8205789e6995.png", width=200, alt="hyeji"/>
+    <img src="https://user-images.githubusercontent.com/102962030/206461751-ba5681fd-0512-47fb-b04f-8205789e6995.png", width=200, alt="hyeji", title="hyejizip"/>
   </a>
   <a href="https://github.com/Juhyorim">
-    <img src="https://user-images.githubusercontent.com/102962030/206461754-a786f9e2-953c-4a9f-971e-62c00ffe2a49.png", width=200, alt="lime"/>
+    <img src="https://user-images.githubusercontent.com/102962030/206461754-a786f9e2-953c-4a9f-971e-62c00ffe2a49.png", width=200, alt="lime", title="lime"/>
   </a>
   <a href="https://github.com/2jin8">
-    <img src="https://user-images.githubusercontent.com/102962030/206461745-c50d1bd1-9072-4aa8-954a-1203c22e0eda.png", width=200, alt="2jin8"/>
+    <img src="https://user-images.githubusercontent.com/102962030/206461745-c50d1bd1-9072-4aa8-954a-1203c22e0eda.png", width=200, alt="2jin8", title="2jin8"/>
   </a>
   
 
