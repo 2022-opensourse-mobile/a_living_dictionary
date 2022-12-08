@@ -4,12 +4,13 @@
 주요 기능은 자취 사전, 커뮤니티, 혼밥 지도 등이 있으며,  각각 자취 정보를 제공하는 사전, 다양한 태그를 지원하는 커뮤니티, 본인만의 맛집을 저장하고 리뷰를 공유하는 맵 기능을 포함합니다.  
   
   
-  
-사용 언어: Dart, flutter  
+목적 : 자취 전반의 정보 제공을 통한 삶의 질 향상    
+사용 언어: Dart, flutter, nodejs  
 사용 패키지 및 API : Firebase(NSQL), Google Map, Kakao, Naver(Sign In)  
-목적 : 자취 전반의 정보 제공을 통한 삶의 질 향상  
+서버 : 카카오, 네이버 로그인 서버와 통신하기 위한 node.js 서버 구축
+  
+DB : Firebase
 DB 구조 : 
-
 ![img](https://firebasestorage.googleapis.com/v0/b/a-living-dictionary.appspot.com/o/DB%20Structure.png?alt=media&token=4c21c918-3ffd-4009-b60d-35b2a8689876)
 
 
