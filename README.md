@@ -100,6 +100,35 @@ Supplementary 폴더 : 각 탭에서 추가적으로 필요한 페이지나 클�
     firebase-admin  ^11.3.0  
     firebase-auth   ^0.1.2  
 
+    dependencies:  
+  flutter:  
+    sdk: flutter  
+  flutter_native_splash: ^2.2.16  
+  smooth_page_indicator: ^1.0.0+2  
+
+  cupertino_icons: ^1.0.2  
+  firebase_core: ^2.1.0  
+  carousel_slider: ^4.1.1  
+  cloud_firestore: ^4.0.3  
+  image_picker: ^0.8.6  
+  firebase_storage: ^11.0.5  
+  file_picker: ^5.2.2  
+  provider: ^6.0.4  
+  kakao_flutter_sdk_user: ^1.2.2  
+  firebase_auth: ^4.1.3  
+  flutterfire_ui: ^0.4.3+20  
+  
+  flutter_webview_plugin: ^0.4.0  
+  flutter_web_auth: ^0.5.0  
+  uuid: ^3.0.7  
+  http: ^0.13.5  
+  google_maps_flutter: ^2.2.1  
+  location: ^4.4.0  
+  flutter_provider: ^2.1.0  
+  flutter_google_places: ^0.3.0  
+  fluttertoast: ^8.1.1  
+
+
 ### NOT FLUTTER  
 ##### NAVER API  
 - https://developers.naver.com/docs/serviceapi/datalab/search/search.md#%EA%B0%9C%EC%9A%94  
